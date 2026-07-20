@@ -1,0 +1,1056 @@
+/* ui_root/static/css/control_panel/data_logger.css */
+
+/* =========================================================
+   DATA LOGGER SECTION
+
+   Visual language follows the PID right drawer
+   (see pid_right_drawer.css):
+
+   - card backgrounds use --bg-panel with a hair border;
+   - section titles use the uppercase control-UI font
+     (.pid-right-drawer-section-title);
+   - the title separator matches .pid-right-drawer-separator;
+   - "header row of selects" mimics a table header so each
+     scope card reads as: header → log rows.
+
+   Layout (top → bottom):
+
+       DATA LOGGER          [All outputs] [All fields] [Clear log]
+       ─────────────────────────────────────────────────────────
+       INPUTS    – manipulated values & setpoints
+       [columns ▾]
+       realtime | step | sim_min | input:FSP | …
+       <log>
+       STATES    – internal controller / plant states
+       [columns ▾]
+       <log>
+       OUTPUTS   – plant outputs (PV) and measured signals
+       [columns ▾]
+       <log>
+       INFO      – Run/Stop/Reset, mode changes, status
+       <info log>
+   ========================================================= */
+
+@layer pages {
+
+    /* When the data logger root lives inside a control-panel
+       section, tint the section's own background so any tiny
+       overflow / scroll-padding band reads as a continuation of
+       the gradient instead of a black bar above/below. The
+       :has() selector targets only sections that contain the
+       data logger, so other sections (PID, monitoring, …) are
+       unaffected. */
+    .control-panel-section:has(> .data-logger-root) {
+        background-color: var(--bg-main) !important;
+    }
+
+    .data-logger-root {
+        width: 100%;
+        max-width: 100% !important;
+        min-width: 1200px !important;
+
+        /* Stretch top-to-bottom of the section so the gradient
+           covers the full viewport even when the log is short.
+           The parent .control-panel-section is a flex column, so
+           flex:1 1 auto + min-height:100% guarantees full-bleed
+           coverage with no surrounding --bg-main strip showing. */
+        flex: 1 1 auto;
+        flex-shrink: 0 !important;
+        min-height: 800px !important;
+
+        display: flex !important;
+        flex-direction: column;
+
+        /* Looser vertical rhythm between cards so the page reads
+           like a stack of separate panels rather than a dense list. */
+        gap: 1rem !important;
+
+        /* Roomier inner padding so cards no longer hug the section
+           edges. Top/bottom > left/right so the header and Info card
+           breathe relative to the section chrome. */
+        padding: 1.15rem 1.15rem 2.25rem 1.15rem !important;
+
+        font-family: var(--font-control-ui);
+
+        color: var(--text-main);
+
+        /* Background is flat – same flat var(--bg-panel-soft)
+           tone used by the right-drawer faceplate body and the
+           other three surfaces (controller modal, runtime
+           manager, performance monitor). The only amber wash on
+           the page lives on the scope-card headers (mirrors
+           .faceplate-header). That way all four surfaces share
+           one chrome strategy: flat body, single accent strip
+           on the header. */
+        background-color: transparent;
+
+        /* No outer border / radius / shadow — the gradient is the
+           section background itself, not a card on top of it. */
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* ── Page-level title row (acts as the faceplate header
+       for the data logger page) ───────────────────────────── */
+
+    .data-logger-page-title-row {
+        width: 100%;
+        min-height: 52px;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        gap: 0.75rem !important;
+
+        margin: 0 0 0.5rem 0 !important;
+        padding: 0.6rem 1.2rem !important;
+
+        /* Solid black — matches .pm-page-header */
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        
+        box-shadow: 
+            0 4px 12px rgba(0, 0, 0, 0.25), 
+            inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .data-logger-page-title {
+        /* Amber display — matches other page titles */
+        color: var(--text-highlight, #ffd600);
+
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+
+        letter-spacing: 0.06em;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    .data-logger-page-subtitle {
+        color: var(--text-muted, #bdbdbd);
+
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 600;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .data-logger-page-actions {
+        display: flex !important;
+        align-items: center;
+
+        gap: 0.35rem !important;
+        margin: 0 !important;
+    }
+
+    .data-logger-action-btn {
+        min-height: 26px !important;
+        height: 26px !important;
+
+        padding: 0 12px !important;
+
+        color: var(--text-main) !important;
+
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+
+        letter-spacing: 0.04em;
+
+        background-color: rgba(255, 255, 255, 0.035) !important;
+
+        border: 1px solid rgba(255, 255, 255, 0.10) !important;
+        border-radius: 4px !important;
+    }
+
+    .data-logger-action-btn:hover {
+        color: var(--text-highlight, #ffd54f) !important;
+
+        background-color: rgba(255, 214, 0, 0.10) !important;
+        border-color: rgba(255, 214, 0, 0.45) !important;
+    }
+
+    .data-logger-action-btn-danger:hover {
+        color: var(--text-white) !important;
+
+        background-color: rgba(211, 47, 47, 0.20) !important;
+        border-color: #d32f2f !important;
+    }
+
+    /* ── Save menu / per-scope save button ──────────────── */
+
+    /* Primary "Save" button — uses the same chrome as the
+       other action buttons but flags itself with the amber
+       accent so it reads as the export action (matches the
+       faceplate Apply button family). */
+    .data-logger-save-btn {
+        color: var(--text-highlight, #ffd54f) !important;
+        border-color: rgba(255, 214, 0, 0.45) !important;
+    }
+
+    .data-logger-save-btn:hover {
+        color: var(--text-highlight, #ffd54f) !important;
+
+        background-color: rgba(255, 214, 0, 0.14) !important;
+        border-color: rgba(255, 214, 0, 0.85) !important;
+    }
+
+    .data-logger-save-btn .q-icon {
+        margin-left: 0.25rem !important;
+    }
+
+    /* Compact save icon-button on each scope card header. */
+    .data-logger-scope-save-btn {
+        color: var(--text-highlight, #ffd54f) !important;
+
+        min-width: 26px !important;
+        min-height: 26px !important;
+
+        background-color: rgba(255, 214, 0, 0.08) !important;
+
+        border: 1px solid rgba(255, 214, 0, 0.35) !important;
+        border-radius: 4px !important;
+    }
+
+    .data-logger-scope-save-btn:hover {
+        color: var(--text-white) !important;
+
+        background-color: rgba(255, 214, 0, 0.20) !important;
+        border-color: rgba(255, 214, 0, 0.75) !important;
+    }
+
+    .data-logger-scope-save-btn .q-icon {
+        font-size: 1.1rem !important;
+    }
+
+    /* Dropdown menu shown when Save is clicked. */
+    .data-logger-save-menu {
+        background-color: var(--bg-panel) !important;
+        color: var(--text-main) !important;
+
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+
+        font-family: var(--font-control-ui);
+        font-size: 0.75rem;
+
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.40);
+    }
+
+    .data-logger-save-menu .q-item {
+        min-height: 30px !important;
+        padding: 0.25rem 0.75rem !important;
+
+        color: var(--text-main) !important;
+
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.72rem !important;
+        letter-spacing: 0.02em;
+    }
+
+    .data-logger-save-menu .q-item:hover,
+    .data-logger-save-menu .q-item--active {
+        background-color: rgba(255, 214, 0, 0.18) !important;
+        color: var(--text-highlight, #ffd54f) !important;
+    }
+
+    .data-logger-save-menu .q-separator {
+        background-color: var(--border-color) !important;
+        margin: 0.1rem 0;
+    }
+
+    /* Wrap the scope title + hint into a column so the save button
+       can sit beside them on the right edge of the card header. */
+    .data-logger-scope-title-group {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 0.1rem !important;
+
+        flex: 1 1 auto;
+    }
+
+    /* Re-align the existing scope-card-header to a row that puts
+       the save button on the trailing edge. */
+    .data-logger-scope-card-header {
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+
+    /* ── Shared scope card (input / state / output / info) ──
+
+       Chrome is now identical to .pm-panel so the two pages
+       read as a single visual family. The only difference is
+       the card body content (plot vs table). */
+
+    .data-logger-scope-card {
+        width: 100%;
+        flex: 0 0 auto;
+
+        display: flex !important;
+        flex-direction: column;
+
+        /* No gap at card level — inner spacing lives in the
+           header and body wrappers (mirrors .pm-panel). */
+        gap: 0 !important;
+
+        margin: 0 !important;
+        /* No all-around padding — header/body handle their own
+           padding, just like .pm-panel / .pm-panel-body. */
+        padding: 0 !important;
+
+        background-color: var(--hmi-bg-deep, #000000) !important;
+
+        border: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14)) !important;
+        border-radius: 6px !important;
+
+        box-shadow:
+            0 12px 28px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+    }
+
+    .data-logger-unified-panel {
+        width: 100%;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        flex: 1 1 0px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+
+        display: flex !important;
+        flex-direction: column;
+
+        /* No gap at card level — inner spacing lives in the
+           header and body wrappers (mirrors .pm-panel). */
+        gap: 0 !important;
+
+        margin: 0 !important;
+        /* No all-around padding — header/body handle their own
+           padding, just like .pm-panel / .pm-panel-body. */
+        padding: 0 !important;
+
+        background-color: var(--hmi-bg-deep, #000000) !important;
+
+        border: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14)) !important;
+        border-radius: 6px !important;
+
+        box-shadow:
+            0 12px 28px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+    }
+
+    /* Header bar — exact mirror of .pm-panel-header:
+       left amber stripe, border-bottom divider, same padding. */
+    .data-logger-scope-card-header {
+        width: 100%;
+
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 8px !important;
+
+        /* Same padding as .pm-panel-header */
+        padding: 0.5rem 0.75rem 0.5rem 0.9rem !important;
+
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        border-bottom: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14));
+
+        position: relative;
+        margin: 0 !important;
+    }
+
+    /* Amber left accent stripe — exact mirror of .pm-panel-header::before */
+    .data-logger-scope-card-header::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--hmi-accent-amber, #ffd54f);
+    }
+
+    /* Body wrapper — mirrors .pm-panel-body.
+       Wraps the cell grid + table/log content. */
+    .data-logger-scope-card-body {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 10px !important;
+
+        padding: 12px 14px 14px 14px !important;
+    }
+
+    .data-logger-scope-title {
+        color: var(--text-highlight, #ffd54f);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .data-logger-scope-hint {
+        color: var(--text-muted, #bdbdbd);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 600;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    /* Reuse the same separator treatment as the right drawer. */
+    .data-logger-separator {
+        background-color: var(--border-color) !important;
+        border-color: var(--border-color) !important;
+        opacity: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 1px !important;
+    }
+
+    /* ── Header row of selects (acts like a table header) ── */
+
+    .data-logger-header-row {
+        width: 100%;
+
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: stretch;
+
+        gap: 0.4rem !important;
+
+        margin: 0 !important;
+        padding: 0.25rem 0 !important;
+
+        overflow-x: auto;
+    }
+
+    /* Container that hosts the per-signal cell grid. The grid
+       itself is rebuilt by the flush timer when the bridge swaps
+       its available_log_fields between sessions, so the container
+       must always exist (NiceGUI ``ui.element('div')``). */
+    .data-logger-header-container {
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Table-header grid — one cell per signal.
+
+       Cells flow horizontally; the row scrolls horizontally if it
+       overflows so the scope card never grows in width and the
+       overall page layout stays stable.
+
+       Reads visually like a P&ID hardware row: every column is a
+       compact, equal-width "label tile" with a clear accent when
+       active. The active accent uses --text-highlight (#ffd54f)
+       so it lines up with the faceplate amber accent used
+       everywhere else in the app (controller modal, performance
+       monitor, runtime manager). */
+    .data-logger-header-grid {
+        width: 100%;
+
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: stretch;
+
+        gap: 0.45rem !important;
+
+        margin: 0 !important;
+        padding: 0.5rem 0 0.4rem 0 !important;
+
+        overflow-x: auto;
+    }
+}
+
+
+
+@layer pages {
+
+    .data-logger-header-grid-empty {
+        flex: 1 1 100%;
+
+        padding: 0.4rem 0.6rem;
+
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.72rem;
+        font-style: italic;
+
+        background-color: rgba(255, 255, 255, 0.02);
+
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        border-radius: 5px;
+    }
+
+    .data-logger-header-cell {
+        flex: 0 0 auto;
+        min-width: 110px;
+        max-width: 200px;
+
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        gap: 0.45rem !important;
+        position: relative;
+
+        padding: 0.4rem 0.6rem 0.4rem 0.7rem !important;
+
+        font-family: var(--font-control-ui);
+
+        background-color: rgba(255, 255, 255, 0.035);
+
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 5px !important;
+
+        user-select: none;
+        cursor: pointer;
+
+        transition:
+            background-color 0.12s ease,
+            border-color 0.12s ease,
+            color 0.12s ease,
+            box-shadow 0.12s ease;
+    }
+
+    .data-logger-header-cell:hover {
+        background-color: rgba(255, 214, 0, 0.06);
+        border-color: rgba(255, 214, 0, 0.35);
+    }
+
+    .data-logger-header-cell-text {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+
+        gap: 0.05rem;
+
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .data-logger-header-cell-tag {
+        color: var(--text-main);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.72rem;
+        font-weight: 700;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        max-width: 100%;
+    }
+
+    .data-logger-header-cell-meta {
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        font-weight: 500;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        max-width: 100%;
+        margin-top: 2px;
+    }
+
+    /* Active state — column is in the bridge's selected_log_fields
+       and its values stream into the log below. */
+    .data-logger-header-cell-active {
+        background-color: rgba(255, 214, 0, 0.14);
+        border-color: var(--text-highlight, #ffd54f);
+
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 214, 0, 0.25),
+            0 0 0 1px rgba(255, 214, 0, 0.10);
+    }
+
+    .data-logger-header-cell-active .data-logger-header-cell-tag {
+        color: var(--text-white);
+    }
+
+    .data-logger-header-cell-active .data-logger-header-cell-meta {
+        color: var(--text-highlight, #ffd54f);
+    }
+
+    .data-logger-header-cell-active:hover {
+        background-color: rgba(255, 214, 0, 0.22);
+        border-color: var(--text-highlight, #ffd54f);
+    }
+
+    /* Inactive state — column is hidden; click to toggle on. */
+    .data-logger-header-cell-inactive {
+        color: var(--text-muted);
+    }
+
+    /* Read-only prefix columns (realtime / step / sim_min). The
+       bridge always emits these, so the user can't toggle them. */
+    .data-logger-header-cell-readonly {
+        cursor: default;
+
+        background-color: rgba(255, 213, 79, 0.08);
+        border-color: rgba(255, 213, 79, 0.22);
+    }
+
+    .data-logger-header-cell-readonly:hover {
+        background-color: rgba(255, 213, 79, 0.12);
+        border-color: rgba(255, 213, 79, 0.32);
+    }
+
+    .data-logger-header-cell-readonly .data-logger-header-cell-tag {
+        color: var(--text-highlight);
+    }
+
+    .data-logger-header-cell-readonly .data-logger-header-cell-meta {
+        color: var(--text-muted);
+    }
+
+    /* The multi-select control itself — kept as a fallback rule
+       (still used by `data_logger_unavailable` if a future variant
+       wants a consolidated picker). */
+    .data-logger-header-select {
+        flex: 1 1 100%;
+        min-width: 220px;
+
+        background-color: rgba(255, 255, 255, 0.035);
+
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 5px;
+
+        padding: 0 0.35rem;
+    }
+
+    .data-logger-header-select .q-field__control,
+    .data-logger-header-select .q-field__inner {
+        min-height: 36px !important;
+    }
+
+    .data-logger-header-select .q-field__label {
+        color: var(--text-muted) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .data-logger-header-select .q-field__native,
+    .data-logger-header-select input {
+        color: var(--text-main) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.75rem !important;
+    }
+
+    .data-logger-header-select .q-chip {
+        background-color: rgba(255, 214, 0, 0.14) !important;
+        color: var(--text-highlight, #ffd54f) !important;
+
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+
+        border: 1px solid rgba(255, 214, 0, 0.40);
+    }
+
+    .data-logger-header-select .q-chip .q-icon {
+        color: var(--text-white) !important;
+    }
+
+    /* Popup menu shown when the user opens the select. */
+    .data-logger-select-menu {
+        background-color: var(--bg-panel) !important;
+        color: var(--text-main) !important;
+
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+
+        font-family: var(--font-control-ui);
+        font-size: 0.75rem;
+    }
+
+    .data-logger-select-menu .q-item {
+        min-height: 30px !important;
+        padding: 0.15rem 0.6rem !important;
+    }
+
+    .data-logger-select-menu .q-item__label {
+        color: var(--text-main) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.72rem !important;
+    }
+
+    .data-logger-select-menu .q-item--active,
+    .data-logger-select-menu .q-item:hover {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    /* ── Streamed grid widgets ───────────────────────────── */
+
+    .data-logger-grid {
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        height: 250px !important;
+        margin: 0.2rem 0 0 0 !important;
+        border: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14)) !important;
+        border-radius: 5px !important;
+        background-color: var(--hmi-bg-deep, #000000) !important;
+    }
+    
+    .data-logger-unified-panel {
+        display: flex !important;
+        flex-direction: column !important;
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        overflow: hidden !important;
+        height: 100% !important;
+        min-height: 0 !important;
+    }
+    
+    .data-logger-grid-unified {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+
+    .data-logger-grid-cell-fixed {
+        color: var(--text-highlight, #ffd54f) !important;
+        font-weight: 700 !important;
+        background-color: rgba(255, 213, 79, 0.03) !important;
+    }
+
+    .data-logger-grid-cell {
+        color: var(--text-main) !important;
+    }
+
+    .data-logger-grid-header {
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.65rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+        color: var(--text-muted) !important;
+    }
+
+    /* Override Quasar table internals to integrate smoothly with deep-black card background */
+    .data-logger-grid,
+    .data-logger-grid-unified {
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        color: var(--text-main) !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Sticky Header Implementation based on Quasar docs */
+    .data-logger-grid .q-table__top,
+    .data-logger-grid-unified .q-table__top,
+    .data-logger-grid .q-table__bottom,
+    .data-logger-grid-unified .q-table__bottom,
+    .data-logger-grid thead tr:first-child th,
+    .data-logger-grid-unified thead tr:first-child th {
+        background-color: var(--hmi-bg-deep, #000000) !important;
+    }
+
+    .data-logger-grid thead tr th,
+    .data-logger-grid-unified thead tr th {
+        position: sticky !important;
+        z-index: 1 !important;
+    }
+
+    .data-logger-grid thead tr:first-child th,
+    .data-logger-grid-unified thead tr:first-child th {
+        top: 0 !important;
+    }
+
+    /* Prevent scrolling behind sticky top row on focus (Quasar best practice) */
+    .data-logger-grid tbody,
+    .data-logger-grid-unified tbody {
+        scroll-margin-top: 36px !important;
+    }
+}
+
+@layer components {
+    .data-logger-grid .q-table,
+    .data-logger-grid-unified .q-table {
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        color: var(--text-main) !important;
+    }
+
+    .data-logger-grid .q-table__middle,
+    .data-logger-grid-unified .q-table__middle {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow: auto !important;
+        pointer-events: auto !important;
+    }
+
+}
+
+
+
+@layer pages {
+
+    .data-logger-grid .q-table th,
+    .data-logger-grid-unified .q-table th,
+    .data-logger-grid .q-table td,
+    .data-logger-grid-unified .q-table td {
+        border-color: rgba(255, 255, 255, 0.06) !important;
+        white-space: nowrap !important;
+        min-width: 120px !important;
+    }
+
+    .data-logger-grid .q-table th.data-logger-grid-cell-fixed,
+    .data-logger-grid-unified .q-table th.data-logger-grid-cell-fixed,
+    .data-logger-grid .q-table td.data-logger-grid-cell-fixed,
+    .data-logger-grid-unified .q-table td.data-logger-grid-cell-fixed {
+        min-width: 75px !important;
+    }
+
+    /* ── Streamed log widgets ───────────────────────────── */
+
+    .data-logger-log {
+        width: 100%;
+        min-height: 200px;
+        max-height: 300px;
+
+        margin: 0.2rem 0 0 0 !important;
+        padding: 0.6rem 0.75rem !important;
+
+        color: var(--text-main);
+
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        line-height: 1.45;
+
+        background-color: rgba(0, 0, 0, 0.50);
+
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 5px;
+
+        /* DCS-style fixed-width output — emitted by
+           ``GenericBridge._format_log_row(dcs_style=True)`` — relies
+           on a strict monospace alignment. ``white-space: pre``
+           keeps the spaces verbatim (no collapse, no word-wrap),
+           ``overflow: hidden`` prevents double scrollbars on the outer container,
+           and ``letter-spacing: 0`` defends against any inherited tracking. */
+        white-space: pre !important;
+        overflow: hidden !important;
+        letter-spacing: 0 !important;
+        tab-size: 4;
+    }
+
+    /* Style the inner textarea inside NiceGUI's ui.log component directly */
+    .data-logger-log textarea {
+        width: 100% !important;
+        height: 100% !important;
+        background: transparent !important;
+        color: inherit !important;
+        border: none !important;
+        outline: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        resize: none !important;
+        font-family: inherit !important;
+        font-size: inherit !important;
+        line-height: inherit !important;
+        white-space: pre !important;
+        overflow: auto !important;
+    }
+
+}
+
+
+
+@layer pages {
+
+    .data-logger-info-card {
+        /* Extra breathing room before the Info card so it visually
+           feels like a "footer" relative to the three scope cards. */
+        margin-top: 0.75rem;
+    }
+
+    .data-logger-info-log {
+        min-height: 120px;
+        max-height: 180px;
+
+        color: var(--text-soft);
+
+        font-family: var(--font-mono) !important;
+        white-space: pre !important;
+        overflow: hidden !important;
+        letter-spacing: 0 !important;
+    }
+
+    /* Inside the unified/popout panel the INFO log must fill the
+       fixed-height container — no max-height restriction. */
+    .data-logger-unified-panel .data-logger-info-log {
+        min-height: 0 !important;
+        max-height: none !important;
+        height: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .data-logger-unified-panel .data-logger-info-log textarea {
+        height: 100% !important;
+        overflow: auto !important;
+    }
+
+    /* ── Generic hint text reused by the "no engine" view ── */
+
+    .data-logger-hint {
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.72rem;
+        font-weight: 500;
+    }
+
+    /* =========================================================
+       CELL RENAME DIALOG
+       Shared by Data Logger and Performance Monitor.
+       ========================================================= */
+
+    .cell-rename-dialog {
+        width: min(92vw, 320px);
+        padding: 1rem 1.1rem !important;
+
+        background-color: var(--bg-panel, #111722) !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+
+        border: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14));
+        border-radius: 8px !important;
+
+        box-shadow:
+            0 18px 42px rgba(0, 0, 0, 0.55),
+            0 0 0 1px rgba(255, 255, 255, 0.025) !important;
+
+        display: flex !important;
+        flex-direction: column;
+        gap: 0.75rem !important;
+    }
+
+    .cell-rename-dialog-title {
+        color: var(--text-highlight, #ffd600);
+
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .cell-rename-dialog-input {
+        width: 100%;
+
+        background-color: rgba(0, 0, 0, 0.40) !important;
+
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.82rem !important;
+        color: #ffffff !important;
+    }
+
+    .cell-rename-dialog-input .q-field__control {
+        min-height: 32px !important;
+        background: transparent !important;
+    }
+
+    .cell-rename-dialog-input .q-field__native,
+    .cell-rename-dialog-input input {
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.82rem !important;
+    }
+
+    .cell-rename-dialog-actions {
+        display: flex !important;
+        justify-content: flex-end;
+        gap: 0.5rem !important;
+    }
+
+    .cell-rename-dialog-btn {
+        min-height: 28px !important;
+        height: 28px !important;
+        padding: 0 14px !important;
+
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em;
+
+        border-radius: 4px !important;
+    }
+
+    .cell-rename-dialog-btn-cancel {
+        color: var(--text-muted) !important;
+        border: 1px solid rgba(255, 255, 255, 0.10) !important;
+        background: transparent !important;
+    }
+
+    .cell-rename-dialog-btn-cancel:hover {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .cell-rename-dialog-btn-confirm {
+        color: var(--text-highlight, #ffd54f) !important;
+        border: 1px solid rgba(255, 213, 79, 0.90) !important;
+        background: transparent !important;
+    }
+
+    .cell-rename-dialog-btn-confirm:hover {
+        background-color: rgba(255, 213, 79, 0.14) !important;
+    }
+
+    /* Double-click hint on cells */
+    .data-logger-header-cell::after,
+    .pm-cell::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+    }
+
+    .data-logger-header-cell:hover::after,
+    .pm-cell:hover::after {
+        opacity: 1;
+    }
+}

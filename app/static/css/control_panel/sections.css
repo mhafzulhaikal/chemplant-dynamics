@@ -1,0 +1,308 @@
+/* ui_root/static/css/control_panel/sections.css */
+
+@layer pages {
+
+    /* =========================================================
+       DEFAULT SECTION
+
+       Non-PID sections:
+       - fill available area
+       - vertical scroll only inside section
+       ========================================================= */
+
+    .control-panel-section {
+        position: relative;
+
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: var(--bg-main);
+        color: var(--text-main);
+
+        font-family: var(--font-control-ui);
+
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+
+        scrollbar-gutter: auto;
+        scroll-behavior: smooth;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+
+    /* =========================================================
+       DEFAULT SECTION CONTENT
+       ========================================================= */
+
+    .control-panel-section-content {
+        width: 100%;
+        min-height: 100%;
+        min-width: 1200px !important;
+        min-height: 800px !important;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: var(--bg-main);
+        color: var(--text-main);
+
+        font-family: var(--font-control-ui);
+
+        overflow: visible;
+    }
+
+
+    /* =========================================================
+       PID SECTION
+
+       Parent section for PID.
+       It owns the control content background.
+       ========================================================= */
+
+    .control-panel-section-pid {
+        position: relative;
+
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: var(--bg-main);
+        color: var(--text-main);
+
+        font-family: var(--font-control-ui);
+
+        overflow: hidden !important;
+    }
+
+    /* =========================================================
+       PERFORMANCE MONITORING
+       ========================================================= */
+
+    .monitor-root {
+        width: 100%;
+        min-height: 100%;
+        gap: 12px !important;
+        padding: 16px 18px 22px 18px !important;
+        background: #000000;
+    }
+
+    .monitor-font-mono {
+        font-family: Consolas, 'Courier New', monospace;
+    }
+
+    .monitor-header-row {
+        width: 100%;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px !important;
+        flex-wrap: wrap;
+    }
+
+    .monitor-page-title {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .monitor-page-subtitle {
+        color: #ffff00;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+    }
+
+    .monitor-metric-grid {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px !important;
+    }
+
+    .monitor-metric-card {
+        min-height: 84px;
+        border-radius: 12px;
+        border: 1px solid #ffffff;
+        background: #000000;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        padding: 10px 12px;
+    }
+
+    .monitor-metric-title {
+        color: #ffffff;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .monitor-metric-value {
+        color: #00ff00;
+        font-size: 24px;
+        line-height: 1.05;
+        margin-top: 8px;
+        font-weight: 650;
+    }
+
+    .monitor-metric-unit {
+        color: #ffff00;
+        font-size: 11px;
+        margin-top: 4px;
+    }
+
+    .monitor-main-layout {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: 12px !important;
+        min-height: 560px;
+    }
+
+    .monitor-plot-list {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid #ffffff;
+        background: #000000;
+        padding: 10px;
+        gap: 8px !important;
+    }
+
+    .monitor-selector-title {
+        color: #ffffff;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 6px 4px;
+    }
+
+    .monitor-plot-button {
+        width: 100%;
+        justify-content: flex-start;
+        text-align: left;
+        border-radius: 8px;
+        padding: 8px 10px !important;
+        min-height: 38px;
+    }
+
+    .monitor-plot-button-inactive {
+        color: #ffffff;
+        border: 1px solid #ffffff;
+        background: #000000;
+    }
+
+    .monitor-plot-button-active {
+        color: #000000;
+        border: 1px solid #ffff00;
+        background: #ffff00;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    }
+
+    .monitor-stage {
+        width: 100%;
+        min-height: 560px;
+        border-radius: 12px;
+        border: 1px solid #ffffff;
+        background: #000000;
+        padding: 10px;
+        gap: 8px !important;
+    }
+
+    .monitor-active-header {
+        width: 100%;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px !important;
+        flex-wrap: wrap;
+    }
+
+    .monitor-active-title {
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+    }
+
+    .monitor-active-subtitle {
+        color: #ffff00;
+        font-size: 11px;
+    }
+
+    .monitor-chart-single {
+        width: 100%;
+        height: 460px;
+        border-radius: 12px;
+        border: 1px solid #ffffff;
+        background: #000000;
+        overflow: hidden;
+    }
+
+    .monitor-bottom-info {
+        width: 100%;
+        gap: 16px !important;
+        color: #ffffff;
+        font-size: 11px;
+    }
+
+    @media (max-width: 1280px) {
+        .monitor-metric-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .monitor-main-layout {
+            grid-template-columns: 240px minmax(0, 1fr);
+        }
+    }
+
+    @media (max-width: 900px) {
+        .monitor-metric-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .monitor-main-layout {
+            grid-template-columns: 1fr;
+            min-height: 0;
+        }
+
+        .monitor-stage {
+            min-height: 0;
+        }
+
+        .monitor-chart-single {
+            height: 360px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .monitor-root {
+            padding: 14px 12px 18px 12px !important;
+        }
+
+        .monitor-metric-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .monitor-chart-single {
+            height: 300px;
+        }
+    }
+}

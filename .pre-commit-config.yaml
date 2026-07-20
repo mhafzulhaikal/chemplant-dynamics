@@ -1,0 +1,18 @@
+# Pre-commit hook configuration.
+# Runs Ruff (lint + format) automatically on every `git commit`.
+# Docs: https://pre-commit.com/
+#
+# SETUP (one-time):
+#   uv run pre-commit install
+#
+# MANUAL RUN (all files):
+#   uv run pre-commit run --all-files
+
+repos:
+  # Ruff: linting + auto-fix + formatting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+      - id: ruff              # linter (with auto-fix)
+        args: [--fix]
+      - id: ruff-format       # formatter (equivalent to black)

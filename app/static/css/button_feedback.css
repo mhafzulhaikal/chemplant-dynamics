@@ -1,0 +1,78 @@
+/* button_feedback.css
+ *
+ * Pure-CSS pressed/active state for buttons that want sub-16 ms
+ * visual feedback without a server round-trip.
+ *
+ * The pattern is a CSS class swap driven by the browser's
+ * ``:active`` pseudo-class combined with a
+ * ``pointerdown``/``pointerup`` event listener installed on the
+ * element by ``app.ui.button_feedback.attach_pointer_feedback``.
+ *
+ * Why both ``:active`` and the explicit class?
+ *
+ *   * ``:active`` covers keyboard focus + Enter/Space
+ *     automatically (matches the existing :focus-visible style).
+ *   * The explicit class lets us also light up on *touchstart*
+ *     for the same device-class that the iOS Safari team
+ *     removed ``:hover`` from.
+ *
+ * The visual treatment is intentionally subtle: a 1-px inset glow
+ * and a 1-step background tint. Anything more is visible on
+ * 60 fps recordings and becomes annoying when buttons are
+ * rapidly tapped.
+ *
+ * Each variant overrides the colors so a button on a dark panel
+ * (e.g. ``.pid-navbar-run-btn``) and a button on a light panel
+ * (``drawer-menu-item``) both read as pressed.
+ */
+
+.btn-feedback {
+    transition:
+        background-color 80ms linear,
+        box-shadow 80ms linear,
+        transform 80ms ease-out;
+    will-change: background-color, box-shadow, transform;
+}
+
+/* The browser fires ``:active`` while the pointer button is
+ * held. Use it for the keyboard case. The explicit class added
+ * by JS (added in pointerdown, removed on pointerup/pointercancel)
+ * covers the touch case where :active is not always reliable. */
+.btn-feedback:active,
+.btn-feedback.is-pressed {
+    transform: translateY(1px);
+    box-shadow:
+        inset 0 0 0 1px var(--btn-feedback-glow, rgba(255, 213, 79, 0.45)),
+        inset 0 1px 0 0 rgba(0, 0, 0, 0.20);
+}
+
+/* On dark surfaces (navbar / drawer on control panel) */
+.btn-feedback--dark {
+    --btn-feedback-glow: rgba(255, 213, 79, 0.55);
+    --btn-feedback-tint:  rgba(255, 213, 79, 0.10);
+}
+
+.btn-feedback--dark.is-pressed,
+.btn-feedback--dark:active {
+    background-color: var(--btn-feedback-tint);
+}
+
+/* On light surfaces (home page, expansion cards) */
+.btn-feedback--light {
+    --btn-feedback-glow: rgba(38, 198, 218, 0.55);
+    --btn-feedback-tint:  rgba(38, 198, 218, 0.10);
+}
+
+.btn-feedback--light.is-pressed,
+.btn-feedback--light:active {
+    background-color: var(--btn-feedback-tint);
+}
+
+/* The "active" / "selected" state stays on a button that has been
+ * toggled, e.g. the left-drawer item that owns the current section.
+ * A subtle persistent accent — not the same as the pressed
+ * feedback, which is transient. */
+.btn-feedback--persistent-active {
+    box-shadow:
+        inset 2px 0 0 0 var(--btn-feedback-glow, rgba(255, 213, 79, 0.65));
+}

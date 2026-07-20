@@ -1,0 +1,275 @@
+/* ui_root/static/css/control_panel/pid_layout.css */
+
+@layer pages {
+
+    /* =========================================================
+       PID ROOT COLUMN
+
+       Structure:
+       .pid-section-root
+       ├── .pid-navbar-row
+       └── .pid-canvas-row
+
+       Requirement:
+       - column has no margin
+       - column has no padding
+       - background transparent
+       ========================================================= */
+
+    .main-scroll-wrapper,
+    .pid-section-root {
+        flex: 1 !important;
+        min-height: 0 !important;
+        width: 100%;
+        display: flex !important;
+        flex-direction: column;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        background: black !important;
+        color: var(--text-main);
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .main-scroll-inner,
+    .pid-section-inner {
+        min-width: var(--min-content-width, 1001px) !important;
+        flex: 1 1 0% !important;
+        display: flex !important;
+        flex-direction: column;
+        min-height: 0 !important;
+        width: 100%;
+        height: 100%;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Ukuran tinggi/lebar scrollbar */
+    .main-scroll-wrapper::-webkit-scrollbar,
+    .pid-section-root::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    /* Lintasan track scrollbar */
+    .main-scroll-wrapper::-webkit-scrollbar-track,
+    .pid-section-root::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-top: 1px solid var(--border-color);
+    }
+
+    /* Gagang geser (thumb) scrollbar */
+    .main-scroll-wrapper::-webkit-scrollbar-thumb,
+    .pid-section-root::-webkit-scrollbar-thumb {
+        background: #3a4451;
+        border-radius: 5px;
+        border: 2px solid #0d1117;
+    }
+
+    /* Gagang scrollbar saat diarahkan kursor (hover) */
+    .main-scroll-wrapper::-webkit-scrollbar-thumb:hover,
+    .pid-section-root::-webkit-scrollbar-thumb:hover {
+        background: #4c5766;
+    }
+
+
+    /* =========================================================
+       ROW 1 — NAVBAR ROW
+
+       Important:
+       - position relative for drawer toggle slot
+       - overflow visible so the toggle button is not clipped
+       ========================================================= */
+
+    .pid-navbar-row {
+        position: relative;
+
+        width: 100%;
+
+        flex: 0 0 auto;
+        min-height: 0;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: stretch;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: transparent !important;
+
+        overflow: visible !important;
+    }
+
+    /*
+       Do NOT apply width:100% to the drawer toggle slot.
+       This prevents the navbar toggle button from disappearing.
+    */
+    .pid-navbar-row > :not(.pid-navbar-drawer-toggle-slot) {
+        width: 100%;
+
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /*
+       Optional spacing so navbar content does not overlap the right toggle.
+       This assumes render_pid_navbar root has class .pid-navbar.
+    */
+    .pid-navbar-row .pid-navbar {
+        padding-right: calc(
+            var(--pid-navbar-drawer-toggle-right, 0.75rem)
+            + var(--pid-navbar-drawer-toggle-size, 32px)
+            + 0.5rem
+        ) !important;
+    }
+
+
+    /* =========================================================
+       ROW 2 — CANVAS ROW
+
+       Stable container:
+       - owns the overlay right drawer
+       - does not scroll itself
+       - inner .pid-canvas-scroll-viewport handles horizontal scroll
+       ========================================================= */
+
+    .pid-content,
+    .pid-canvas-row {
+        position: relative;
+
+        flex: 1 1 0% !important;
+        min-height: 200px !important;
+        width: 100%;
+        min-width: var(--min-content-width, 1001px) !important;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        background-color: transparent !important;
+
+        overflow: hidden !important;
+    }
+
+
+    /* =========================================================
+       CANVAS SCROLL VIEWPORT
+
+       This is the only horizontal scroll area.
+       Right drawer is outside this flow, so content does not move.
+       ========================================================= */
+
+    .pid-canvas-scroll-viewport {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+
+        flex: 1 1 auto;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: stretch;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: transparent !important;
+
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+
+        scrollbar-gutter: auto;
+        overscroll-behavior-x: contain;
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+
+    /* =========================================================
+       PID SCROLL CANVAS
+
+       Stable canvas:
+       - height follows row 2
+       - width is at least 100%
+       - width can exceed viewport to activate horizontal scroll
+       ========================================================= */
+
+    .pid-scroll-canvas {
+        height: 100%;
+        min-height: 100%;
+
+        width: max(100%, var(--pid-canvas-min-w, 1400px));
+        min-width: 100%;
+
+        flex: 0 0 auto;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: center;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+
+        padding-top: var(--pid-canvas-py, 1rem) !important;
+        padding-bottom: var(--pid-canvas-py, 1rem) !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        background-color: transparent !important;
+
+        overflow: hidden !important;
+    }
+
+
+    /* =========================================================
+       PID CONTENT
+       ========================================================= */
+
+    .pid-content {
+        position: relative;
+
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        min-width: 0;
+
+        flex: 1 1 auto;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: transparent !important;
+        color: var(--text-main);
+
+        border: none;
+        border-radius: 0;
+
+        /* Allow the SVG to be fully visible at its natural aspect ratio
+           without being clipped. The horizontal scroll viewport wraps
+           this container, so overflow is handled there. */
+        overflow: visible;
+    }
+}

@@ -1,0 +1,41 @@
+/* ui_root/static/css/control_panel/pid_svg.css */
+
+@layer pages {
+
+    /* =========================================================
+       STHR PID SVG
+       ========================================================= */
+
+    .svg-full,
+    .sthr-pid-svg,
+    .biodiesel-pid-svg {
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        min-width: 0 !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        margin: 0 !important;
+        padding: 1rem !important;
+
+        background: black !important;
+        overflow: hidden !important;
+    }
+
+    .svg-full svg,
+    .sthr-pid-svg svg,
+    .biodiesel-pid-svg svg {
+        display: block !important;
+
+        width: 100% !important;
+        height: 100% !important;
+
+        margin: 0 auto !important;
+        padding: 0 !important;
+
+        background-color: transparent !important;
+    }
+}

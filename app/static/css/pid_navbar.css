@@ -1,0 +1,514 @@
+/* ui_root/static/css/pid_navbar.css */
+
+/* ============================================================
+   PID NAVIGATION BAR
+   ============================================================ */
+
+@layer components {
+
+    /* =========================================================
+       NAVBAR ROOT
+       ========================================================= */
+
+    .pid-navbar {
+        width: 100%;
+
+        height: var(--pid-navbar-h, var(--header-h));
+        min-height: var(--pid-navbar-h, var(--header-h));
+
+        display: flex !important;
+        align-items: center;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: var(--bg-main);
+        color: var(--text-main);
+
+        border-bottom: 1px solid var(
+            --pid-navbar-border-color,
+            rgba(255, 255, 255, 0.85)
+        );
+
+        font-family: var(--font-control-ui);
+
+        overflow: hidden;
+        flex: 0 0 auto;
+    }
+
+
+    /* =========================================================
+       NAVBAR REGIONS
+       ========================================================= */
+
+    .pid-navbar-left {
+        height: 100%;
+        min-width: 0;
+
+        flex: 1 1 auto;
+
+        display: flex !important;
+        align-items: center;
+
+        gap: 0 !important;
+
+        padding-left: 1rem;
+        padding-right: 0;
+    }
+
+    .pid-navbar-right {
+        height: 100%;
+        min-width: 0;
+
+        flex: 0 0 auto;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-end;
+
+        gap: var(--pid-navbar-right-gap, 0.6rem);
+
+        padding-left: 0;
+        padding-right: 1rem;
+    }
+
+
+    /* =========================================================
+       PROCESS LABEL
+       ========================================================= */
+
+    .pid-navbar-process-label {
+        font-family: var(--font-control-ui);
+        font-size: clamp(var(--pid-navbar-process-label-fs-min), var(--pid-navbar-process-label-fs-fluid), var(--pid-navbar-process-label-fs-max));
+        font-weight: 600;
+
+        color: var(--text-control);
+
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    /* =========================================================
+       SIMULATION MANAGER BLOCK
+
+       Contains:
+       - row 1: Simulation Manager button
+       - row 2: Real Time checkbox
+
+       Goal:
+       - consistent row height
+       - consistent icon/box size
+       - consistent label size
+       - consistent icon-label gap
+       - left aligned
+       ========================================================= */
+
+    .pid-navbar-manager-block {
+        height: 100%;
+        min-width: var(--pid-navbar-manager-min-w, 158px);
+
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+
+        gap: var(--pid-navbar-manager-gap, 0.1rem) !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+
+    /* =========================================================
+       SIMULATION MANAGER BUTTON
+       ========================================================= */
+
+    .pid-navbar-manager-btn {
+        height: var(--pid-navbar-manager-row-h, 24px);
+        min-height: var(--pid-navbar-manager-row-h, 24px);
+
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-start;
+
+        margin: 0 !important;
+        padding: 0 0.35rem !important;
+
+        color: var(--text-main) !important;
+
+        font-family: var(--font-control-ui) !important;
+        font-size: var(--pid-navbar-manager-label-fs, 0.7rem) !important;
+        font-weight: 700 !important;
+
+        border-radius: 6px;
+
+        line-height: 1 !important;
+
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease;
+    }
+
+    .pid-navbar-manager-btn:hover {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        color: var(--text-white) !important;
+    }
+
+    .pid-navbar-manager-btn .q-btn__content {
+        width: 100%;
+        min-height: var(--pid-navbar-manager-row-h, 24px);
+
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+
+        gap: var(--pid-navbar-manager-icon-label-gap, 0.5rem) !important;
+
+        line-height: 1 !important;
+        text-align: left;
+    }
+
+    .pid-navbar-manager-symbol {
+        width: var(--pid-navbar-manager-icon-size, 20px);
+        min-width: var(--pid-navbar-manager-icon-size, 20px);
+
+        height: var(--pid-navbar-manager-icon-size, 20px);
+        min-height: var(--pid-navbar-manager-icon-size, 20px);
+
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        color: inherit !important;
+
+        font-family: "Material Symbols Outlined";
+        font-size: var(--pid-navbar-manager-icon-size, 20px);
+        font-weight: normal;
+        line-height: 1;
+
+        font-variation-settings:
+            "FILL" 0,
+            "wght" 500,
+            "GRAD" 0,
+            "opsz" 24;
+    }
+
+    .pid-navbar-manager-label {
+        height: var(--pid-navbar-manager-icon-size, 20px);
+
+        display: inline-flex;
+        align-items: center;
+
+        color: inherit;
+
+        font-family: var(--font-mono);
+        font-size: var(--pid-navbar-manager-label-fs, 0.7rem);
+        font-weight: 700;
+
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+       REAL TIME CHECKBOX
+
+       Goal:
+       - checkbox box size matches Simulation Manager icon
+       - label size matches Simulation Manager label
+       - gap matches Simulation Manager icon-label gap
+       - white checkbox
+       - left aligned
+       ========================================================= */
+
+    .pid-navbar-realtime-check {
+        height: var(--pid-navbar-manager-row-h, 24px);
+        min-height: var(--pid-navbar-manager-row-h, 24px);
+
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-start;
+
+        margin: 0 !important;
+        padding: 0 0.35rem !important;
+
+        color: var(--text-main);
+
+        font-family: var(--font-mono);
+        font-size: var(--pid-navbar-manager-label-fs, 0.7rem);
+
+        white-space: nowrap;
+    }
+
+    .pid-navbar-realtime-check .q-checkbox__inner {
+        width: var(--pid-navbar-manager-icon-size, 20px) !important;
+        min-width: var(--pid-navbar-manager-icon-size, 20px) !important;
+
+        height: var(--pid-navbar-manager-icon-size, 20px) !important;
+        min-height: var(--pid-navbar-manager-icon-size, 20px) !important;
+
+        font-size: var(--pid-navbar-manager-icon-size, 20px) !important;
+
+        color: var(--pid-navbar-realtime-box-color, #ffffff) !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .pid-navbar-realtime-check .q-checkbox__bg {
+        border-color: var(--pid-navbar-realtime-box-color, #ffffff) !important;
+    }
+
+    .pid-navbar-realtime-check .q-checkbox__inner--falsy .q-checkbox__bg {
+        background-color: transparent !important;
+        border-color: var(--pid-navbar-realtime-box-color, #ffffff) !important;
+    }
+
+    .pid-navbar-realtime-check .q-checkbox__inner--truthy .q-checkbox__bg {
+        background-color: var(--pid-navbar-realtime-box-color, #ffffff) !important;
+        border-color: var(--pid-navbar-realtime-box-color, #ffffff) !important;
+    }
+
+    .pid-navbar-realtime-check .q-checkbox__inner--truthy .q-checkbox__svg {
+        color: var(--bg-main) !important;
+    }
+
+    .pid-navbar-realtime-check .q-checkbox__label {
+        height: var(--pid-navbar-manager-icon-size, 20px);
+
+        display: inline-flex !important;
+        align-items: center !important;
+
+        color: var(--text-main) !important;
+
+        font-family: var(--font-mono) !important;
+        font-size: var(--pid-navbar-manager-label-fs, 0.7rem);
+        font-weight: 700;
+
+        line-height: 1;
+
+        padding-left: var(--pid-navbar-manager-icon-label-gap, 0.5rem);
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+       CENTERED SEPARATOR
+       ========================================================= */
+
+    .pid-navbar-separator-wrap {
+        height: 100%;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .pid-navbar-separator {
+        height: var(--pid-navbar-separator-h, 42px);
+        min-height: var(--pid-navbar-separator-h, 42px);
+
+        align-self: center;
+
+        background-color: var(
+            --pid-navbar-border-color,
+            rgba(255, 255, 255, 0.85)
+        ) !important;
+        border-color: var(
+            --pid-navbar-border-color,
+            rgba(255, 255, 255, 0.85)
+        ) !important;
+
+        opacity: 1 !important;
+    }
+
+
+    /* =========================================================
+       SIMULATION CONTROL BUTTONS
+       ========================================================= */
+
+    .pid-navbar-control-group {
+        height: 100%;
+
+        display: flex !important;
+        align-items: center;
+
+        gap: var(--pid-navbar-control-gap, 0.35rem);
+    }
+
+    .pid-navbar-action-btn {
+        height: var(--pid-navbar-action-btn-h, 56px);
+        min-height: var(--pid-navbar-action-btn-h, 56px);
+
+        padding: 0.25rem 0.45rem !important;
+
+        color: var(--text-main) !important;
+
+        font-family: var(--font-mono) !important;
+        font-size: var(--pid-navbar-action-label-fs, 0.62rem) !important;
+        font-weight: 700 !important;
+
+        border-radius: 6px;
+
+        line-height: 1.05 !important;
+
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease;
+    }
+
+    .pid-navbar-action-btn:hover {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        color: var(--text-white) !important;
+    }
+
+    .pid-navbar-action-btn .q-icon {
+        color: inherit !important;
+        font-size: var(--pid-navbar-action-icon-fs, 28px) !important;
+        line-height: 1 !important;
+    }
+
+    .pid-navbar-action-btn .q-btn__content {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        gap: 0.12rem;
+
+        line-height: 1.05 !important;
+        text-align: center;
+    }
+
+    .pid-navbar-run-btn {
+        color: var(--text-success) !important;
+    }
+
+    .pid-navbar-run-btn-active {
+        background-color: rgba(0, 255, 153, 0.18) !important;
+        color: #00ff99 !important;
+        box-shadow:
+            0 0 0 1px rgba(0, 255, 153, 0.55) inset,
+            0 0 8px rgba(0, 255, 153, 0.35) !important;
+    }
+
+    .pid-navbar-run-btn-active .q-icon {
+        animation: pid-run-icon-pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes pid-run-icon-pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50%      { transform: scale(1.12); opacity: 0.85; }
+    }
+
+    /* ── Disabled state (simulation finished) ──
+       Applied by ``set_run_button_disabled`` in
+       app/pages/_svg_animation_helpers.py once the worker reaches
+       ``time_end`` and ``state.natural_stop`` flips to True. The
+       block is lifted on Reset and when the user extends End Time.
+
+       We target both the attribute selector (``[disabled]`` — what
+       Quasar / the HTML spec set) and the class
+       (``pid-navbar-run-btn-disabled`` — what the helper applies as
+       a visual hook independent of Quasar's own attribute juggling)
+       so the styling is robust if either form is stripped by a
+       Vue re-render. The active-state animation/glow is suppressed
+       so a button that was Running and then naturally completed
+       doesn't keep pulsing green. */
+    .pid-navbar-run-btn[disabled],
+    .pid-navbar-run-btn-disabled {
+        color: rgba(255, 255, 255, 0.35) !important;
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+        pointer-events: auto !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .pid-navbar-run-btn[disabled] .q-icon,
+    .pid-navbar-run-btn-disabled .q-icon {
+        animation: none !important;
+        opacity: 0.7 !important;
+    }
+
+    .pid-navbar-run-btn[disabled]:hover,
+    .pid-navbar-run-btn-disabled:hover {
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .pid-navbar-stop-btn {
+        color: #ff5252 !important;
+    }
+
+    .pid-navbar-reset-btn {
+        color: var(--text-highlight) !important;
+    }
+
+
+    /* =========================================================
+       CLOCK
+       ========================================================= */
+
+    .pid-navbar-clock {
+        min-width: var(--pid-navbar-clock-min-w, 190px);
+        height: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+
+        gap: var(--pid-navbar-clock-gap, 0.08rem) !important;
+
+        margin-top: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
+        margin-left: calc(-1 * var(--pid-navbar-clock-pull-left, 0.18rem)) !important;
+
+        padding: 0 !important;
+
+        color: var(--text-muted);
+
+        font-family: var(--font-mono);
+
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .pid-navbar-clock-date {
+        color: var(--text-muted);
+
+        font-family: var(--font-mono);
+        font-size: var(--pid-navbar-clock-date-fs, 0.62rem);
+        font-weight: 500;
+
+        line-height: 1;
+    }
+
+    .pid-navbar-clock-time {
+        color: var(--text-main);
+
+        font-family: var(--font-mono);
+        font-size: var(--pid-navbar-clock-time-fs, 0.80rem);
+        font-weight: 700;
+
+        line-height: 1;
+        letter-spacing: 0.03em;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+}

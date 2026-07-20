@@ -1,0 +1,27 @@
+/* ui_root/static/css/control_panel/responsive.css */
+
+@layer pages {
+
+    @media (max-width: 50rem) {
+        body.control-panel-page.control-panel-drawer-open .control-panel-main {
+            left: var(--control-left-drawer-w, 240px);
+        }
+
+        .pid-scroll-canvas {
+            width: max(100%, var(--pid-canvas-min-w-sm, 1000px));
+
+            padding-top: var(--pid-canvas-py-sm, 0.75rem) !important;
+            padding-bottom: var(--pid-canvas-py-sm, 0.75rem) !important;
+        }
+
+        .pid-navbar-drawer-toggle-slot {
+            right: var(--pid-navbar-drawer-toggle-right-sm, 0.5rem);
+        }
+
+        .pid-right-drawer {
+            width: var(--pid-right-drawer-w-sm, 280px);
+            right: var(--pid-right-drawer-offset-sm, 0.5rem);
+            bottom: var(--pid-right-drawer-offset-sm, 0.5rem);
+        }
+    }
+}

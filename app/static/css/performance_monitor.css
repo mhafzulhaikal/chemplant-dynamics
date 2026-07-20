@@ -1,0 +1,610 @@
+/* ui_root/static/css/performance_monitor.css */
+
+/* ============================================================
+   PERFORMANCE MONITORING PAGE — DCS HMI style
+
+   Visual language:
+
+   - Panel chrome: matches the right-drawer / controller-modal
+     industrial palette (--hmi-bg-panel / --hmi-border / amber
+     accents). The header bar carries the amber accent stripe +
+     a green status dot, just like the Simulation Manager page.
+
+   - Picker UI: mirrors the Data Logger's
+     .data-logger-header-cell — one clickable cell per available
+     field, in a horizontal-scrolling row. Active cells get the
+     green accent; inactive cells are muted. This is the same
+     visual / interaction language as the Data Logger so the two
+     pages read as a single "channel selection" surface.
+
+   - Chart: deep-black well, amber axes, traces cycle through
+     the DCS HMI palette (amber / cyan / green / red / sky / pink
+     / orange / slate) — one color per selected field.
+
+   Three stacked panels (input / state / output) — the picker
+   is the *only* selection UI, just like the Data Logger; clicks
+   here call bridge.set_selected_log_fields(...) so toggling a
+   cell here is reflected instantly in the Data Logger and vice
+   versa.
+   ============================================================ */
+
+@layer pages {
+
+    /* When the performance-monitoring root lives inside a
+       control-panel section, tint the section's own background
+       so any tiny overflow / scroll-padding band reads as a
+       continuation of the panel instead of a black strip. */
+    .control-panel-section:has(.pm-page) {
+        background-color: var(--bg-main) !important;
+    }
+
+    /* =========================================================
+       PAGE
+       ========================================================= */
+
+    .pm-page {
+        width: 100%;
+        min-height: 100%;
+        min-width: 1200px !important;
+        flex: 1 1 auto;
+        flex-shrink: 0 !important;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 1rem !important;
+
+        margin: 0 !important;
+        padding: 1.15rem 1.15rem 2.25rem 1.15rem !important;
+
+        /* Page background fills the section from header to footer,
+           matching the data-logger strategy. */
+        background-color: transparent;
+
+        color: var(--hmi-text-bright, #ffffff);
+
+        font-family: var(--font-control-ui);
+    }
+
+
+    /* =========================================================
+       PAGE HEADER
+       ========================================================= */
+
+    .pm-page-header {
+        min-height: 52px;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        margin: 0 0 0.5rem 0 !important;
+        padding: 0.6rem 1.2rem !important;
+
+        /* Solid black — same as .data-logger-page-title-row */
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        
+        box-shadow: 
+            0 4px 12px rgba(0, 0, 0, 0.25), 
+            inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .pm-page-title {
+        color: var(--text-highlight, #ffd600);
+
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+
+        letter-spacing: 0.06em;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    .pm-page-subtitle {
+        color: var(--text-muted, #bdbdbd);
+
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 600;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .pm-separator {
+        background-color: var(--border-color) !important;
+        border-color: var(--border-color) !important;
+        opacity: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 1px !important;
+    }
+
+    .pm-action-btn {
+        min-height: 26px !important;
+        height: 26px !important;
+        padding: 0 12px !important;
+        color: var(--text-main) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em;
+        background-color: rgba(255, 255, 255, 0.035) !important;
+        border: 1px solid rgba(255, 255, 255, 0.10) !important;
+        border-radius: 4px !important;
+    }
+
+    .pm-action-btn:hover {
+        color: var(--text-highlight, #ffd54f) !important;
+        background-color: rgba(255, 214, 0, 0.10) !important;
+        border-color: rgba(255, 214, 0, 0.45) !important;
+    }
+
+
+    /* =========================================================
+       PANEL — DCS HMI card (right-drawer / data-logger style)
+       ========================================================= */
+
+    .pm-panel {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        color: var(--hmi-text-bright, #ffffff);
+
+        border: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14));
+        border-radius: 6px;
+
+        box-shadow:
+            0 12px 28px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    /* The separator between panel-header and panel-body is provided
+       by the header's border-bottom, so the Quasar separator element
+       is hidden to avoid a double divider line. */
+    .pm-panel-separator {
+        display: none !important;
+    }
+
+
+    /* =========================================================
+       PANEL — header bar (title + hint + scope tag, with
+       amber left accent stripe). Mirrors the data-logger
+       .data-logger-scope-card-header.
+       ========================================================= */
+
+    .pm-panel-header {
+        width: 100%;
+
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 8px;
+
+        padding: 0.5rem 0.75rem 0.5rem 0.9rem;
+
+        background-color: var(--hmi-bg-deep, #000000) !important;
+        border-bottom: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14));
+
+        position: relative;
+    }
+
+    .pm-panel-header::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--hmi-accent-amber, #ffd54f);
+    }
+
+    .pm-panel-title-group {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem !important;
+        flex: 1 1 auto;
+    }
+
+    .pm-panel-title {
+        color: var(--text-highlight, #ffd54f);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .pm-panel-hint {
+        color: var(--text-muted, #bdbdbd);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 600;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .pm-panel-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+
+        height: 20px;
+        padding: 0 8px;
+
+        color: var(--hmi-text-soft, #bdbdbd);
+        background-color: transparent;
+        border: 1px solid var(--hmi-border-strong, rgba(255, 255, 255, 0.20));
+        border-radius: 2px;
+
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        font-weight: 700;
+
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .pm-panel-tag-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: var(--text-highlight, #ffd54f);
+        box-shadow: 0 0 4px var(--text-highlight, #ffd54f);
+    }
+
+    .pm-panel-tag-text {
+        color: var(--hmi-text-soft, #bdbdbd);
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       PANEL — body
+       ========================================================= */
+
+    .pm-panel-body {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 10px !important;
+
+        padding: 12px 14px 14px 14px !important;
+    }
+
+
+    /* =========================================================
+       PANEL — header cell grid (picker UI)
+
+       Mirrors .data-logger-header-grid: one cell per available
+       field, horizontal-scrolling when there are many. Each cell
+       is clickable, with active/inactive visual states.
+       ========================================================= */
+
+    .pm-panel-cell-container {
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .pm-panel-cell-grid {
+        width: 100%;
+
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: stretch;
+
+        gap: 0.45rem !important;
+
+        margin: 0 !important;
+        padding: 0.4rem 0 !important;
+
+        overflow-x: auto;
+    }
+
+
+    .pm-panel-cell-empty {
+        flex: 1 1 100%;
+
+        padding: 0.4rem 0.6rem;
+
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.72rem;
+        font-style: italic;
+
+        background-color: rgba(255, 255, 255, 0.02);
+
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        border-radius: 5px;
+    }
+
+
+    /* =========================================================
+       PANEL — cell (one clickable signal column)
+       Direct port of .data-logger-header-cell. The active
+       accent uses the brand green so it matches the Data
+       Logger exactly — same single source of truth = same
+       active highlight.
+       ========================================================= */
+
+    .pm-cell {
+        flex: 0 0 auto;
+        min-width: 110px;
+        max-width: 200px;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+
+        gap: 0.45rem;
+
+        position: relative;
+
+        padding: 0.4rem 0.6rem 0.4rem 0.7rem;
+
+        font-family: var(--font-control-ui);
+
+        background-color: rgba(255, 255, 255, 0.035);
+
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 5px;
+
+        user-select: none;
+        cursor: pointer;
+
+        transition:
+            background-color 0.12s ease,
+            border-color 0.12s ease,
+            color 0.12s ease,
+            box-shadow 0.12s ease;
+    }
+
+    .pm-cell:hover {
+        background-color: rgba(255, 214, 0, 0.06);
+        border-color: rgba(255, 214, 0, 0.35);
+    }
+
+    /* Color dot — appears on active cells. The fill is set via
+       inline style (one palette color per index); this rule only
+       shapes it. */
+    .pm-cell-color-dot {
+        flex: 0 0 auto;
+
+        display: inline-block;
+
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        background-color: var(--hmi-accent-amber, #ffd54f);
+        box-shadow: 0 0 4px currentColor;
+    }
+
+    /* Text column that holds the tag + meta. Lets the cell use
+       flex-direction: row so the dot, tag, and meta line up
+       horizontally like a real "channel tile". */
+    .pm-cell-text {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+
+        gap: 0.05rem;
+
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .pm-cell-tag {
+        color: var(--text-main);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.72rem;
+        font-weight: 700;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        max-width: 100%;
+    }
+
+    .pm-cell-meta {
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        font-weight: 500;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        max-width: 100%;
+    }
+
+    /* Active state — the trace color (set inline on the element
+       in Python) takes over: the cell's border, background tint,
+       and glow all match the chart line color. The rules below
+       are the fallback if no inline color is set; the inline
+       !important styles from Python always win. */
+    .pm-cell-active {
+        background-color: rgba(255, 255, 255, 0.04);
+        border-color: var(--text-highlight, #ffd54f);
+    }
+
+    .pm-cell-active .pm-cell-tag {
+        color: var(--text-white);
+    }
+
+    .pm-cell-active .pm-cell-meta {
+        color: var(--text-main);
+    }
+
+    .pm-cell-active:hover {
+        background-color: rgba(255, 214, 0, 0.10);
+        border-color: var(--text-highlight, #ffd54f);
+    }
+
+    /* Inactive state — column is hidden in the chart. */
+    .pm-cell-inactive {
+        color: var(--text-muted);
+    }
+
+
+    /* =========================================================
+       PANEL — "selected" status strip
+       ========================================================= */
+
+    .pm-panel-statusbar {
+        width: 100%;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+
+        margin: 0 !important;
+        padding: 6px 10px !important;
+
+        color: var(--hmi-text-soft, #bdbdbd);
+        background-color: rgba(0, 0, 0, 0.30);
+        border-top: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14));
+
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .pm-panel-statusbar-label {
+        color: var(--hmi-text-muted, #8b949e);
+    }
+
+    .pm-panel-statusbar-value {
+        color: var(--text-highlight, #ffd54f);
+        font-weight: 700;
+        font-family: var(--font-control-ui);
+        letter-spacing: 0.04em;
+        word-break: break-all;
+        text-align: right;
+    }
+
+    .pm-panel-statusbar-value-empty {
+        color: var(--hmi-text-muted, #8b949e);
+        font-style: italic;
+        font-weight: 400;
+    }
+
+
+    /* =========================================================
+       PANEL — chart (in a deep-black well, DCS retune)
+       ========================================================= */
+
+    .pm-panel-chart {
+        width: 100%;
+        height: 280px;
+        min-height: 260px;
+
+        background-color: #000000;
+        border: 1px solid var(--hmi-border, rgba(255, 255, 255, 0.14));
+        border-radius: 2px;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 900px) {
+        .pm-panel-chart {
+            height: 230px;
+            min-height: 210px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .pm-page {
+            padding: 14px 12px 18px 12px !important;
+        }
+
+        .pm-panel-chart {
+            height: 210px;
+            min-height: 190px;
+        }
+    }
+
+    .pm-action-btn-danger:hover {
+        color: #ff5252 !important;
+        background-color: rgba(255, 82, 82, 0.1) !important;
+        border-color: rgba(255, 82, 82, 0.45) !important;
+    }
+    
+    .pm-save-btn {
+        background-color: rgba(255, 214, 0, 0.05) !important;
+        border-color: rgba(255, 214, 0, 0.2) !important;
+        color: #ffd54f !important;
+    }
+    .pm-save-btn:hover {
+        background-color: rgba(255, 214, 0, 0.15) !important;
+        border-color: rgba(255, 214, 0, 0.6) !important;
+    }
+    
+    .pm-save-menu {
+        background-color: rgba(17, 17, 17, 0.98) !important;
+        border: 1px solid rgba(255, 214, 0, 0.3) !important;
+        border-radius: 4px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    .pm-save-menu .q-item {
+        color: var(--text-main) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+    }
+    .pm-save-menu .q-item:hover {
+        background-color: rgba(255, 214, 0, 0.1) !important;
+        color: #ffd54f !important;
+    }
+}

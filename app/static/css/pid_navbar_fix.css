@@ -1,0 +1,37 @@
+/* app/static/css/pid_navbar_fix.css */
+
+/* Override for the SVG image inside .pid-navbar-manager-symbol.
+   The .pid-navbar-manager-symbol base class in engine_root is styled
+   for Material Symbols Outlined text, but we use an <img> with the
+   actual chart_time.svg file. Make sure the <img> fits the 20x20 box. */
+
+.pid-navbar-manager-symbol,
+.pid-navbar-manager-symbol img,
+.pid-navbar-manager-symbol .q-img__image,
+.pid-navbar-manager-symbol .q-img__container {
+    width: var(--pid-navbar-manager-icon-size, 20px) !important;
+    min-width: var(--pid-navbar-manager-icon-size, 20px) !important;
+    height: var(--pid-navbar-manager-icon-size, 20px) !important;
+    min-height: var(--pid-navbar-manager-icon-size, 20px) !important;
+    max-width: var(--pid-navbar-manager-icon-size, 20px) !important;
+    max-height: var(--pid-navbar-manager-icon-size, 20px) !important;
+
+    object-fit: contain !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    /* Reset font-specific styles from engine_root's base rule */
+    font-family: inherit !important;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    font-variation-settings: normal !important;
+}
+
+/* Ensure the SVG itself inverts to white on dark backgrounds */
+.pid-navbar-manager-symbol svg {
+    width: 100% !important;
+    height: 100% !important;
+    fill: currentColor !important;
+}

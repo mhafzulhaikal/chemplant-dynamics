@@ -1,0 +1,325 @@
+/* ui_root/static/css/tokens.css */
+
+:root {
+    /* =========================================================
+       01. FONT FAMILY
+       ========================================================= */
+
+    --font-ui: "JetBrains Mono", "Cascadia Mono", "Consolas", monospace;
+    --font-display: "Outfit", "JetBrains Mono", monospace;
+    --font-mono: "JetBrains Mono", "Cascadia Mono", "Consolas", monospace;
+    --font-control-ui: "JetBrains Mono", "Cascadia Mono", "Consolas", monospace;
+
+
+    /* =========================================================
+       02. COLOR — BACKGROUND
+       ========================================================= */
+
+    --bg-main: #000000;
+
+    --bg-header: #1a1e29;
+    --bg-footer: #1a1e29;
+
+    --bg-panel: #111722;
+    --bg-panel-soft: #151c29;
+    --bg-panel-hover: #1c2637;
+
+
+    /* =========================================================
+       03. COLOR — BORDER
+       ========================================================= */
+
+    --border-color: #2a3441;
+
+
+    /* =========================================================
+       04. COLOR — TEXT / STATE
+       ========================================================= */
+
+    --text-main: #e0e0e0;
+    --text-muted: #8b949e;
+    --text-soft: rgba(224, 224, 224, 0.62);
+
+    --text-highlight: #ffd600;
+    --text-success: #4caf50;
+    --text-white: #ffffff;
+
+    --text-control: green;
+
+
+    /* =========================================================
+       05. GLOBAL LAYOUT
+       ========================================================= */
+
+    --min-viewport-width: 500px;
+
+    --header-h: 64px;
+    --footer-h: 40px;
+
+
+    /* =========================================================
+       06. TYPOGRAPHY SCALE
+       ========================================================= */
+
+    --app-title-fs: clamp(0.75rem, 1.371vw, 1.2rem);
+    --section-title-fs: clamp(0.85rem, 1.714vw, 1.5rem);
+
+    --org-line-1-fs: clamp(0.60rem, 0.914vw, 0.80rem);
+    --org-line-2-fs: clamp(0.55rem, 0.800vw, 0.72rem);
+    --org-line-3-fs: clamp(0.50rem, 0.720vw, 0.65rem);
+
+    --footer-fs: clamp(0.5rem, 0.8vw, 0.7rem);
+
+
+    /* =========================================================
+       07. GLOBAL SPACING
+       ========================================================= */
+
+    --header-gap: clamp(0.3rem, 0.857vw, 0.75rem);
+    --header-px: clamp(0.4rem, 1.143vw, 1rem);
+
+    --footer-px: clamp(0.5rem, 1.143vw, 1rem);
+
+
+    /* =========================================================
+       08. HEADER — ORGANIZATION IDENTITY
+       ========================================================= */
+
+    --org-block-min-w: 280px;
+
+
+    /* =========================================================
+       09. HEADER — LOGOS
+       ========================================================= */
+
+    --header-logo-w: 110px;
+    --header-logo-max-h: 46px;
+
+    --org-logo-w: 40px;
+    --org-logo-h: 40px;
+    --org-logo-max-h: 40px;
+
+
+    /* =========================================================
+       10. CONTROL PANEL DRAWER — WIDTH
+       ========================================================= */
+
+    --control-left-drawer-w: 260px;
+    --control-left-drawer-w-sm: 200px;
+
+
+    /* =========================================================
+       11. CONTROL PANEL DRAWER — MENU TITLE
+       ========================================================= */
+
+    --drawer-menu-title-h: 72px;
+    --drawer-menu-title-h-sm: 72px;
+    --drawer-menu-title-fs: 0.85rem;
+    --drawer-menu-title-fs-sm: 0.75rem;
+
+
+    /* =========================================================
+       12. CONTROL PANEL DRAWER — MENU ITEM
+       ========================================================= */
+
+    --drawer-menu-item-h: 40px;
+    --drawer-menu-item-h-sm: 36px;
+    --drawer-menu-item-fs: 0.82rem;
+    --drawer-menu-item-fs-sm: 0.72rem;
+
+
+    /* =========================================================
+       13. CONTROL PANEL DRAWER — MENU SPACING
+       ========================================================= */
+
+    --drawer-menu-list-gap: 0.5rem;
+    --drawer-menu-list-gap-sm: 0.3rem;
+
+    --drawer-menu-list-pt: 1rem;
+    --drawer-menu-list-px: 0.35rem;
+    --drawer-menu-list-pb: 0.45rem;
+
+    --drawer-menu-list-pt-sm: 0.75rem;
+    --drawer-menu-list-px-sm: 0.3rem;
+    --drawer-menu-list-pb-sm: 0.4rem;
+
+
+    /* =========================================================
+       14. CONTROL PANEL DRAWER — COLOR
+       ========================================================= */
+
+    --drawer-menu-separator-bg: #d32f2f;
+
+    --drawer-menu-item-text: #c9d1d9;
+    --drawer-menu-item-active-text: #000000;
+
+
+    /* =========================================================
+       15. PID CANVAS
+       ========================================================= */
+
+    --pid-canvas-min-w: 1000px;
+    --pid-canvas-min-w-sm: 500px;
+
+    --min-content-width: 1001px;
+
+    --pid-canvas-py: 3rem;
+    --pid-canvas-py-sm: 2rem;
+
+    --pid-canvas-px: 3rem;
+    --pid-canvas-px-sm: 2rem;
+
+
+    /* =========================================================
+       16. PID NAVBAR — LAYOUT
+       ========================================================= */
+
+    /*
+       Use this to increase PID navbar height without changing
+       global header height.
+    */
+    --pid-navbar-h: 72px;
+
+    --pid-navbar-border-color: rgba(255, 255, 255, 0.85);
+
+    --pid-navbar-right-gap: 0.6rem;
+
+
+    /* =========================================================
+       17. PID NAVBAR — PROCESS LABEL
+       ========================================================= */
+
+    --pid-navbar-process-label-fs-min: 1rem;
+    --pid-navbar-process-label-fs-fluid: 1.8vw;
+    --pid-navbar-process-label-fs-max: 1.35rem;
+
+
+    /* =========================================================
+       18. PID NAVBAR — SIMULATION MANAGER BLOCK
+       ========================================================= */
+
+    --pid-navbar-manager-min-w: 158px;
+
+    --pid-navbar-manager-gap: 0.1rem;
+
+    --pid-navbar-manager-row-h: 24px;
+
+    --pid-navbar-manager-icon-size: 20px;
+    --pid-navbar-manager-label-fs: 0.7rem;
+    --pid-navbar-manager-icon-label-gap: 0.5rem;
+
+
+    /* =========================================================
+       19. PID NAVBAR — REAL TIME CHECKBOX
+       ========================================================= */
+
+    /*
+       Realtime checkbox intentionally reuses:
+       - --pid-navbar-manager-row-h
+       - --pid-navbar-manager-icon-size
+       - --pid-navbar-manager-label-fs
+       - --pid-navbar-manager-icon-label-gap
+
+       This keeps Simulation Manager and Real Time visually consistent.
+    */
+    --pid-navbar-realtime-box-color: #ffffff;
+
+
+    /* =========================================================
+       20. PID NAVBAR — SEPARATOR
+       ========================================================= */
+
+    --pid-navbar-separator-h: 42px;
+
+
+    /* =========================================================
+       21. PID NAVBAR — ACTION BUTTONS
+       ========================================================= */
+
+    --pid-navbar-control-gap: 0.35rem;
+
+    --pid-navbar-action-btn-h: 56px;
+    --pid-navbar-action-icon-fs: 28px;
+    --pid-navbar-action-label-fs: 0.62rem;
+
+
+    /* =========================================================
+       22. PID NAVBAR — CLOCK
+       ========================================================= */
+
+    --pid-navbar-clock-min-w: 190px;
+    --pid-navbar-clock-gap: 0.1rem;
+    --pid-navbar-clock-pull-left: 0.1rem;
+
+    --pid-navbar-clock-date-fs: 0.62rem;
+    --pid-navbar-clock-time-fs: 0.80rem;
+
+
+    /* =========================================================
+       23. PID RIGHT DRAWER
+       ========================================================= */
+
+    --pid-right-drawer-w: 350px;
+    --pid-right-drawer-w-sm: 330px;
+
+    --pid-right-drawer-offset: 0.75rem;
+    --pid-right-drawer-offset-sm: 0.5rem;
+
+
+    /* =========================================================
+       24. PID RIGHT DRAWER — FLOATING TOGGLE
+       ========================================================= */
+
+    --pid-right-drawer-toggle-size: 34px;
+    --pid-right-drawer-toggle-icon-size: 24px;
+    --pid-right-drawer-toggle-gap: 0.5rem;
+
+   /* =========================================================
+      25. SIMULATION MANAGER PAGE
+      ========================================================= */
+
+    --simulation-manager-page-card-w: 560px;
+
+    /* HMI/DCS accent palette for the Runtime Manager faceplate.
+       Colors map back to the rest of the app so the floating card
+       reads as the same product:
+
+       - amber/yellow is the brand accent (controller modal title,
+         navbar Run/Stop/Reset, monitor plot button active state,
+         --text-highlight).
+       - success green is the live "running" color (--text-success,
+         live PV text, --text-control).
+       - the deep backgrounds mirror the controller-modal's
+         rgba(17,17,17) section / rgba(27,27,27) input-control
+         palette.
+       - the grid backdrop uses the same low-alpha white as the
+         monitor plot frame divider. */
+    --hmi-bg-deep:        #000000;
+    --hmi-bg-panel:       #111111;
+    --hmi-bg-elev:        #050505;
+    --hmi-bg-input:       rgba(27, 27, 27, 0.94);
+    --hmi-bg-readonly:    rgba(37, 37, 37, 0.92);
+    --hmi-border:         rgba(255, 255, 255, 0.14);
+    --hmi-border-strong:  rgba(255, 255, 255, 0.20);
+    --hmi-text-bright:    #ffffff;
+    --hmi-text-soft:      #bdbdbd;
+    --hmi-text-muted:     #8b949e;
+    --hmi-accent-amber:   #ffd54f;
+    --hmi-accent-amber-strong: #ffd600;
+    --hmi-accent-amber-soft:   rgba(255, 213, 79, 0.14);
+    --hmi-accent-green:   #4caf50;
+    --hmi-accent-green-bright: #00ff00;
+    --hmi-accent-red:     #ff5252;
+    --hmi-accent-amber-button: #c62828;
+    --hmi-grid:           rgba(255, 255, 255, 0.04);
+
+    /* =========================================================
+   25. STHR CONTROLLER CARDS
+   ========================================================= */
+
+    --sthr-controller-layer-top: 0.75rem;
+    --sthr-controller-layer-left: 0.75rem;
+
+    --sthr-controller-card-w: 230px;
+    --sthr-controller-card-gap: 0.45rem;
+}

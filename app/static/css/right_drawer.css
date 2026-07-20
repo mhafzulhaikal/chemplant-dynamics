@@ -1,0 +1,50 @@
+/* app/static/css/right_drawer.css */
+
+/* Right drawer header (title + close button row) */
+.pid-right-drawer-header {
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+
+    padding: 0 0.5rem;
+
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pid-right-drawer-header-title {
+    color: var(--text-white);
+    font-family: var(--font-control-ui);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.pid-right-drawer-close-btn {
+    color: var(--text-white) !important;
+    cursor: default !important;
+}
+
+.pid-right-drawer-inner {
+    width: 100%;
+    height: 100%;
+
+    display: flex !important;
+    flex-direction: column;
+
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+
+    background: transparent !important;
+}
+
+.pid-right-drawer-toggle-btn {
+    color: var(--text-control) !important;
+}

@@ -1,0 +1,282 @@
+/* ui_root/static/css/header.css */
+
+@layer components {
+    /* =========================================================
+       HEADER ROOT
+       ========================================================= */
+
+    .app-header {
+        height: var(--header-h);
+        min-height: var(--header-h);
+        background-color: var(--bg-header);
+        color: var(--text-main);
+        font-family: var(--font-ui);
+
+        padding-left: var(--header-px);
+        padding-right: var(--header-px);
+    }
+
+    .app-header-inner {
+        width: 100%;
+        height: 100%;
+        gap: var(--header-gap);
+    }
+
+
+    /* =========================================================
+       HEADER REGIONS
+       ========================================================= */
+
+    .header-region {
+        height: 100%;
+        min-width: 0;
+    }
+
+    .header-left {
+        flex: 1 1 0;
+        gap: var(--header-gap);
+    }
+
+    .header-center {
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+
+    .header-right {
+        flex: 1 1 0;
+        gap: var(--header-gap);
+    }
+
+
+    /* =========================================================
+       MENU BUTTON
+       ========================================================= */
+
+    .header-menu-button {
+        color: var(--text-white) !important;
+        flex: 0 0 auto;
+    }
+
+
+    /* =========================================================
+       APP TITLE
+       ========================================================= */
+
+    .app-title {
+        font-family: var(--font-display);
+        font-size: var(--app-title-fs);
+        font-weight: 600;
+        letter-spacing: 0.02rem;
+        color: var(--text-white);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Clickable app title (set by
+       :func:`app.components.header.render_header_title` when
+       the page passes an ``on_click`` handler). Mirrors the
+       look-and-feel of the home page's case-card link so the
+       title reads as an obviously interactive element without
+       needing to switch to ``<a>`` (which would fight the
+       existing ``.app-title`` typography). The hover
+       opacity hint follows the same convention the case
+       cards use for their image-link cluster. */
+    .app-title-clickable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .app-title-clickable:hover {
+        opacity: 0.85;
+    }
+
+    /* Keyboard focus ring. Only drawn on keyboard focus
+       (``:focus-visible``) so a mouse click does not leave
+       a permanent outline around the title. */
+    .app-title-clickable:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+        border-radius: 2px;
+    }
+
+
+    /* =========================================================
+       ORGANIZATION IDENTITY
+       ========================================================= */
+
+    .org-block {
+        font-family: var(--font-ui);
+        line-height: 1.15;
+        white-space: nowrap;
+        min-width: var(--org-block-min-w);
+    }
+
+    .org-block-right {
+        align-items: flex-end;
+        text-align: right;
+    }
+
+    .org-block-center {
+        align-items: center;
+        text-align: center;
+    }
+
+    .org-line-1,
+    .org-line-2,
+    .org-line-3 {
+        width: 100%;
+    }
+
+    .org-block-right .org-line-1,
+    .org-block-right .org-line-2,
+    .org-block-right .org-line-3 {
+        text-align: right;
+    }
+
+    .org-block-center .org-line-1,
+    .org-block-center .org-line-2,
+    .org-block-center .org-line-3 {
+        text-align: center;
+    }
+
+    .org-line-1 {
+        font-size: var(--org-line-1-fs);
+        font-weight: 600;
+        letter-spacing: 0.15px;
+        color: var(--text-main);
+    }
+
+    .org-line-2 {
+        font-size: var(--org-line-2-fs);
+        font-weight: 400;
+        letter-spacing: 0.1px;
+        color: var(--text-muted);
+    }
+
+    .org-line-3 {
+        font-size: var(--org-line-3-fs);
+        font-weight: 400;
+        letter-spacing: 0.08px;
+        color: var(--text-soft);
+    }
+
+
+    /* =========================================================
+       LOGOS
+       ========================================================= */
+
+    .header-logo-row,
+    .org-logo-row {
+        height: 100%;
+        flex: 0 0 auto;
+    }
+
+    .header-logo-image {
+        display: block;
+        flex: 0 0 auto;
+
+        width: var(--header-logo-w);
+        max-width: var(--header-logo-w);
+        max-height: var(--header-logo-max-h);
+
+        object-fit: contain;
+        overflow: visible;
+    }
+
+    .org-logo-image {
+        display: block;
+        flex: 0 0 auto;
+
+        width: var(--org-logo-w);
+        height: var(--org-logo-h);
+
+        max-width: var(--org-logo-w);
+        max-height: var(--org-logo-max-h);
+
+        object-fit: contain;
+        overflow: visible;
+    }
+
+
+    /* =========================================================
+       HOME HEADER VARIANT
+       ========================================================= */
+
+    .home-header .header-center {
+        display: none;
+    }
+
+    .home-header .header-left {
+        flex: 1 1 auto;
+    }
+
+    .home-header .header-right {
+        flex: 0 0 auto;
+    }
+
+
+    /* =========================================================
+       CONTROL PANEL HEADER VARIANT
+       ========================================================= */
+
+    .control-panel-header .header-left {
+        flex: 1 1 0;
+    }
+
+    .control-panel-header .header-center {
+        flex: 0 1 auto;
+    }
+
+    .control-panel-header .header-right {
+        flex: 1 1 0;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE HEADER
+       ========================================================= */
+
+    @media (max-width: 640px) {
+        .org-block {
+            min-width: 230px;
+        }
+
+        .header-logo-image {
+            width: 90px;
+            max-width: 90px;
+            max-height: 40px;
+        }
+
+        .org-logo-image {
+            width: 36px;
+            height: 36px;
+            max-width: 36px;
+            max-height: 40px;
+        }
+    }
+
+    @media (max-width: 540px) {
+        .app-header {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .org-block {
+            min-width: 210px;
+        }
+
+        .header-logo-image {
+            width: 76px;
+            max-width: 76px;
+            max-height: 36px;
+        }
+
+        .org-logo-image {
+            width: 32px;
+            height: 32px;
+            max-width: 32px;
+            max-height: 36px;
+        }
+    }
+}

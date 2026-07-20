@@ -1,0 +1,186 @@
+/* app_skeleton.css
+ *
+ * Shimmer-animated placeholder blocks used by ``app.ui.loading``.
+ *
+ * Pattern: a horizontal gradient that travels left → right at a
+ * steady rate. Lighter weight than opacity-pulse animations
+ * (which fight with the browser's compositor on mobile) and more
+ * "alive" than a solid block.
+ *
+ * The base color is themed via ``--skeleton-base-color`` so the
+ * skeleton blends with whatever background the host page uses.
+ * The accent (highlight) is themed via ``--skeleton-accent-color``.
+ *
+ * Variants:
+ *   .app-skeleton              — generic block (default 100% × 1em)
+ *   .app-skeleton-row          — full-width single line
+ *   .app-skeleton-card         — multi-row card with 2-3 stacked lines
+ *   .app-skeleton-circle       — square-aspect, fully rounded (avatars)
+ *
+ * All variants carry the same animation timing so a screen full of
+ * skeletons pulses in unison — easier on the eye than scattered
+ * timing offsets.
+ */
+
+:root {
+    --skeleton-base-color: rgba(255, 255, 255, 0.06);
+    --skeleton-accent-color: rgba(255, 213, 79, 0.18);
+    --skeleton-duration: 1.6s;
+    --skeleton-radius: 6px;
+}
+
+@keyframes app-skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+.app-skeleton {
+    display: block;
+    position: relative;
+    background-color: var(--skeleton-base-color);
+    background-image: linear-gradient(
+        90deg,
+        var(--skeleton-base-color) 0%,
+        var(--skeleton-accent-color) 50%,
+        var(--skeleton-base-color) 100%
+    );
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+    animation: app-skeleton-shimmer var(--skeleton-duration)
+        linear infinite;
+    border-radius: var(--skeleton-radius);
+    min-height: 1em;
+    /* Skeletons should never receive pointer events; they are
+     * placeholders, not interactive surfaces. */
+    pointer-events: none;
+    user-select: none;
+}
+
+.app-skeleton-row {
+    height: 0.9em;
+    width: 100%;
+}
+
+.app-skeleton-card {
+    /* A "card" skeleton is 3 stacked rows with consistent spacing.
+     * Built with a child element so the height matches the parent
+     * container exactly. */
+    width: 100%;
+    min-height: 6em;
+    padding: 0.75em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    box-sizing: border-box;
+    border: 1px solid var(--skeleton-base-color);
+    border-radius: var(--skeleton-radius);
+}
+
+.app-skeleton-card .app-skeleton-row {
+    width: 100%;
+}
+
+.app-skeleton-card .app-skeleton-row:nth-child(2) {
+    width: 80%;
+}
+
+.app-skeleton-card .app-skeleton-row:nth-child(3) {
+    width: 60%;
+}
+
+.app-skeleton-circle {
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+}
+
+/* When the skeleton is being replaced by real content we fade it
+ * out so the swap is smooth. The host calls
+ * ``replace_with_real(skeleton_el)`` which adds ``.app-skeleton-leaving``
+ * for the duration of the fade (160 ms), then removes the element
+ * entirely. */
+.app-skeleton.app-skeleton-leaving {
+    opacity: 0;
+    transition: opacity 160ms ease-out;
+}
+
+/* =========================================================
+   SPINNER OVERLAY
+   ========================================================= */
+
+.app-spinner-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    /* Light tint so the panel bg still shows through. */
+    background-color: rgba(17, 23, 34, 0.35);
+
+    /* Content behind is blurred while loading. */
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+
+    /* Pointer events pass through so the user can still scroll /
+       interact with the blurred content behind the spinner. The
+       spinner itself is a decorative visual cue, not a modal
+       blocker. */
+    pointer-events: none;
+}
+
+.app-spinner-center {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    /* The center cluster catches pointer events so nothing
+       behind it accidentally receives clicks through the spinner. */
+    pointer-events: auto;
+}
+
+/* =========================================================
+   GRADIENT SPINNER (pure CSS)
+   A rotating ring with a conic gradient that cycles through
+   amber → gold → white → amber. Replaces the solid-colour
+   Quasar spinner so the loading cue reads as "system" not
+   "generic".
+   ========================================================= */
+
+.app-spinner-gradient {
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: 50%;
+
+    background: conic-gradient(
+        from 0deg,
+        var(--text-highlight, #ffd54f) 0%,
+        #ffffff 25%,
+        var(--text-highlight, #ffd54f) 50%,
+        rgba(255, 213, 79, 0.25) 75%,
+        var(--text-highlight, #ffd54f) 100%
+    );
+
+    /* Hollow centre — creates the ring look. */
+    -webkit-mask: radial-gradient(
+        circle,
+        transparent 55%,
+        black 56%
+    );
+    mask: radial-gradient(
+        circle,
+        transparent 55%,
+        black 56%
+    );
+
+    animation: app-spinner-rotate 1.1s linear infinite;
+}
+
+@keyframes app-spinner-rotate {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

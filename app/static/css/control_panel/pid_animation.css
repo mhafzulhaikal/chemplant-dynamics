@@ -1,0 +1,149 @@
+/* ui_root/static/css/control_panel/pid_animation.css */
+
+@layer pages {
+
+    /* =========================================================
+       ANIMATION PLAY-STATE CONTROL
+       
+       We set the custom property --pid-play-state when the
+       simulation is running. The individual elements use this
+       variable to toggle their play-state dynamically.
+       ========================================================= */
+
+    .sthr-pid-svg .pid-animation-running,
+    .sthr-pid-svg.pid-animation-running,
+    .biodiesel-pid-svg .pid-animation-running,
+    .biodiesel-pid-svg.pid-animation-running {
+        --pid-play-state: running !important;
+    }
+
+
+    /* =========================================================
+       SVG ANIMATION KEYFRAMES
+       ========================================================= */
+
+    @keyframes spin-blade {
+        from { transform: rotate(0deg) translateZ(0); }
+        to   { transform: rotate(360deg) translateZ(0); }
+    }
+    
+    @keyframes spin-horizontal {
+        from { transform: rotateY(0deg) translateZ(0); }
+        to   { transform: rotateY(360deg) translateZ(0); }
+    }
+    
+    @keyframes wave-drift {
+        from { translate: 0 0; }
+        to   { translate: -200px 0; }
+    }
+    
+    @keyframes wave-drift-reverse {
+        from { translate: 0 0; }
+        to   { translate: 200px 0; }
+    }
+    
+    @keyframes fluid-breathe {
+        0%, 100% { translate: 0 0; }
+        50%      { translate: 0 -2px; }
+    }
+
+
+    /* =========================================================
+       STIRRED TANK HEATER (STHR) SVG ANIMATIONS
+       ========================================================= */
+
+    .sthr-pid-svg .pump-blades {
+        transform-origin: 34.125px 36px;
+        animation: spin-blade 1s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+    .sthr-pid-svg .stirred-upper-blades {
+        transform-origin: 43px 178px;
+        animation: spin-horizontal 1.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+
+    .sthr-pid-svg .stirred-lower-blades {
+        transform-origin: 43px 340px;
+        animation: spin-horizontal 1.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+
+    .sthr-pid-svg .fluid-body {
+        animation: fluid-breathe 4s ease-in-out infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+    .sthr-pid-svg .fluid-wave-1,
+    .sthr-pid-svg .fluid-wave-3 {
+        animation: wave-drift 2.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+    .sthr-pid-svg .fluid-wave-2 {
+        animation: wave-drift-reverse 3.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+
+    /* =========================================================
+       BIODIESEL REACTOR (BIODIESEL) SVG ANIMATIONS
+       ========================================================= */
+
+    .biodiesel-pid-svg .pump-blades {
+        transform-origin: 24.025px 24.58px;
+        animation: spin-blade 0.8s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+    .biodiesel-pid-svg .stirred-upper-blades {
+        transform-origin: 43px 178px;
+        animation: spin-horizontal 1.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+
+    .biodiesel-pid-svg .stirred-lower-blades {
+        transform-origin: 43px 340px;
+        animation: spin-horizontal 1.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+        backface-visibility: hidden;
+    }
+
+    .biodiesel-pid-svg .reactor-fluid-breathe {
+        animation: fluid-breathe 4s ease-in-out infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+    .biodiesel-pid-svg .fluid-wave-1,
+    .biodiesel-pid-svg .fluid-wave-3 {
+        animation: wave-drift 2.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+    .biodiesel-pid-svg .fluid-wave-2 {
+        animation: wave-drift-reverse 3.5s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+
+    .biodiesel-pid-svg .fluid-wave-main {
+        animation: wave-drift 2s linear infinite;
+        animation-play-state: var(--pid-play-state, paused);
+        will-change: transform;
+    }
+}

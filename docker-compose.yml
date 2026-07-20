@@ -1,0 +1,71 @@
+services:
+  cpdynamics-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cpdynamics-app
+
+    ports:
+      # Local development: http://localhost:8080
+      # On Azure Container Apps, ACA ingress handles external traffic — remove this mapping.
+      - "8080:8080"
+
+    # Load sensitive variables from .env (never commit .env to git).
+    env_file:
+      - .env
+
+    environment:
+      - PYTHONUNBUFFERED=1
+      # STORAGE_SECRET is pulled from .env via env_file above.
+      # You can still override individual vars here if needed.
+
+    restart: unless-stopped
+
+    # Resource limits — adjust for your host / cloud tier.
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+    # Health-check for local Docker use (mirrors the Dockerfile HEALTHCHECK).
+    healthcheck:
+      test:
+        - "CMD"
+        - "python"
+        - "-c"
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    # Structured JSON logging — rotate automatically so disk doesn't fill up.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Named volumes for persistent data.
+    # Replace with Azure Files mounts when deploying to Container Apps.
+    volumes:
+      - cpdynamics-data:/app/data
+      - cpdynamics-logs:/app/logs
+
+    # Isolated network — prevents accidental cross-service exposure.
+    networks:
+      - cpdynamics-net
+
+networks:
+  cpdynamics-net:
+    driver: bridge
+
+volumes:
+  cpdynamics-data:
+    driver: local
+  cpdynamics-logs:
+    driver: local

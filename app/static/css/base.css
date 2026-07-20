@@ -1,0 +1,71 @@
+/* ui_root/static/css/base.css */
+
+@layer base {
+    /* =========================================================
+       BASE PAGE
+       ========================================================= */
+
+    html,
+    body {
+        min-width: var(--min-viewport-width);
+        background-color: var(--bg-main);
+        font-family: var(--font-ui);
+        margin: 0;
+        padding: 0;
+    }
+
+    /* NiceGUI root/body helper */
+    .app-body {
+        min-width: var(--min-viewport-width);
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        font-family: var(--font-ui);
+    }
+
+    /* Main content placeholder */
+    .main-content {
+        background-color: var(--bg-main);
+        color: var(--text-main);
+    }
+
+    /* Global Scrollbar Customization - Native styling with smooth transitions */
+    * {
+        scrollbar-color: rgba(255, 213, 79, 0.2) transparent;
+        scrollbar-width: thin;
+        transition: scrollbar-color 0.12s ease-out;
+    }
+
+    /* Exclude page-level layout wrappers to prevent their scrollbars from staying permanently bright */
+    html, body, .app-body, .main-content, .home-main, .control-panel-main {
+        scrollbar-color: rgba(255, 213, 79, 0.2) transparent !important;
+        scrollbar-width: thin;
+    }
+
+    /* Hovering any scroll container or content area makes the scrollbar bright */
+    :not(html):not(body):not(.app-body):not(.main-content):not(.home-main):not(.control-panel-main):hover {
+        scrollbar-color: var(--text-highlight, #ffd54f) transparent !important;
+    }
+
+    /* =========================================================
+       GLOBAL DROPDOWN (Q-SELECT) ALIGNMENT
+       ========================================================= */
+    .q-select .q-field__control {
+        padding-left: 8px !important;
+    }
+
+    .q-select .q-field__control-container,
+    .q-select .q-field__native,
+    .q-select .q-field__input,
+    .q-select .q-field__native span {
+        text-align: left !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        display: flex !important;
+        height: 100% !important;
+        min-height: 100% !important;
+        line-height: normal !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+

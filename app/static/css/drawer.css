@@ -1,0 +1,536 @@
+/* ui_root/static/css/drawer.css */
+
+/* ============================================================
+   CONTROL PANEL DRAWER STYLES
+
+   Current drawer design:
+   - text-only menu
+   - no icon
+   - left aligned labels
+   - MENU title has no red background
+   - red separator is directly below MENU title, with no gap
+   - distance after red separator is controlled by .drawer-menu-list padding-top
+   - active item uses yellow background and black text
+   - one responsive breakpoint only
+   ============================================================ */
+
+@layer pages {
+
+    /* =========================================================
+       LEFT DRAWER / LEFT BAR
+       ========================================================= */
+
+    .control-left-drawer,
+    .left-bar {
+        width: var(--control-left-drawer-w, 240px) !important;
+
+        padding: 0 !important;
+
+        background-color: var(--bg-header) !important;
+        border-right: 1px solid var(--border-color) !important;
+
+        color: var(--text-main);
+        font-family: var(--font-ui);
+
+        overflow: hidden !important;
+    }
+
+    aside.control-left-drawer,
+    aside.left-bar {
+        width: var(--control-left-drawer-w, 240px) !important;
+    }
+
+    .control-left-drawer .q-drawer__content,
+    .left-bar .q-drawer__content {
+        height: 100% !important;
+
+        display: flex !important;
+        flex-direction: column;
+
+        background-color: var(--bg-header) !important;
+
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+
+
+    /* =========================================================
+       LEFT DRAWER CONTENT
+       ========================================================= */
+
+    .control-left-drawer-content {
+        width: 100%;
+        height: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+
+        /*
+           Important:
+           ui.column can introduce layout gap.
+           Keep this 0 so MENU title and red separator touch directly.
+        */
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: var(--bg-header);
+        color: var(--text-main);
+
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .control-left-drawer-content > * {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+
+    /* =========================================================
+       MENU TITLE
+       ========================================================= */
+
+    .drawer-menu-title,
+    .menu-title {
+        width: 100%;
+
+        height: var(--drawer-menu-title-h, 50px);
+        min-height: var(--drawer-menu-title-h, 50px);
+
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex: 0 0 auto;
+
+        margin: 0 !important;
+        padding: 0 1rem;
+
+        background-color: transparent !important;
+        border: none !important;
+
+        color: var(--text-white);
+
+        font-family: var(--font-display);
+        font-size: var(--drawer-menu-title-fs);
+        font-weight: 700;
+        line-height: 1;
+
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+
+        text-align: left;
+        user-select: none;
+    }
+
+
+    /* =========================================================
+       MENU RED SEPARATOR
+       Directly below MENU title.
+       ========================================================= */
+
+    .drawer-menu-red-separator,
+    .drawer-menu-red-separator.q-separator {
+        width: 100%;
+
+        height: var(--drawer-menu-item-h, 40px);
+        min-height: var(--drawer-menu-item-h, 40px);
+
+        display: block !important;
+        flex: 0 0 auto;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: #d32f2f !important;
+        border: none !important;
+
+        opacity: 1 !important;
+    }
+
+
+    /* =========================================================
+       MENU LIST
+       ========================================================= */
+
+    .drawer-menu-list {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+
+        /*
+           Controls distance between menu items.
+        */
+        gap: 0.5rem !important;
+
+        margin: 0 !important;
+
+        /*
+           padding-top controls distance between red separator and first item.
+           If you want the first item closer to the red separator, reduce 1rem.
+        */
+        padding: 1rem 0.35rem 0.45rem 0.35rem !important;
+    }
+
+
+    /* =========================================================
+       MENU ITEM BASE
+       ========================================================= */
+
+    .drawer-menu-item,
+    .menu-item {
+        width: 100%;
+
+        height: var(--drawer-menu-item-h, 40px);
+        min-height: var(--drawer-menu-item-h, 40px);
+        
+        transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                    color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-start;
+
+        margin: 0 !important;
+        padding: 0.5rem 0.65rem !important;
+
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 6px;
+
+        color: #c9d1d9 !important;
+
+        font-family: var(--font-display) !important;
+        font-size: var(--drawer-menu-item-fs) !important;
+        font-weight: 500 !important;
+        line-height: 1.25;
+
+        text-align: left !important;
+
+        cursor: pointer;
+        user-select: none;
+
+        box-shadow: none !important;
+
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease;
+    }
+
+    /*
+       Quasar button puts text inside .q-btn__content.
+       This keeps the label left-aligned.
+    */
+    .drawer-menu-item .q-btn__content,
+    .menu-item .q-btn__content {
+        width: 100%;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-start !important;
+
+        color: inherit !important;
+
+        text-align: left !important;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .drawer-menu-item::before,
+    .menu-item::before {
+        box-shadow: none !important;
+    }
+
+    .drawer-menu-item:hover,
+    .menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.06) !important;
+        color: var(--text-white) !important;
+    }
+
+    .drawer-menu-item:active,
+    .menu-item:active {
+        background-color: rgba(255, 255, 255, 0.09) !important;
+    }
+
+
+    /* =========================================================
+       ACTIVE MENU ITEM
+       ========================================================= */
+
+    .drawer-menu-item-active,
+    .menu-item-active {
+        background-color: var(--text-highlight) !important;
+        color: #000000 !important;
+
+        font-weight: 700 !important;
+    }
+
+    .drawer-menu-item-active:hover,
+    .menu-item-active:hover,
+    .drawer-menu-item-active:active,
+    .menu-item-active:active {
+        background-color: var(--text-highlight) !important;
+        color: #000000 !important;
+    }
+
+    .drawer-menu-item-active .q-btn__content,
+    .menu-item-active .q-btn__content {
+        color: #000000 !important;
+        font-weight: 700 !important;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER — CONTROLLER PARAMETER PANEL
+       Reserved for next stage.
+       ========================================================= */
+
+    .right-drawer {
+        padding: 0 !important;
+
+        background-color: #000000 !important;
+        border-left: 1px solid var(--border-color) !important;
+
+        color: var(--text-main);
+        font-family: var(--font-ui);
+    }
+
+    .right-drawer .q-drawer__content {
+        height: 100% !important;
+
+        display: flex;
+        flex-direction: column;
+
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER HEADER
+       ========================================================= */
+
+    .drawer-header {
+        width: 100%;
+        height: 33px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+
+        padding: 0.6rem 0.75rem;
+
+        background-color: #000000;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .drawer-header-title {
+        width: 100%;
+
+        color: var(--text-white);
+
+        font-family: var(--font-display);
+        font-size: 0.5rem;
+        font-weight: 700;
+
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER SECTION TITLE
+       ========================================================= */
+
+    .drawer-section-title {
+        padding: 0.75rem 0.75rem 0.25rem;
+
+        color: var(--text-success);
+
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER PARAMETER ROW
+       ========================================================= */
+
+    .drawer-param-row {
+        display: flex;
+        flex-direction: column;
+
+        gap: 0.2rem;
+
+        padding: 0.3rem 0.75rem;
+    }
+
+    .drawer-param-label {
+        color: var(--text-muted);
+
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER INPUT
+       ========================================================= */
+
+    .drawer-input .q-field__control {
+        min-height: 34px !important;
+        height: 34px !important;
+
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 4px !important;
+    }
+
+    .drawer-input .q-field__native,
+    .drawer-input .q-field__input {
+        padding: 0 8px !important;
+
+        color: var(--text-main) !important;
+
+        font-family: var(--font-mono) !important;
+        font-size: 0.8rem !important;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER LIVE VALUE CARD
+       ========================================================= */
+
+    .drawer-live-card {
+        margin: 0.4rem 0.75rem;
+        padding: 0.5rem 0.75rem;
+
+        background: rgba(76, 175, 80, 0.06);
+        border: 1px solid rgba(76, 175, 80, 0.2);
+        border-radius: 6px;
+
+        text-align: center;
+    }
+
+    .drawer-live-value {
+        color: var(--text-success);
+
+        font-family: var(--font-mono);
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .drawer-live-sublabel {
+        margin-top: 2px;
+
+        color: var(--text-muted);
+
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER NOTE
+       ========================================================= */
+
+    .drawer-readonly-note {
+        padding: 1.5rem 0.75rem;
+
+        color: var(--text-muted);
+
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-style: italic;
+        line-height: 1.5;
+
+        text-align: center;
+    }
+
+
+    /* =========================================================
+       RIGHT DRAWER APPLY BUTTON
+       ========================================================= */
+
+    .drawer-apply-btn {
+        height: 36px !important;
+
+        margin: 0.75rem 0.75rem !important;
+
+        font-family: var(--font-mono) !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+
+        letter-spacing: 0.5px;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+       One breakpoint only.
+       ========================================================= */
+
+    @media (max-width: 50rem) {
+        .control-left-drawer,
+        .left-bar,
+        aside.control-left-drawer,
+        aside.left-bar {
+            width: var(--control-left-drawer-w, 240px) !important;
+        }
+
+        .drawer-menu-title,
+        .menu-title {
+            height: var(--drawer-menu-title-h-sm, 64px);
+            min-height: var(--drawer-menu-title-h-sm, 64px);
+
+            padding: 0 0.75rem;
+
+            font-size: var(--drawer-menu-title-fs-sm);
+        }
+
+        .drawer-menu-red-separator,
+        .drawer-menu-red-separator.q-separator {
+            height: var(--drawer-menu-item-h-sm, 36px);
+            min-height: var(--drawer-menu-item-h-sm, 36px);
+        }
+
+        .drawer-menu-list {
+            gap: 0.3rem !important;
+            padding: 0.75rem 0.3rem 0.4rem 0.3rem !important;
+        }
+
+        .drawer-menu-item,
+        .menu-item {
+            height: var(--drawer-menu-item-h-sm, 36px);
+            min-height: var(--drawer-menu-item-h-sm, 36px);
+
+            padding: 0.4rem 0.55rem !important;
+
+            border-radius: 5px;
+
+            font-size: var(--drawer-menu-item-fs-sm) !important;
+            line-height: 1.2;
+        }
+
+        .drawer-menu-item .q-btn__content,
+        .menu-item .q-btn__content {
+            line-height: 1.2;
+        }
+    }
+}

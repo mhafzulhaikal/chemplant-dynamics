@@ -1,0 +1,959 @@
+/* ui_root/static/css/control_panel/faceplate.css */
+
+@layer pages {
+
+    /* =========================================================
+       FACEPLATE ROOT
+       DCS-style right-drawer faceplate.
+       Fills the existing .pid-right-drawer-inner container.
+       ========================================================= */
+
+    .faceplate-root {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        font-family: var(--font-control-ui);
+
+        overflow: hidden !important;
+
+        /* Container query context — lets the mode-badge text
+           auto-hide when the drawer is narrow (e.g. 200px
+           single-bar indicator). */
+        container-type: inline-size;
+        container-name: faceplate-root;
+    }
+
+
+    /* =========================================================
+       FACEPLATE HEADER
+       Tag + title on the left, mode badge + close on the right
+       ========================================================= */
+
+    .faceplate-header {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 0.4rem;
+        margin: 0 !important;
+        padding: 0.4rem 0.5rem !important;
+
+        background:
+            linear-gradient(180deg, rgba(255, 214, 0, 0.08), rgba(255, 214, 0, 0.0)),
+            rgba(255, 255, 255, 0.025) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0;
+
+        /* Single-line header — never wrap to a second line
+           regardless of drawer width. The right cluster (mode
+           badge + close button) keeps its full size; the left
+           cluster (tag + title) truncates to make room. */
+        flex-wrap: nowrap !important;
+        min-width: 0;
+    }
+
+    .faceplate-header-text {
+        /* Allow the tag/title cluster to shrink and truncate
+           when the drawer is narrow (e.g. 200px for single-bar
+           indicators). Without this the long titles would push
+           the close button off-screen.
+
+           The ``min-width: var(--faceplate-input-w, 60px)``
+           line ties the truncation threshold to the longest
+           input value (set from Python in
+           ``FaceplatePanel._apply_drawer_size``). The cluster
+           can shrink down to the input's own width before the
+           title starts clipping — so the header column always
+           matches the input column visually. */
+        min-width: var(--faceplate-input-w, 60px);
+        flex: 1 1 auto;
+        overflow: hidden;
+    }
+
+    .faceplate-header-text .faceplate-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .faceplate-header-text .faceplate-tag {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .faceplate-header-right {
+        flex: 0 0 auto;
+    }
+
+    .faceplate-header-text {
+        gap: 0.12rem;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .faceplate-tag {
+        color: var(--text-highlight);
+
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.06em;
+    }
+
+    .faceplate-title {
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 600;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .faceplate-header-right {
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .faceplate-mode-badge {
+        display: flex !important;
+        align-items: center;
+        gap: 0.32rem;
+
+        padding: 0.18rem 0.45rem !important;
+
+        background-color: rgba(0, 0, 0, 0.32) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    /* When the drawer (and therefore the input column) is
+       narrow, drop the AUTO/MANUAL/OFF text and keep just the
+       coloured status dot — the operator still sees the colour
+       cue without crowding the close button. The threshold is
+       keyed off the input width (set by Python as
+       ``--faceplate-input-w``) so the badge text hides exactly
+       when the input would otherwise need the same space. */
+    @container faceplate-root (max-width: 220px) {
+        .faceplate-mode-text { display: none !important; }
+    }
+
+    .faceplate-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4caf50;
+        box-shadow: 0 0 6px rgba(76, 175, 80, 0.55);
+    }
+
+    .faceplate-status-auto {
+        background: #4caf50 !important;
+        box-shadow: 0 0 6px rgba(76, 175, 80, 0.55) !important;
+    }
+
+    .faceplate-status-manual {
+        background: #ffb300 !important;
+        box-shadow: 0 0 6px rgba(255, 179, 0, 0.55) !important;
+    }
+
+    .faceplate-status-off {
+        background: #9e9e9e !important;
+        box-shadow: 0 0 6px rgba(158, 158, 158, 0.45) !important;
+    }
+
+    .faceplate-mode-text {
+        color: var(--text-white);
+
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.06em;
+    }
+
+    .faceplate-close-btn {
+        color: var(--text-white) !important;
+        cursor: default !important;
+    }
+
+
+    /* =========================================================
+       BARGRAPHS
+
+       Three side-by-side vertical bargraphs (PV, SP, OP).
+       Each bargraph is a tall rectangle with a fill that grows
+       from the bottom. The fill is positioned absolutely at the
+       bottom of the track; its height is updated in % by the
+       faceplate's live flusher.
+       ========================================================= */
+
+    .faceplate-bars {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: center;
+
+        gap: 3rem;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* When all three bars are visible, center the row and let
+       the small gap separate them — the bars sit in the middle
+       of the drawer, not stretched edge-to-edge. When only the
+       PV bar is visible (read-only indicator), the row also
+       centers around it. The active variant is driven by a
+       modifier class set on the bargraph row. */
+    .faceplate-bars.faceplate-bars-3 {
+        justify-content: center;
+    }
+
+    .faceplate-bars.faceplate-bars-1 {
+        justify-content: center;
+    }
+
+    .faceplate-bar-col {
+        flex: 0 0 auto;
+        width: 30px;
+        min-width: 30px;
+        max-width: 30px;
+
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+
+        gap: 0.25rem;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .faceplate-bar-label {
+        text-align: center;
+
+        font-family: var(--font-control-ui);
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.08em;
+    }
+
+    .faceplate-bar-label-pv {
+        color: #00e676;
+    }
+
+    .faceplate-bar-label-sp {
+        color: #ffffff;
+    }
+
+    .faceplate-bar-label-op {
+        color: #00e5ff;
+    }
+
+    .faceplate-bar-track {
+        position: relative;
+
+        width: 100%;
+        height: 140px;
+        min-height: 140px;
+
+        background:
+            repeating-linear-gradient(
+                0deg,
+                rgba(255, 255, 255, 0.04) 0,
+                rgba(255, 255, 255, 0.04) 1px,
+                transparent 1px,
+                transparent 18px
+            ),
+            linear-gradient(180deg, #0a0d14, #161b25) !important;
+
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 4px;
+
+        overflow: hidden;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45);
+    }
+
+    .faceplate-bar-fill {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        height: 0%;
+
+        transition: height 0.18s ease-out;
+    }
+
+    .faceplate-bar-fill-pv {
+        background: linear-gradient(
+            180deg,
+            #69f0ae 0%,
+            #00e676 60%,
+            #00c853 100%
+        );
+        box-shadow: none;
+    }
+
+    .faceplate-bar-fill-sp {
+        background: linear-gradient(
+            180deg,
+            #ffffff 0%,
+            #e0e0e0 60%,
+            #9e9e9e 100%
+        );
+        box-shadow: none;
+    }
+
+    .faceplate-bar-fill-op {
+        background: linear-gradient(
+            180deg,
+            #18ffff 0%,
+            #00e5ff 60%,
+            #00b8d4 100%
+        );
+        box-shadow: none;
+    }
+
+    .faceplate-bar-sp-marker {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0%;
+
+        height: 2px;
+
+        background-color: #ffffff;
+        box-shadow: 0 0 4px rgba(255, 255, 255, 0.85);
+
+        pointer-events: none;
+        transition: bottom 0.18s ease-out;
+    }
+
+    .faceplate-bar-value {
+        text-align: center;
+        white-space: nowrap;
+
+        color: var(--text-white);
+
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.02em;
+    }
+
+    .faceplate-bar-unit {
+        text-align: center;
+        white-space: nowrap;
+
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       SECTION DIVIDERS / TITLES
+       ========================================================= */
+
+    .faceplate-section-separator {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        opacity: 1 !important;
+    }
+
+    .faceplate-section {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 0.32rem;
+        margin: 0 !important;
+        padding: 0.5rem 0.55rem !important;
+
+        background-color: rgba(0, 0, 0, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 5px;
+    }
+
+    .faceplate-section-title {
+        color: var(--text-highlight);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+
+    /* =========================================================
+       INPUT ROWS
+       Mirrors .tic-param-row from the modal so the user sees
+       the same fields in the same order.
+       ========================================================= */
+
+    .faceplate-input-row {
+        width: 100%;
+        min-height: 22px;
+
+        display: grid !important;
+        grid-template-columns: 38px minmax(0, 1fr) 46px;
+
+        align-items: center;
+        column-gap: 6px;
+
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .faceplate-input-row > * {
+        min-width: 0;
+    }
+
+    .faceplate-input-label {
+        color: var(--text-white);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .faceplate-input-field {
+        width: 100%;
+    }
+
+    /* Readonly state — dim the text and remove the focus
+       highlight so the operator can see at a glance which
+       inputs are live vs. display-only. Mirrors the modal's
+       ``.tic-param-readonly-value`` style. */
+    .faceplate-input-field.faceplate-readonly .q-field__native,
+    .faceplate-input-field.faceplate-readonly .q-field__input,
+    .faceplate-input-field.faceplate-readonly .q-field__control-container,
+    .faceplate-input-field.faceplate-readonly input {
+        color: var(--text-soft) !important;
+        opacity: 0.7 !important;
+    }
+
+    .faceplate-input-field.faceplate-readonly .q-field__control {
+        background-color: rgba(27, 27, 27, 0.6) !important;
+    }
+
+    .faceplate-input-field:not(.q-select) .q-field__control {
+        height: 22px !important;
+        min-height: 22px !important;
+
+        background-color: rgba(27, 27, 27, 0.94) !important;
+        border-radius: 4px !important;
+
+        padding: 0 4px !important;
+        box-shadow: none !important;
+    }
+
+    .faceplate-input-field.q-select .q-field__control {
+        height: 22px !important;
+        min-height: 22px !important;
+
+        background-color: rgba(27, 27, 27, 0.94) !important;
+        border-radius: 4px !important;
+
+        padding-left: 8px !important;
+        padding-right: 4px !important;
+        box-shadow: none !important;
+    }
+
+    .faceplate-input-field:not(.q-select) .q-field__native,
+    .faceplate-input-field:not(.q-select) .q-field__input,
+    .faceplate-input-field:not(.q-select) .q-field__control-container {
+        height: 22px !important;
+        min-height: 22px !important;
+        line-height: 22px !important;
+
+        padding: 0 !important;
+
+        color: var(--text-white) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        text-align: center !important;
+    }
+
+    .faceplate-input-field.q-select .q-field__native,
+    .faceplate-input-field.q-select .q-field__input,
+    .faceplate-input-field.q-select .q-field__control-container,
+    .faceplate-input-field.q-select .q-field__native span {
+        height: 22px !important;
+        min-height: 22px !important;
+        line-height: normal !important;
+
+        padding-left: 0 !important;
+
+        color: var(--text-white) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        display: flex !important;
+    }
+
+    .faceplate-input-field input {
+        color: var(--text-white) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        text-align: center !important;
+    }
+
+    .faceplate-input-field .q-field__append {
+        height: 22px !important;
+        min-height: 22px !important;
+        color: var(--text-white) !important;
+        padding-left: 2px !important;
+    }
+
+    .faceplate-input-field .q-field__bottom {
+        display: none !important;
+    }
+
+    .faceplate-input-unit {
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        line-height: 1.2;
+
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    /* =========================================================
+       MODE SELECT (popup styling)
+       ========================================================= */
+
+    .faceplate-mode-popup {
+        /* Lock the dropdown width to the Mode select's own
+           width so the Quasar ``q-menu`` portal doesn't
+           stretch to fill the right-drawer body. The
+           ``.faceplate-input-row`` grid is 38px/1fr/70px, so
+           the Mode field occupies the full 1fr column —
+           approximately 110 px on a 220 px single-bar
+           indicator drawer, slightly wider on a 360 px
+           TIC-100 drawer. We pin it to 110 px so single-bar
+           indicators and full TIC-100 drawers both show the
+           same dropdown shape. The companion rules below
+           cap each item at 22 px tall, so a 110 px wide ×
+           ~68 px tall (3 items) menu is the intended shape. */
+        width: 110px;
+        min-width: 110px;
+        max-width: 110px;
+
+        background-color: #1b1b1b !important;
+        color: var(--text-white) !important;
+
+        border: 1px solid #303030 !important;
+        border-radius: 4px !important;
+
+        box-shadow: none !important;
+    }
+
+    .faceplate-mode-popup .q-item {
+        min-height: 22px !important;
+        height: 22px !important;
+
+        padding: 0 8px !important;
+
+        color: var(--text-white) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+    }
+
+    .faceplate-mode-popup .q-item__section {
+        padding: 0 !important;
+        min-width: 0 !important;
+    }
+
+    .faceplate-mode-popup .q-item__label {
+        color: var(--text-white) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        line-height: 22px !important;
+    }
+
+    .faceplate-mode-popup .q-item:hover {
+        background-color: #2a2a2a !important;
+    }
+
+    .faceplate-mode-popup .q-item--active {
+        background-color: #3a3000 !important;
+    }
+
+    .faceplate-mode-popup .q-item--active .q-item__label {
+        color: var(--text-highlight) !important;
+        font-weight: 700;
+    }
+
+
+    /* =========================================================
+       APPLY BUTTON
+       ========================================================= */
+
+    .faceplate-apply-btn {
+        align-self: stretch;
+
+        height: 26px !important;
+        min-height: 26px !important;
+
+        padding: 0 12px !important;
+        border-radius: 4px !important;
+
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+
+        background: transparent !important;
+        color: var(--text-highlight) !important;
+        border: 1px solid rgba(255, 214, 0, 0.90) !important;
+        box-shadow: none !important;
+        text-transform: none !important;
+    }
+
+    .faceplate-apply-btn .q-btn__content {
+        color: var(--text-highlight) !important;
+    }
+
+    .faceplate-apply-btn:hover {
+        background-color: rgba(255, 214, 0, 0.14) !important;
+    }
+
+
+    /* =========================================================
+       FLOATING DIALOG HOST (FaceplateDialog)
+       ---------------------------------------------------------
+       The faceplate is now a ``ui.dialog`` (see
+       ``app/components/faceplate_dialog.py``) instead of a
+       right-drawer. The styles below turn the dialog's host
+       card into a floating panel: positioned absolutely inside
+       Quasar's ``.q-dialog__inner``, sized via the same
+       CSS custom-property pattern the runtime manager uses,
+       and tagged so the
+       :class:`app.components.floating_window.DraggableCard` JS
+       can find it across DOM swaps.
+
+       Mirrors ``body .floating-runtime-manager-card`` in
+       ``simulation_manager_page.css:248`` so the two dialogs
+       read as the same family of floating cards.
+       ========================================================= */
+
+    body .faceplate-dialog-card {
+        /* Quasar's ``.q-dialog__inner`` is ``position: fixed;
+           inset: 0; display: flex; justify-content: center;
+           align-items: center;``. The card sits
+           ``position: absolute`` inside that flex container,
+           so it's centered in the viewport automatically —
+           no JS math, no race with the show-transition.
+
+           ``--faceplate-drawer-offset`` (default 0) is the
+           same drawer-aware centering hook the runtime
+           manager uses. When the control-panel's left drawer
+           is open the offset is set to half the drawer
+           width so the dialog appears centered in the
+           content area instead of the full viewport. */
+        position: absolute !important;
+        margin-left: var(--faceplate-drawer-offset, 0px) !important;
+
+        background-color: var(--bg-panel, #111722) !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+
+        border: 1px solid var(--border-color, #2a3441) !important;
+        border-radius: 8px !important;
+
+        /* User-resizable defaults. Width / max-height are
+           read from CSS custom properties so the JS
+           multi-edge resize handler in
+           ``app/components/floating_window.py`` can persist
+           the user's drag of any resize handle to
+           ``sessionStorage`` and replay it on the next open. */
+        width: var(
+            --faceplate-dialog-card-width,
+            min(360px, calc(100vw - 2rem))
+        ) !important;
+        height: var(
+            --faceplate-dialog-card-height,
+            auto
+        ) !important;
+        max-height: calc(100vh - 1rem) !important;
+
+        min-width: 320px;
+        min-height: 360px;
+        max-width: calc(100vw - 1rem);
+
+        /* ``overflow: visible`` so absolutely-positioned resize
+           handles (3 px outside the card on N/E/S/W edges) are
+           not clipped.  The inner ``.faceplate-root`` keeps
+           ``overflow-y: auto`` so scrollbars stay inside the
+           rounded corners. */
+        overflow: visible;
+
+        z-index: 1000;
+
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55) !important;
+    }
+
+    /* Quasar's show-transition centers the card via the
+       ``.q-dialog__inner`` flex layout. Keep that flex
+       centering on the inner in both cases (the card
+       itself receiving the ``q-dialog__inner`` class on
+       some Quasar versions, vs the inner being a separate
+       element). */
+    body .faceplate-dialog-card.q-dialog__inner,
+    .q-dialog__inner:has(> .faceplate-dialog-card) {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        min-height: 0 !important;
+        transform: none !important;
+        padding: 0 !important;
+    }
+
+    /* Drag handle. The card's header row carries both
+       ``.faceplate-header`` (the body styles) and
+       ``.faceplate-dialog-header`` (the drag-handle
+       marker the DraggableCard JS targets). */
+    body .faceplate-dialog-card
+        .faceplate-dialog-header {
+        cursor: default !important;
+        touch-action: none;
+    }
+
+    body .faceplate-dialog-card
+        .faceplate-dialog-header:active {
+        cursor: default !important;
+    }
+
+    /* Minimize button. The runtime manager pattern uses
+       a round dense button next to the close button; we
+       match that here so the chrome reads as the same
+       family of floating cards. */
+    .faceplate-minimize-btn {
+        color: var(--text-white) !important;
+        cursor: default !important;
+    }
+
+    /* 8-direction resize handles. Mounted by
+       ``DraggableCard`` as 8 absolute-positioned divs
+       with class
+       ``faceplate-dialog-card-resize-handle[-<side>]``.
+       The handles sit on top of the card edges / corners
+       and let the user grab any side to resize. ``pointer
+       events: auto`` overrides any parent rule that
+       would otherwise block them; the handles are
+       transparent (no background) so they don't visually
+       compete with the body. */
+    .faceplate-dialog-card-resize-handle {
+        position: absolute;
+        z-index: 1001;
+        background: transparent;
+        pointer-events: auto;
+        touch-action: none;
+    }
+
+    .faceplate-dialog-card-resize-handle-n,
+    .faceplate-dialog-card-resize-handle-s {
+        left: 8px;
+        right: 8px;
+        height: 6px;
+    }
+    .faceplate-dialog-card-resize-handle-n { top: -3px; cursor: ns-resize; }
+    .faceplate-dialog-card-resize-handle-s { bottom: -3px; cursor: ns-resize; }
+
+    .faceplate-dialog-card-resize-handle-e,
+    .faceplate-dialog-card-resize-handle-w {
+        top: 8px;
+        bottom: 8px;
+        width: 6px;
+    }
+    .faceplate-dialog-card-resize-handle-e { right: -3px; cursor: ew-resize; }
+    .faceplate-dialog-card-resize-handle-w { left: -3px; cursor: ew-resize; }
+
+    .faceplate-dialog-card-resize-handle-ne,
+    .faceplate-dialog-card-resize-handle-nw,
+    .faceplate-dialog-card-resize-handle-sw {
+        width: 14px;
+        height: 14px;
+    }
+    .faceplate-dialog-card-resize-handle-ne { top: -3px; right: -3px; cursor: nesw-resize; }
+    .faceplate-dialog-card-resize-handle-nw { top: -3px; left: -3px; cursor: nwse-resize; }
+    .faceplate-dialog-card-resize-handle-se {
+        bottom: 0px; right: 0px;
+        width: 16px; height: 16px;
+        cursor: nwse-resize;
+        /* Premium commercial UI dotted resize grip */
+        background-image: radial-gradient(circle at center, rgba(255,255,255,0.5) 1px, transparent 1px);
+        background-size: 3px 3px;
+        background-position: right bottom;
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+    .faceplate-dialog-card-resize-handle-sw { bottom: -3px; left: -3px; cursor: nesw-resize; }
+
+    /* Minimized state — hide everything except OP section and apply button */
+    body .faceplate-dialog-card.faceplate-dialog-card-minimized .faceplate-body > *:not(.faceplate-op-section):not(.faceplate-apply-btn) {
+        display: none !important;
+    }
+
+    body .faceplate-dialog-card.faceplate-dialog-card-minimized .faceplate-statusbar {
+        display: none !important;
+    }
+
+    body .faceplate-dialog-card.faceplate-dialog-card-minimized {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+    }
+
+    /* Hide resize handles while minimized */
+    body .faceplate-dialog-card.faceplate-dialog-card-minimized
+        .faceplate-dialog-card-resize-handle {
+        display: none !important;
+    }
+
+    /* Re-enable pointer events on the card itself when
+       minimized so the header buttons remain clickable
+       even though the dialog wrapper may flip them off. */
+    body .faceplate-dialog-card.faceplate-dialog-card-minimized {
+        pointer-events: auto !important;
+    }
+
+    /* =========================================================
+       NON-MODAL BEHAVIOUR — page stays active / scrollable
+       ---------------------------------------------------------
+       The faceplate dialog is a floating HUD, not a modal that
+       blocks the dashboard. We flip pointer-events so the user
+       can still pan the P&ID, click controllers, and scroll
+       sections while the faceplate is open.
+       ========================================================= */
+
+    /* Dialog wrapper: let clicks pass through to the page. */
+    .q-dialog:has(> .q-dialog__inner > .faceplate-dialog-card) {
+        pointer-events: none !important;
+    }
+    /* Backdrop: fully transparent and non-interactive. */
+    .q-dialog:has(> .q-dialog__inner > .faceplate-dialog-card)
+        .q-dialog__backdrop {
+        background: transparent !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    /* Inner flex wrapper: also pass-through. */
+    .q-dialog:has(> .q-dialog__inner > .faceplate-dialog-card)
+        .q-dialog__inner {
+        pointer-events: none !important;
+    }
+    /* The card itself: re-enable so header buttons, inputs,
+       resize handles, and drag remain usable. */
+    body .faceplate-dialog-card {
+        pointer-events: auto !important;
+    }
+
+    /* =========================================================
+       SCROLL AT MINIMUM SIZE
+       ---------------------------------------------------------
+       When the user resizes the faceplate down to its min
+       dimensions, the inner body should scroll instead of
+       clipping. The header stays fixed; only the body scrolls.
+       ========================================================= */
+    body .faceplate-dialog-card {
+        /* Body already has overflow-y: auto in .faceplate-root,
+           but the card itself also needs it so the Quasar card
+           wrapper respects the content bounds. */
+        overflow: hidden !important;
+    }
+
+    /* ── Faceplate Body (Scrollable) ── */
+    .faceplate-body {
+        width: 100% !important;
+        flex-grow: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0.7rem 0.7rem 0.2rem !important;
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+
+    /* ── Faceplate Status Bar (Footer) ── */
+    .faceplate-statusbar {
+        width: 100%;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px !important;
+        margin: 0 !important;
+        margin-top: auto !important;
+        padding: 2px 8px !important;
+        color: var(--hmi-text-soft, #bdbdbd);
+        background-color: rgba(0, 0, 0, 0.30);
+        border-top: 1px solid rgba(255, 255, 255, 0.20);
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        line-height: normal;
+        text-transform: uppercase;
+    }
+
+    .faceplate-statusbar-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0;
+        background-color: transparent;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .faceplate-statusbar-cell-label {
+        color: var(--hmi-text-muted);
+    }
+
+    .faceplate-statusbar-cell-value {
+        color: #ffffff;
+    }
+}

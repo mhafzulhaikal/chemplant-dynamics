@@ -1,0 +1,1027 @@
+@layer pages {
+    body.runtime-manager-page,
+    body.runtime-manager-page #app,
+    body.runtime-manager-page .nicegui-content,
+    body.runtime-manager-page .q-layout,
+    body.runtime-manager-page .q-page-container,
+    body.runtime-manager-page .q-page {
+        width: 100% !important;
+        min-width: var(--min-viewport-width);
+        height: 100% !important;
+        min-height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: var(--bg-main) !important;
+        color: var(--text-main);
+        overflow: hidden !important;
+    }
+
+    .runtime-manager-page-root {
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        margin: 0 !important;
+        padding: 1rem !important;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        font-family: var(--font-control-ui);
+    }
+
+    .runtime-manager-page-root-full {
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .runtime-manager-page-card {
+        width: min(
+            var(--runtime-manager-page-card-w, 720px),
+            calc(100vw - 2rem)
+        );
+        max-height: calc(100vh - 2rem);
+        display: flex !important;
+        flex-direction: column;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: #050505;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.85);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow:
+            0 18px 42px rgba(0, 0, 0, 0.55),
+            0 0 0 1px rgba(255, 255, 255, 0.025);
+    }
+
+    .runtime-manager-page-header {
+        width: 100%;
+        min-height: 34px;
+        padding: 4px 10px !important;
+        background:
+            linear-gradient(180deg, rgba(255, 214, 0, 0.08), rgba(255, 214, 0, 0.0)),
+            rgba(255, 255, 255, 0.025) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.20);
+    }
+
+    .runtime-manager-page-title-block {
+        min-width: 0;
+        gap: 0.12rem !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .runtime-manager-page-title {
+        color: var(--text-highlight, #ffd600);
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1;
+    }
+
+    .runtime-manager-page-process-label {
+        color: var(--text-muted, #bdbdbd);
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        line-height: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .runtime-manager-page-close-btn {
+        color: var(--text-muted) !important;
+        cursor: default !important;
+    }
+
+    .runtime-manager-page-close-btn:hover {
+        color: var(--text-white) !important;
+        background-color: rgba(255, 255, 255, 0.06) !important;
+    }
+
+    .runtime-manager-page-header-right {
+        flex: 1 1 auto;
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px !important;
+        min-width: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .runtime-manager-page-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 22px;
+        padding: 0 6px;
+        color: var(--text-highlight, #ffd54f);
+        background-color: transparent;
+        border: 1px solid rgba(255, 214, 0, 0.55);
+        border-radius: 4px;
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .runtime-manager-page-form {
+        width: 100%;
+        display: flex !important;
+        flex-direction: column;
+        gap: 6px !important;
+        margin: 0 !important;
+        padding: 4px 6px !important;
+        overflow-y: auto;
+    }
+
+    .runtime-manager-page-input {
+        width: 100%;
+    }
+
+    .runtime-manager-page-input .q-field__control {
+        height: 24px !important;
+        min-height: 24px !important;
+        background-color: rgba(27, 27, 27, 0.94) !important;
+        border: 0 !important;
+        border-radius: 4px !important;
+        padding: 0 4px !important;
+        box-shadow: none !important;
+    }
+
+    .runtime-manager-page-input .q-field__control-container {
+        height: 24px !important;
+        min-height: 24px !important;
+        line-height: 24px !important;
+        padding: 0 !important;
+    }
+
+    .runtime-manager-page-input .q-field__native,
+    .runtime-manager-page-input .q-field__input,
+    .runtime-manager-page-input .q-field__append {
+        height: 24px !important;
+        min-height: 24px !important;
+        line-height: 24px !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        text-align: center !important;
+    }
+
+    .runtime-manager-page-input .q-field__label,
+    .runtime-manager-page-input .q-field__bottom {
+        display: none !important;
+    }
+
+    .runtime-manager-page-actions {
+        width: 100%;
+        margin: 0 !important;
+        padding: 0.75rem 1rem 1rem 1rem !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .runtime-manager-page-apply-btn {
+        color: var(--text-highlight) !important;
+        font-weight: 700 !important;
+    }
+
+    body .floating-runtime-manager-card {
+        position: absolute !important;
+        margin-left: var(--frm-drawer-offset, 0px) !important;
+        width: var(--frm-width, 360px) !important;
+        height: var(--frm-height, auto) !important;
+        max-height: calc(100vh - 1rem) !important;
+        min-width: 360px;
+        min-height: 220px;
+        max-width: calc(100vw - 1rem);
+        overflow: visible;
+        z-index: 1000;
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55) !important;
+    }
+
+    body .floating-runtime-manager-card.q-dialog__inner,
+    .q-dialog__inner:has(> .floating-runtime-manager-card) {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        min-height: 0 !important;
+        transform: none !important;
+        padding: 0 !important;
+    }
+
+    body .floating-runtime-manager-card
+        .runtime-manager-page-header {
+        cursor: default !important;
+        touch-action: none;
+    }
+
+    body .floating-runtime-manager-card
+        .runtime-manager-page-header:active {
+        cursor: default !important;
+    }
+
+    .runtime-manager-page-form {
+        gap: 6px !important;
+        padding: 4px 6px !important;
+    }
+
+    .runtime-manager-page-form > .row {
+        gap: 0 !important;
+    }
+
+    .runtime-manager-section {
+        width: 100%;
+        display: flex !important;
+        flex-direction: column;
+        gap: 4px !important;
+        margin: 0 !important;
+        padding: 6px 8px !important;
+        background-color: rgba(0, 0, 0, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-radius: 5px !important;
+        box-shadow: none !important;
+    }
+
+    .runtime-manager-section + .runtime-manager-section {
+        margin-top: 0 !important;
+    }
+
+    .runtime-manager-section-header {
+        width: 100%;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px !important;
+        margin: 0 0 2px 0 !important;
+        padding: 0 !important;
+        color: var(--text-highlight, #ffd54f);
+        background-color: transparent;
+        border-bottom: 1px solid var(--hmi-border);
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .runtime-manager-section-title {
+        color: var(--text-highlight, #ffd54f);
+        background-color: transparent;
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .runtime-manager-section-hint {
+        color: var(--text-muted, #bdbdbd);
+        background-color: transparent;
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        opacity: 0.85;
+    }
+
+    .runtime-manager-section-body {
+        width: 100%;
+        display: grid !important;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 8px !important;
+        margin: 0 !important;
+        padding: 2px 0 0 0 !important;
+    }
+
+    .runtime-manager-actions-section {
+        border-color: rgba(255, 214, 0, 0.18) !important;
+    }
+
+    .runtime-manager-actions-row {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        gap: 10px !important;
+        align-items: stretch;
+        justify-content: flex-start;
+        grid-template-columns: none !important;
+    }
+
+    .runtime-manager-action-btn {
+        min-width: 110px;
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 0 14px !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.06em !important;
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.20) !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+    }
+
+    .runtime-manager-action-btn .q-icon {
+        margin-right: 4px;
+    }
+
+    .runtime-manager-action-btn-run {
+        color: var(--text-highlight, #ffd54f) !important;
+    }
+
+    .runtime-manager-action-btn-run:hover {
+        background-color: rgba(255, 214, 0, 0.14) !important;
+        border-color: rgba(255, 214, 0, 0.90) !important;
+    }
+
+    .runtime-manager-action-btn-stop {
+        color: #ff5252 !important;
+    }
+
+    .runtime-manager-action-btn-stop:hover {
+        background-color: rgba(255, 82, 82, 0.10) !important;
+        border-color: rgba(255, 82, 82, 0.55) !important;
+    }
+
+    .runtime-manager-action-btn[disabled],
+    .runtime-manager-action-btn-disabled {
+        color: rgba(255, 255, 255, 0.35) !important;
+        opacity: 0.5 !important;
+        cursor: not-allowed !important;
+        background-color: transparent !important;
+        border-color: rgba(255, 255, 255, 0.10) !important;
+    }
+
+    .runtime-manager-action-btn[disabled]:hover,
+    .runtime-manager-action-btn-disabled:hover {
+        background-color: transparent !important;
+    }
+
+    .runtime-manager-field {
+        grid-column: span 4 / span 4;
+        min-width: 0;
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 2px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .runtime-manager-field-wide {
+        grid-column: span 6 / span 6;
+    }
+
+    .runtime-manager-field-full {
+        grid-column: span 12 / span 12;
+    }
+
+    .runtime-manager-field-label {
+        height: 14px;
+        color: #ffffff;
+        background-color: transparent;
+        font-family: var(--font-control-ui);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        line-height: 1;
+        text-transform: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .runtime-manager-field-row {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch;
+        gap: 4px !important;
+    }
+
+    .runtime-manager-field-row .q-field {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .runtime-manager-field-unit {
+        flex: 0 0 auto;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: flex-start;
+        min-width: 38px;
+        max-width: 78px;
+        height: 24px;
+        padding: 0 4px 0 6px;
+        color: #bdbdbd;
+        background-color: transparent;
+        border: 0;
+        border-radius: 0;
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        line-height: 24px;
+        text-align: left;
+        text-transform: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .runtime-manager-readout {
+        height: 24px;
+        min-height: 24px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 0 4px;
+        color: var(--text-highlight, #ffd54f);
+        background-color: rgba(27, 27, 27, 0.94);
+        border: 0;
+        border-radius: 4px;
+        box-shadow: none;
+        font-family: var(--font-control-ui);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        line-height: 24px;
+        text-align: center;
+    }
+
+    .runtime-manager-readout-sm {
+        height: 24px;
+        min-height: 24px;
+        font-size: 0.7rem;
+    }
+
+    .runtime-manager-timer {
+        width: 100%;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px !important;
+        margin: 0 !important;
+        padding: 8px 12px !important;
+        background:
+            linear-gradient(
+                180deg,
+                rgba(255, 213, 79, 0.10) 0%,
+                rgba(27, 27, 27, 0.94) 100%
+            );
+        border-bottom: 1px solid var(--hmi-border);
+        border-radius: 0;
+    }
+
+    .runtime-manager-timer-block {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 1px;
+        min-width: 0;
+    }
+
+    .runtime-manager-timer-label {
+        color: var(--text-highlight, #ffd54f);
+        background-color: transparent;
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.10em;
+        line-height: 1.1;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .runtime-manager-timer-value {
+        color: #ffffff;
+        background-color: transparent;
+        font-family: var(--font-control-ui);
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .runtime-manager-timer-unit {
+        color: var(--text-highlight, #ffd54f);
+        background-color: transparent;
+        font-family: var(--font-control-ui);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1.1;
+        text-transform: lowercase;
+    }
+
+    .runtime-manager-status-pill {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 4px !important;
+        height: 22px;
+        min-height: 22px;
+        padding: 0 8px;
+        color: #ffffff;
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.20);
+        border-radius: 4px;
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .runtime-manager-status-pill::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: currentColor;
+        box-shadow: 0 0 4px currentColor;
+        flex: 0 0 auto;
+    }
+
+        .runtime-manager-status-pill-mode-auto {
+        color: #28a745;
+        background-color: rgba(40, 167, 69, 0.06);
+        border-color: rgba(40, 167, 69, 0.55);
+    }
+
+    .runtime-manager-status-pill-mode-auto::before {
+        background: #4caf50;
+        box-shadow: 0 0 6px rgba(76, 175, 80, 0.55);
+    }
+
+        .runtime-manager-status-pill-mode-manual {
+        color: #ffc107;
+        background-color: rgba(255, 193, 7, 0.06);
+        border-color: rgba(255, 193, 7, 0.55);
+    }
+
+    .runtime-manager-status-pill-mode-manual::before {
+        background: #ffb300;
+        box-shadow: 0 0 6px rgba(255, 179, 0, 0.55);
+    }
+
+    .runtime-manager-status-pill-mode-off {
+        color: #9e9e9e;
+        background-color: rgba(158, 158, 158, 0.04);
+        border-color: rgba(158, 158, 158, 0.40);
+    }
+
+    .runtime-manager-status-pill-mode-off::before {
+        background: #9e9e9e;
+        box-shadow: 0 0 6px rgba(158, 158, 158, 0.45);
+    }
+
+    .runtime-manager-status-pill-mode-cascade {
+        color: #ffb300;
+        background-color: rgba(255, 179, 0, 0.06);
+        border-color: rgba(255, 179, 0, 0.55);
+    }
+
+    .runtime-manager-status-pill-mode-cascade::before {
+        background: #ffb300;
+        box-shadow: 0 0 6px rgba(255, 179, 0, 0.55);
+    }
+
+    .runtime-manager-status-pill-idle {
+        color: var(--hmi-text-muted);
+        background-color: transparent;
+        border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .runtime-manager-status-pill-idle::before {
+        animation: runtime-manager-blink 1.6s ease-in-out infinite;
+    }
+
+    @keyframes runtime-manager-blink {
+        0%, 100% { opacity: 0.4; }
+        50%      { opacity: 1; }
+    }
+
+    .runtime-manager-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        height: 22px;
+        padding: 0 6px;
+        color: var(--text-highlight, #ffd54f);
+        background-color: transparent;
+        border: 1px solid rgba(255, 214, 0, 0.55);
+        border-radius: 4px;
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        line-height: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .runtime-manager-tag-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--text-highlight, #ffd54f);
+        box-shadow: 0 0 6px rgba(255, 214, 0, 0.55);
+        flex: 0 0 auto;
+    }
+
+    .runtime-manager-statusbar {
+        width: 100%;
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px !important;
+        margin: 0 !important;
+        margin-top: auto !important;
+        padding: 6px 8px !important;
+        color: var(--hmi-text-soft, #bdbdbd);
+        background-color: rgba(0, 0, 0, 0.30);
+        border-top: 1px solid rgba(255, 255, 255, 0.20);
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+
+    .runtime-manager-statusbar-cell {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0;
+        background-color: transparent;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .runtime-manager-statusbar-cell-label {
+        color: var(--hmi-text-muted);
+    }
+
+    .runtime-manager-statusbar-cell-value {
+        color: #ffffff;
+    }
+
+    .runtime-manager-page-card {
+        background-color: var(--bg-panel, #111722) !important;
+        color: #ffffff;
+    }
+
+    .runtime-manager-page-header {
+        background:
+            linear-gradient(180deg, rgba(255, 214, 0, 0.08), rgba(255, 214, 0, 0.0)),
+            rgba(255, 255, 255, 0.025) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.20) !important;
+    }
+
+    .runtime-manager-page-title {
+        color: var(--text-highlight, #ffd600) !important;
+        font-family: var(--font-mono) !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.06em !important;
+        line-height: 1 !important;
+    }
+
+    .runtime-manager-page-process-label {
+        color: var(--text-muted, #bdbdbd) !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.62rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+    }
+
+    .runtime-manager-page-input .q-field__control {
+        background-color: rgba(27, 27, 27, 0.94) !important;
+        border: 0 !important;
+        border-radius: 4px !important;
+        height: 24px !important;
+        min-height: 24px !important;
+        padding: 0 4px !important;
+        box-shadow: none !important;
+    }
+
+    .runtime-manager-page-input .q-field__control-container {
+        height: 24px !important;
+        min-height: 24px !important;
+        line-height: 24px !important;
+        padding: 0 !important;
+    }
+
+    .runtime-manager-page-input .q-field__native,
+    .runtime-manager-page-input .q-field__input,
+    .runtime-manager-page-input .q-field__append {
+        height: 24px !important;
+        min-height: 24px !important;
+        line-height: 24px !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+    }
+
+    .runtime-manager-page-input .q-field__label {
+        display: none !important;
+    }
+
+    .runtime-manager-page-input .q-field__bottom {
+        display: none !important;
+    }
+
+    body .floating-runtime-manager-card
+        .runtime-manager-page-header {
+        position: relative;
+    }
+
+    body .floating-runtime-manager-card
+        .runtime-manager-page-header::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 2px;
+        transform: translateX(-50%);
+        width: 28px;
+        height: 2px;
+        background-color: rgba(255, 255, 255, 0.20);
+        border-radius: 1px;
+        pointer-events: none;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-snapped-left {
+        box-shadow:
+            -3px 0 0 0 var(--hmi-accent-amber),
+            0 18px 42px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(255, 213, 79, 0.20) !important;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-snapped-right {
+        box-shadow:
+            3px 0 0 0 var(--hmi-accent-amber),
+            0 18px 42px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(255, 213, 79, 0.20) !important;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-snapped-top {
+        box-shadow:
+            0 -3px 0 0 var(--hmi-accent-amber),
+            0 18px 42px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(255, 213, 79, 0.20) !important;
+    }
+
+    .runtime-manager-resize-handle {
+        position: absolute;
+        z-index: 1002;
+        background: transparent;
+        pointer-events: auto;
+        touch-action: none;
+    }
+
+    .runtime-manager-resize-handle-n {
+        top: -4px; left: 8px; right: 8px;
+        height: 4px;
+        cursor: ns-resize;
+    }
+
+    .runtime-manager-resize-handle-s {
+        bottom: -4px; left: 8px; right: 8px;
+        height: 4px;
+        cursor: ns-resize;
+    }
+
+    .runtime-manager-resize-handle-e {
+        right: -4px; top: 8px; bottom: 8px;
+        width: 4px;
+        cursor: ew-resize;
+    }
+
+    .runtime-manager-resize-handle-w {
+        left: -4px; top: 8px; bottom: 8px;
+        width: 4px;
+        cursor: ew-resize;
+    }
+
+    .runtime-manager-resize-handle-ne {
+        top: -4px; right: -4px;
+        width: 12px; height: 12px;
+        cursor: nesw-resize;
+    }
+
+    .runtime-manager-resize-handle-nw {
+        top: -4px; left: -4px;
+        width: 12px; height: 12px;
+        cursor: nwse-resize;
+    }
+
+        .runtime-manager-resize-handle-se {
+        bottom: 4px; right: 4px;
+        width: 16px; height: 16px;
+        cursor: nwse-resize;
+        /* Premium commercial UI dotted resize grip (like macOS / VS Code) */
+        background-image: radial-gradient(circle at center, rgba(255,255,255,0.5) 1px, transparent 1px);
+        background-size: 3px 3px;
+        background-position: right bottom;
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .runtime-manager-resize-handle-sw {
+        bottom: -4px; left: -4px;
+        width: 12px; height: 12px;
+        cursor: nesw-resize;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-minimized
+        .runtime-manager-page-form,
+    body .floating-runtime-manager-card.runtime-manager-minimized
+        .runtime-manager-statusbar {
+        display: none !important;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-minimized {
+        max-height: none !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-minimized
+        .runtime-manager-resize-handle {
+        display: none !important;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-minimized
+        .runtime-manager-timer {
+        border-bottom: 0 !important;
+        border-bottom-left-radius: 8px !important;
+        border-bottom-right-radius: 8px !important;
+    }
+
+    .q-dialog:has(.floating-runtime-manager-card.runtime-manager-minimized) {
+        pointer-events: none !important;
+    }
+
+    .q-dialog:has(.floating-runtime-manager-card.runtime-manager-minimized)
+        .q-dialog__backdrop {
+        display: none !important;
+    }
+
+    .q-dialog:has(.floating-runtime-manager-card.runtime-manager-minimized)
+        .q-dialog__inner {
+        pointer-events: none !important;
+        background: transparent !important;
+    }
+
+    body .floating-runtime-manager-card.runtime-manager-minimized {
+        pointer-events: auto !important;
+    }
+
+    body .floating-runtime-manager-card
+        .runtime-manager-page-header
+        .runtime-manager-window-btn {
+        cursor: default !important;
+    }
+
+    body .floating-runtime-manager-card
+        .runtime-manager-page-header
+        .runtime-manager-status-pill {
+        cursor: default;
+    }
+
+        .runtime-manager-window-btn {
+        color: #ffffff !important;
+        background-color: transparent !important;
+        width: 28px !important;
+        min-width: 28px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        padding: 0 !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        position: relative;
+        z-index: 1003;
+    }
+
+    .runtime-manager-window-btn .q-btn__content {
+        color: inherit !important;
+    }
+
+    .runtime-manager-window-btn:hover {
+        background-color: rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+    }
+
+    .runtime-manager-window-btn:focus-visible {
+        outline: 2px solid var(--hmi-accent-amber, #ffd54f) !important;
+        outline-offset: 1px !important;
+    }
+
+    .runtime-manager-mode-popup {
+        background-color: #1b1b1b !important;
+        color: #ffffff !important;
+        border: 1px solid #303030 !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+        font-family: var(--font-control-ui) !important;
+    }
+
+    .runtime-manager-mode-popup .q-item {
+        min-height: 24px !important;
+        height: 24px !important;
+        padding: 0 8px !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+    }
+
+    .runtime-manager-mode-popup .q-item__section {
+        padding: 0 !important;
+        min-width: 0 !important;
+    }
+
+    .runtime-manager-mode-popup .q-item__label {
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        line-height: 24px !important;
+    }
+
+    .runtime-manager-mode-popup .q-item:hover {
+        background-color: #2a2a2a !important;
+    }
+
+    .runtime-manager-mode-popup .q-item--active {
+        background-color: #3a3000 !important;
+    }
+
+    .runtime-manager-mode-popup .q-item--active .q-item__label {
+        color: #ffd54f !important;
+        font-weight: 700;
+    }
+
+    .runtime-manager-page-select .q-field__control {
+        padding-left: 8px !important;
+        padding-right: 4px !important;
+    }
+    
+    .runtime-manager-page-select .q-field__native,
+    .runtime-manager-page-select .q-field__input,
+    .runtime-manager-page-select .q-field__control-container,
+    .runtime-manager-page-select .q-field__native span {
+        padding-left: 0 !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        display: flex !important;
+        line-height: normal !important;
+    }
+
+    .runtime-manager-window-btn-close:hover {
+        background-color: rgba(198, 40, 40, 0.55) !important;
+        color: #ffffff !important;
+    }
+
+    @media (max-width: 60rem) {
+        .runtime-manager-field { grid-column: span 6 / span 6; }
+        .runtime-manager-field-wide { grid-column: span 12 / span 12; }
+    }
+
+    @media (max-width: 38rem) {
+        .runtime-manager-field { grid-column: span 12 / span 12; }
+    }
+
+    @media (max-width: 38rem) {
+        .runtime-manager-timer-value { font-size: 1.1rem; }
+        .runtime-manager-timer-unit  { font-size: 0.75rem; }
+    }
+}

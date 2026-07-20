@@ -1,0 +1,27 @@
+/* ui_root/static/css/control_panel.css */
+
+/* ============================================================
+   CONTROL PANEL CSS ENTRY
+
+   Split into:
+   - base.css              : page root, main area, stack
+   - sections.css          : default control panel sections
+   - pid_layout.css        : PID root, navbar row, canvas row
+   - pid_svg.css           : SVG wrapper sizing
+   - pid_animation.css     : SVG animation play state
+   - controller_modal.css  : TIC-100 modal styling
+   - pid_right_drawer.css  : navbar toggle + right drawer overlay
+   - responsive.css        : responsive rules
+   ============================================================ */
+
+@import url("./control_panel/base.css");
+@import url("./control_panel/sections.css");
+@import url("./control_panel/pid_layout.css");
+@import url("./control_panel/pid_svg.css");
+@import url("./control_panel/pid_animation.css?v=3");
+@import url("./control_panel/pid_controller_cards.css");
+@import url("./control_panel/controller_modal.css");
+@import url("./control_panel/data_logger.css");
+@import url("./control_panel/faceplate.css");
+@import url("./control_panel/pid_right_drawer.css");
+@import url("./control_panel/responsive.css");

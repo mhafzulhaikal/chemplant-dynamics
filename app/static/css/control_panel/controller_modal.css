@@ -1,0 +1,607 @@
+/* ui/static/css/control_panel/controller_modal.css */
+
+/* =========================================================
+   CONTROLLER MODAL — DCS HMI faceplate style
+
+   The controller modal is the *transient* variant of the
+   right-drawer faceplate. It uses the EXACT same visual
+   language — same gradient, same border, same section card,
+   same input chrome, same action buttons — so the operator
+   sees one consistent widget family whether the controller
+   is open in the drawer (persistent) or as a modal
+   (transient overlay).
+
+   Design tokens shared with faceplate.css:
+
+   - Card body: radial amber wash (top-left) + radial white
+     wash (top-right) + linear slate→near-black gradient.
+   - Hair border: 1px solid rgba(255, 255, 255, 0.85).
+   - 8 px radius.
+   - Header strip: amber-on-translucent gradient, content-sized
+     (no fixed min-height so the modal header matches the
+     right-drawer faceplate's natural height exactly).
+   - Section card: rgba(17, 17, 17, 0.82) bg, 1 px hair border
+     rgba(255, 255, 255, 0.14), 6 px radius, 6/8 padding.
+   - Section title: uppercase 0.66 rem amber, --font-control-ui.
+   - Input row: 24 px tall, rgba(27, 27, 27, 0.94) bg, 4 px
+     radius, 42 px label / 1 fr input / 78 px unit grid.
+   - Action button: 26 px tall, amber outline, transparent fill,
+     amber hover wash.
+
+   The modal drops the bargraphs (those live in the right-drawer
+   faceplate) and the mode-status dot (Mode select renders
+   status inline).
+   ========================================================= */
+
+@layer pages {
+    /* ── Manual-anchor placement note ──
+       The controller modal is pinned to a hard-coded viewport
+       corner per tag (see ``MANUAL_ANCHORS`` in
+       ``app/pid/sthr/controller_modal.py``). The override is
+       applied as INLINE STYLES on the card itself via
+       ``setProperty(name, value, 'important')`` from JS because
+       layered CSS (this file is inside ``@layer pages``) always
+       loses the cascade to Quasar's unlayered utility classes
+       AND to NiceGUI's own inline ``position: fixed; left: …;
+       top: …`` written onto the card to center it. Do NOT add
+       ``.ctrl-param-dialog-card { position: fixed; ... }``
+       overrides here — they would silently lose to the inline
+       styles set by both NiceGUI and the placement JS. */
+
+    /* ── Card chrome — mirrors .pid-right-drawer (flat body,
+       gradient lives on the header only, same as the faceplate
+       right drawer). The faceplate deliberately keeps the body
+       flat --bg-panel so the only color signal is the header's
+       amber wash and the section-card backgrounds. */
+    .ctrl-param-dialog-card {
+        position: relative;
+
+        width: 300px;
+        max-width: min(96vw, 300px);
+
+        padding: 6px !important;
+
+        background-color: var(--bg-panel, #111722) !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+
+        border: 1px solid var(--border-color, #2a3441) !important;
+        border-radius: 8px !important;
+
+        box-shadow:
+            0 18px 42px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(255, 255, 255, 0.025) !important;
+        overflow: hidden;
+        gap: 6px !important;
+    }
+
+    /* ── Header strip — mirrors .faceplate-header exactly
+       (same gradient, same border, same padding, same gap,
+       same flex layout). The modal header has three clusters:
+       - Left: tag (mono amber) + title (small uppercase muted)
+         stacked in a column (.faceplate-header-text).
+       - Middle: mode badge with status dot + AUTO/MANUAL text
+         (.faceplate-mode-badge).
+       - Right: close button (.faceplate-close-btn).
+       The faceplate has a 4th "Mode select" there in the
+       drawer; in the modal the body already has a Mode
+       select, so we replace the right cluster with a close
+       button instead. */
+    .ctrl-param-dialog-header {
+        /* Mirrors .faceplate-header exactly — same width,
+           gradient, border, padding, gap, flex layout. The
+           modal deliberately does NOT set ``min-height`` /
+           ``max-width`` / ``box-sizing`` so the header sizes
+           itself from its content + padding, exactly like the
+           right-drawer faceplate. Forcing a 34px min-height
+           was previously making the modal header visibly taller
+           than the faceplate's, breaking the visual continuity
+           between the two surfaces. */
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 0.3rem;
+        margin: 0 !important;
+        padding: 0.3rem 0.4rem !important;
+
+        background:
+            linear-gradient(180deg, rgba(255, 214, 0, 0.08), rgba(255, 214, 0, 0.0)),
+            rgba(255, 255, 255, 0.025) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+
+        /* Single-line header — never wrap to a second line
+           regardless of modal width. The right cluster (mode
+           badge + close button) keeps its full size; the left
+           cluster (tag + title) truncates to make room. */
+        flex-wrap: nowrap !important;
+        min-width: 0;
+    }
+
+    /* Left cluster (tag + title stacked) — mirrors
+       .faceplate-header-text exactly. Allowed to shrink and
+       ellipsis its children when the right cluster (mode
+       badge + close button) needs the remaining space.
+
+       The ``min-width: var(--faceplate-input-w, 60px)`` line
+       ties the truncation threshold to the longest input
+       value (set from Python in
+       ``FaceplatePanel._apply_drawer_size``). The cluster
+       can shrink down to the input's own width before the
+       title starts clipping — so the header column always
+       matches the input column visually, identical to the
+       right-drawer faceplate.
+
+       ``ui.column`` already provides ``display: flex;
+       flex-direction: column;`` so the modal does not need
+       to re-declare them here (the previous version did,
+       which produced a subtly different flex behaviour
+       than the faceplate's ``ui.column``). */
+    .ctrl-param-dialog-header-text {
+        min-width: var(--faceplate-input-w, 60px);
+        flex: 1 1 auto;
+        overflow: hidden;
+    }
+
+    .ctrl-param-dialog-header-text {
+        gap: 0.05rem;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Force the inner labels to ellipsis instead of pushing
+       the close button off-screen — same contract as
+       .faceplate-header-text .faceplate-title / .faceplate-tag. */
+    .ctrl-param-dialog-header-text .ctrl-param-dialog-tag,
+    .ctrl-param-dialog-header-text .ctrl-param-dialog-title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    /* Right cluster — mirrors .faceplate-header-right. Holds
+       the mode badge + close button in a single inline-flex
+       row, so the outer .ctrl-param-dialog-header only has to
+       space-between two children. */
+    .ctrl-param-dialog-header-right {
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.35rem;
+
+        flex: 0 0 auto;
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Tag (top line) — mirrors .faceplate-tag. Mono amber
+       0.95rem, same as the right-drawer faceplate's tag. */
+    .ctrl-param-dialog-tag {
+        color: var(--text-highlight, #ffd600);
+
+        font-family: var(--font-mono);
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.06em;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    /* Title (subtext) — mirrors .faceplate-title. Small
+       uppercase muted Courier. */
+    .ctrl-param-dialog-title {
+        color: var(--text-muted, #bdbdbd);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 600;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    /* Mode badge (middle cluster) — mirrors .faceplate-mode-badge.
+       Dark glass background, status dot + AUTO/MANUAL/OFF text. */
+    .ctrl-param-mode-badge {
+        display: flex !important;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.32rem;
+
+        padding: 0.18rem 0.45rem !important;
+        margin: 0 !important;
+
+        background-color: rgba(0, 0, 0, 0.32) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .ctrl-param-status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        vertical-align: middle;
+    }
+
+    .ctrl-param-status-auto {
+        background: #4caf50 !important;
+        box-shadow: 0 0 6px rgba(76, 175, 80, 0.55) !important;
+    }
+
+    .ctrl-param-status-manual {
+        background: #ffb300 !important;
+        box-shadow: 0 0 6px rgba(255, 179, 0, 0.55) !important;
+    }
+
+    .ctrl-param-status-off {
+        background: #9e9e9e !important;
+        box-shadow: 0 0 6px rgba(158, 158, 158, 0.45) !important;
+    }
+
+    .ctrl-param-mode-text {
+        color: var(--text-white, #ffffff);
+
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.06em;
+    }
+
+    /* Close button (right cluster) — mirrors .faceplate-close-btn.
+       Top-right corner, transparent fill, red on hover. Use
+       the Quasar round sm button (32 px diameter) so the
+       button size stays predictable. */
+    .ctrl-param-close-btn {
+        flex: 0 0 auto !important;
+        align-self: center !important;
+
+        color: #ffffff !important;
+        background: transparent !important;
+
+        box-shadow: none !important;
+        cursor: default !important;
+    }
+
+    .ctrl-param-close-btn .q-btn__content {
+        color: #ffffff !important;
+    }
+
+    .ctrl-param-close-btn:hover {
+        background-color: rgba(198, 40, 40, 0.55) !important;
+    }
+
+    /* Body — same vertical rhythm as the faceplate body. */
+    .ctrl-param-dialog-content {
+        width: 100%;
+        padding: 0 !important;
+
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+
+        background: transparent;
+    }
+
+    /* ── Section card — mirrors .faceplate-section exactly
+       (flat rgba(0,0,0,0.18) bg, hair border, 5px radius). */
+    .ctrl-param-section {
+        width: 100%;
+        display: flex !important;
+        flex-direction: column !important;
+
+        background-color: rgba(0, 0, 0, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-radius: 5px !important;
+
+        padding: 4px 6px !important;
+        gap: 3px !important;
+
+        box-shadow: none !important;
+    }
+
+    .ctrl-param-section-title {
+        color: var(--text-highlight, #ffd54f) !important;
+        font-family: var(--font-control-ui);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        line-height: 1;
+        margin: 0 0 4px 0 !important;
+    }
+
+    .ctrl-param-inputs {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    /* ── Input row — mirrors .faceplate-input-row ──
+       42 px label, 1 fr input, 78 px unit chip. */
+    .ctrl-param-row {
+        width: 100%;
+        min-height: 24px;
+
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr) 48px;
+
+        align-items: center;
+        column-gap: 6px;
+    }
+
+    .ctrl-param-row > * {
+        min-width: 0;
+    }
+
+    .ctrl-param-variable {
+        color: #ffffff;
+        font-family: var(--font-control-ui);
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .ctrl-param-unit {
+        color: var(--text-muted, #bdbdbd);
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        line-height: 1.2;
+        text-align: left;
+        white-space: nowrap;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ctrl-param-value,
+    .ctrl-param-mode {
+        width: 100%;
+    }
+
+    /* Input chrome — 24 px tall, dark, 4 px radius, no border. */
+    .ctrl-param-value .q-field__control {
+           height: 24px !important;
+           min-height: 24px !important;
+        background-color: rgba(27, 27, 27, 0.94) !important;
+        border: 0 !important;
+        border-radius: 4px !important;
+           padding: 0 4px !important;
+        box-shadow: none !important;
+    }
+
+    .ctrl-param-mode.q-select .q-field__control {
+           height: 24px !important;
+           min-height: 24px !important;
+        background-color: rgba(27, 27, 27, 0.94) !important;
+        border: 0 !important;
+        border-radius: 4px !important;
+           padding-left: 8px !important;
+           padding-right: 4px !important;
+        box-shadow: none !important;
+    }
+
+    .ctrl-param-value .q-field__native,
+    .ctrl-param-value .q-field__input {
+           height: 24px !important;
+           min-height: 24px !important;
+           line-height: 24px !important;
+        padding: 0 !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+           font-size: 0.7rem !important;
+        text-align: center !important;
+    }
+
+    .ctrl-param-mode.q-select .q-field__native,
+    .ctrl-param-mode.q-select .q-field__input,
+    .ctrl-param-mode.q-select .q-field__control-container,
+    .ctrl-param-mode.q-select .q-field__native span {
+           height: 24px !important;
+           min-height: 24px !important;
+           line-height: normal !important;
+        padding-left: 0 !important;
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+           font-size: 0.7rem !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        display: flex !important;
+    }
+
+    .ctrl-param-value input,
+    .ctrl-param-mode input {
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+            font-size: 0.7rem !important;
+        text-align: center !important;
+    }
+
+    .ctrl-param-value .q-field__append,
+    .ctrl-param-mode .q-field__append {
+           height: 24px !important;
+           min-height: 24px !important;
+        color: #ffffff !important;
+        padding-left: 2px !important;
+    }
+
+    .ctrl-param-value .q-field__bottom,
+    .ctrl-param-mode .q-field__bottom {
+        display: none !important;
+    }
+
+    /* Readonly input — dim text, lighter bg. */
+    .ctrl-param-readonly-value .q-field__control {
+        background-color: rgba(37, 37, 37, 0.92) !important;
+    }
+
+    .ctrl-param-readonly-value .q-field__native,
+    .ctrl-param-readonly-value input {
+        color: #9e9e9e !important;
+        opacity: 0.7 !important;
+        cursor: default !important;
+    }
+
+    .ctrl-param-readonly-value-text {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        width: 100%;
+        height: 24px !important;
+        min-height: 24px !important;
+
+        padding: 0 4px !important;
+        margin: 0 !important;
+
+        background-color: rgba(27, 27, 27, 0.94) !important;
+        border-radius: 4px !important;
+
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        white-space: nowrap;
+    }
+
+    .ctrl-param-readonly-description {
+        color: #bdbdbd;
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        line-height: 1.4;
+        padding: 2px 0;
+    }
+
+    /* ── Mode popup — mirrors .faceplate-mode-popup ── */
+    .ctrl-param-mode-popup {
+        /* Lock the dropdown width to the Mode select's own
+           width so the Quasar ``q-menu`` portal doesn't
+           stretch to fill the parent dialog card (300 px)
+           and open as a wide dialog. Sized to fit the longest
+           label ``Automatic`` at 0.7rem
+           ``var(--font-control-ui)`` plus 8 px padding × 2.
+           The companion rules below already cap each item at
+           24 px tall, so a 76 px wide × ~76 px tall (3 items)
+           menu is the intended shape. */
+        width: 76px;
+        min-width: 76px;
+        max-width: 76px;
+
+        background-color: #1b1b1b !important;
+        color: #ffffff !important;
+
+        border: 1px solid #303030 !important;
+        border-radius: 4px !important;
+
+        box-shadow: none !important;
+    }
+
+    .ctrl-param-mode-popup .q-item {
+           min-height: 24px !important;
+           height: 24px !important;
+
+        padding: 0 8px !important;
+
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+           font-size: 0.7rem !important;
+    }
+
+    .ctrl-param-mode-popup .q-item__section {
+        padding: 0 !important;
+        min-width: 0 !important;
+    }
+
+    .ctrl-param-mode-popup .q-item__label {
+        color: #ffffff !important;
+        font-family: var(--font-control-ui) !important;
+           font-size: 0.7rem !important;
+           line-height: 24px !important;
+    }
+
+    .ctrl-param-mode-popup .q-item:hover {
+        background-color: #2a2a2a !important;
+    }
+
+    .ctrl-param-mode-popup .q-item--active {
+        background-color: #3a3000 !important;
+    }
+
+    .ctrl-param-mode-popup .q-item--active .q-item__label {
+        color: #ffd54f !important;
+        font-weight: 700;
+    }
+
+    /* ── Footer — mirrors the faceplate Apply row ── */
+    .ctrl-param-footer {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 !important;
+        margin: 0;
+    }
+
+    /* Apply / Face plate — same as .faceplate-apply-btn */
+    .ctrl-param-faceplate-btn,
+    .ctrl-param-apply-btn {
+           height: 26px !important;
+           min-height: 26px !important;
+
+           padding: 0 12px !important;
+        border-radius: 4px !important;
+
+        font-family: var(--font-control-ui) !important;
+           font-size: 0.72rem !important;
+           font-weight: 700 !important;
+
+        background: transparent !important;
+        color: var(--text-highlight, #ffd54f) !important;
+        border: 1px solid rgba(255, 213, 79, 0.90) !important;
+        box-shadow: none !important;
+        text-transform: none !important;
+    }
+
+    .ctrl-param-faceplate-btn .q-btn__content,
+    .ctrl-param-apply-btn .q-btn__content {
+        color: var(--text-highlight, #ffd54f) !important;
+    }
+
+    .ctrl-param-faceplate-btn:hover,
+    .ctrl-param-apply-btn:hover {
+        background-color: rgba(255, 213, 79, 0.14) !important;
+    }
+
+    @media (max-width: 760px) {
+        .ctrl-param-dialog-card {
+            width: min(96vw, 300px);
+        }
+    }
+}

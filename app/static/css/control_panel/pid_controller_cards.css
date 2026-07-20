@@ -1,0 +1,181 @@
+/* ui_root/static/css/control_panel/pid_controller_cards.css */
+
+@layer pages {
+
+    /* =========================================================
+       STHR CONTROLLER CARD LAYER
+       ========================================================= */
+
+    .sthr-controller-card-layer {
+        position: absolute;
+
+        top: var(--sthr-controller-layer-top, 0.75rem);
+        left: var(--sthr-controller-layer-left, 0.75rem);
+
+        z-index: 25;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: var(--sthr-controller-card-gap, 0.45rem) !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        pointer-events: auto;
+    }
+
+
+    /* =========================================================
+       CONTROLLER CARD
+       ========================================================= */
+
+    .sthr-controller-card {
+        width: var(--sthr-controller-card-w, 230px);
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0 !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        background-color: rgba(17, 23, 34, 0.94) !important;
+        color: var(--text-main);
+
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+
+        box-shadow:
+            0 12px 26px rgba(0, 0, 0, 0.38),
+            0 0 0 1px rgba(255, 255, 255, 0.02);
+
+        overflow: hidden;
+    }
+
+    .sthr-controller-card-header {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0.16rem !important;
+
+        margin: 0 !important;
+        padding: 0.45rem 0.55rem !important;
+
+        background-color: rgba(255, 255, 255, 0.035);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .sthr-controller-card-tag {
+        color: var(--text-control);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.75rem;
+        font-weight: 700;
+
+        line-height: 1;
+        letter-spacing: 0.05em;
+    }
+
+    .sthr-controller-card-title {
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.6rem;
+        font-weight: 600;
+
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .sthr-controller-card-body {
+        width: 100%;
+
+        display: flex !important;
+        flex-direction: column;
+
+        gap: 0.25rem !important;
+
+        margin: 0 !important;
+        padding: 0.5rem 0.55rem !important;
+    }
+
+    .sthr-controller-card-row {
+        width: 100%;
+
+        display: grid !important;
+        grid-template-columns: 2.4rem 1fr;
+        align-items: center;
+
+        column-gap: 0.45rem;
+
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .sthr-controller-card-field-label {
+        color: var(--text-muted);
+
+        font-family: var(--font-control-ui);
+        font-size: 0.62rem;
+        font-weight: 700;
+
+        letter-spacing: 0.04em;
+    }
+
+    .sthr-controller-card-value {
+        min-height: 1.35rem;
+
+        display: flex !important;
+        align-items: center;
+        justify-content: flex-end;
+
+        padding: 0.16rem 0.35rem;
+
+        color: var(--text-main);
+
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 4px;
+
+        background-color: rgba(0, 0, 0, 0.22);
+    }
+
+    .sthr-controller-card-value-pv {
+        color: var(--text-highlight);
+    }
+
+    .sthr-controller-card-value-out {
+        color: var(--text-success);
+    }
+
+    .sthr-controller-card-setpoint {
+        width: 100%;
+    }
+
+    .sthr-controller-card-setpoint .q-field__control {
+        min-height: 1.6rem !important;
+
+        background-color: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 4px !important;
+    }
+
+    .sthr-controller-card-setpoint .q-field__native,
+    .sthr-controller-card-setpoint .q-field__input {
+        color: var(--text-control) !important;
+
+        font-family: var(--font-mono) !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+
+        text-align: right;
+    }
+}
