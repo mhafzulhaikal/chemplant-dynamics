@@ -142,8 +142,6 @@ ui.run_with(
     title='ChemPlant Dynamics',
     dark=True,
     storage_secret=os.environ.get('STORAGE_SECRET', 'chemplant-dev-secret-change-me'),
-    # favicon can be set here once a .ico asset is available:
-    # favicon='/static/favicon.ico',
 )
 
 # ── Direct-run entrypoint ──────────────────────────────────────────────────────

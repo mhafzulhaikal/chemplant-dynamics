@@ -330,7 +330,7 @@ class ControllerSystem:
             if tauD_eff > self.MODE_THRESHOLD:
                 a = np.exp(-dt / (Alpha * tauD_eff))
                 D_next = a * float(D_state) + (1.0 - a) * float(C)
-            # else: if tauD ~ 0, hold D_state
+            # Otherwise when tauD is near zero, hold D_state
             return [I_next, D_next]
 
         # --- PID mode: discretize integrator (Euler) + derivative

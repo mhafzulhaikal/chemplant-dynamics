@@ -797,15 +797,7 @@ class Bridge:
                 decorated.append(f'{label:^{cell_width}}')
 
             # Prefix designed to align character-for-character with
-            # the row prefix written by ``_format_log_row``:
-            #
-            #   row:    "[2026-06-07 14:23:11.123] STEP 00001"
-            #           " | t=   10.2500 min  "
-            #   header: "[    wall-clock time   ] STEP #step#"
-            #           " | t=   sim_min  min "
-            #
-            # Each segment width is chosen to equal the corresponding
-            # row-segment width.
+            # the row prefix written by _format_log_row (e.g. matching wall-clock time, step, and sim_min).
             prefix = (
                 f'[{"wall-clock time":^23}] '  # matches "[<23-char ts>] "
                 f'STEP {"#step":>5} '  # matches "STEP NNNNN "

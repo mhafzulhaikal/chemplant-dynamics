@@ -19,7 +19,7 @@ updates the bridge's ``state.real_time``.
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from urllib.parse import quote
 
@@ -253,43 +253,37 @@ def render_simulation_control_buttons(config: PidNavbarConfig) -> None:
 
 
 def render_clock() -> None:
-    now = datetime.now()
     with ui.column().classes('pid-navbar-clock'):
-        ui.label(now.strftime('%A, %d %B %Y')).classes('pid-navbar-clock-date')
-        ui.label(now.strftime('%H:%M:%S')).classes('pid-navbar-clock-time')
+        day_date_label = ui.label().classes('pid-navbar-clock-date')
+        time_label = ui.label().classes('pid-navbar-clock-time')
 
-    ui.add_head_html("""
-        <script>
-            if (!window._pidClockInitialized) {
-                window._pidClockInitialized = true;
-                window.updatePidClock = function() {
-                    const now = new Date();
-                    const ds = now.toLocaleDateString('en-GB', {
-                        weekday: 'long',
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    const ts = now.toLocaleTimeString('en-GB', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                    });
-                    const dateEls = document.querySelectorAll('.pid-navbar-clock-date');
-                    const timeEls = document.querySelectorAll('.pid-navbar-clock-time');
-                    for (let i = 0; i < dateEls.length; i++) {
-                        dateEls[i].innerText = ds;
-                    }
-                    for (let i = 0; i < timeEls.length; i++) {
-                        timeEls[i].innerText = ts;
-                    }
-                };
-                setInterval(window.updatePidClock, 1000);
-            }
-        </script>
-    """)
-    ui.run_javascript('if (window.updatePidClock) window.updatePidClock();', respond=False)
+    client_tz: list[timezone | None] = [None]
+
+    def update_clock() -> None:
+        try:
+            tz = client_tz[0]
+            now = datetime.now(tz) if tz is not None else datetime.now()
+            day_date_label.set_text(now.strftime('%A, %d %B %Y'))
+            time_label.set_text(now.strftime('%H:%M:%S'))
+        except Exception:
+            pass
+
+    async def init_client_timezone() -> None:
+        try:
+            # new Date().getTimezoneOffset() returns minutes difference from UTC (e.g. -420 for UTC+7)
+            offset_minutes = await ui.run_javascript(
+                'new Date().getTimezoneOffset()',
+                timeout=2.0,
+            )
+            if offset_minutes is not None:
+                client_tz[0] = timezone(timedelta(minutes=-int(offset_minutes)))
+                update_clock()
+        except Exception:
+            pass
+
+    update_clock()
+    ui.timer(1.0, update_clock)
+    ui.timer(0.05, init_client_timezone, once=True)
 
 
 def render_navbar_separator() -> None:

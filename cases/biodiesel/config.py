@@ -199,7 +199,7 @@ SCENARIO_INITIAL_STATES: dict[str, dict[str, float]] = {
         'biodiesel_reactor.T_coolant': 298.15,
         # Sensor: PV at room / zero
         'TT-100.PVm': 298.15,
-        # Controllers: reset (I_state = 0, D_state = 0)
+        # Reset controller states (integral and derivative states to 0.0)
         'LC-100.I_state': 0.0,
         'LC-100.D_state': 0.0,
         'TC-100.I_state': 0.0,
