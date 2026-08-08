@@ -219,21 +219,20 @@
     /* =========================================================
        REAL TIME CHECKBOX
 
-       Goal:
-       - checkbox box size matches Simulation Manager icon
-       - label size matches Simulation Manager label
-       - gap matches Simulation Manager icon-label gap
-       - white checkbox
-       - left aligned
+       Pendekatan optimal: gunakan token CSS yang sama persis
+       dengan .pid-navbar-manager-btn agar ukuran dan posisi
+       sejajar sempurna tanpa hardcode atau transform hack.
        ========================================================= */
 
     .pid-navbar-realtime-check {
+        /* Sama persis dengan .pid-navbar-manager-btn */
         height: var(--pid-navbar-manager-row-h, 24px);
         min-height: var(--pid-navbar-manager-row-h, 24px);
 
         display: flex !important;
-        align-items: center;
-        justify-content: flex-start;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
 
         margin: 0 !important;
         padding: 0 0.35rem !important;
@@ -242,18 +241,29 @@
 
         font-family: var(--font-mono);
         font-size: var(--pid-navbar-manager-label-fs, 0.7rem);
+        font-weight: 700;
+        line-height: 1 !important;
 
         white-space: nowrap;
     }
 
+    /* Kotak checkbox: ukuran = icon manager */
     .pid-navbar-realtime-check .q-checkbox__inner {
         width: var(--pid-navbar-manager-icon-size, 20px) !important;
         min-width: var(--pid-navbar-manager-icon-size, 20px) !important;
+        max-width: var(--pid-navbar-manager-icon-size, 20px) !important;
 
         height: var(--pid-navbar-manager-icon-size, 20px) !important;
         min-height: var(--pid-navbar-manager-icon-size, 20px) !important;
+        max-height: var(--pid-navbar-manager-icon-size, 20px) !important;
 
         font-size: var(--pid-navbar-manager-icon-size, 20px) !important;
+
+        position: relative !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
 
         color: var(--pid-navbar-realtime-box-color, #ffffff) !important;
 
@@ -261,8 +271,16 @@
         padding: 0 !important;
     }
 
+    /* Background/border box — full fill of inner */
     .pid-navbar-realtime-check .q-checkbox__bg {
+        position: absolute !important;
+        top: 10% !important;
+        left: 10% !important;
+        width: 80% !important;
+        height: 80% !important;
         border-color: var(--pid-navbar-realtime-box-color, #ffffff) !important;
+        border-width: 1.5px !important;
+        box-sizing: border-box !important;
     }
 
     .pid-navbar-realtime-check .q-checkbox__inner--falsy .q-checkbox__bg {
@@ -279,8 +297,9 @@
         color: var(--bg-main) !important;
     }
 
+    /* Label teks: gap = icon-label-gap manager, tinggi = icon manager */
     .pid-navbar-realtime-check .q-checkbox__label {
-        height: var(--pid-navbar-manager-icon-size, 20px);
+        height: var(--pid-navbar-manager-icon-size, 20px) !important;
 
         display: inline-flex !important;
         align-items: center !important;
@@ -288,14 +307,32 @@
         color: var(--text-main) !important;
 
         font-family: var(--font-mono) !important;
-        font-size: var(--pid-navbar-manager-label-fs, 0.7rem);
-        font-weight: 700;
+        font-size: var(--pid-navbar-manager-label-fs, 0.7rem) !important;
+        font-weight: 700 !important;
 
-        line-height: 1;
+        line-height: 1 !important;
 
-        padding-left: var(--pid-navbar-manager-icon-label-gap, 0.5rem);
+        padding-left: var(--pid-navbar-manager-icon-label-gap, 0.5rem) !important;
         white-space: nowrap;
     }
+
+
+    /* Disable hover effects on Real Time checkbox */
+    .pid-navbar-realtime-check:hover,
+    .pid-navbar-realtime-check .q-checkbox__inner:hover,
+    .pid-navbar-realtime-check .q-checkbox__label:hover {
+        background: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .pid-navbar-realtime-check .q-focus-helper,
+    .pid-navbar-realtime-check .q-checkbox__inner:before {
+        display: none !important;
+        background: transparent !important;
+        opacity: 0 !important;
+    }
+
 
 
     /* =========================================================

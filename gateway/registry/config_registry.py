@@ -20,6 +20,14 @@ def discover_case_configs() -> dict[str, Any]:
             continue
         found[modname] = cfg_mod
 
+    # Fallback for Pyodide VFS where pkgutil might fail
+    if not found:
+        for modname in ('sthr', 'biodiesel'):
+            try:
+                found[modname] = importlib.import_module(f'cases.{modname}.config')
+            except Exception:
+                pass
+
     return found
 
 

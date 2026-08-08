@@ -196,6 +196,23 @@
         cursor: default !important;
     }
 
+    .faceplate-close-btn:hover {
+        background-color: rgba(198, 40, 40, 0.65) !important;
+        opacity: 1 !important;
+    }
+
+    /* Hapus layer putih Quasar saat hover */
+    .faceplate-close-btn .q-focus-helper,
+    .faceplate-close-btn::before {
+        display: none !important;
+    }
+
+    .faceplate-close-btn:hover .q-btn__content,
+    .faceplate-close-btn:hover .q-icon {
+        color: #ffffff !important;
+        opacity: 1 !important;
+    }
+
 
     /* =========================================================
        BARGRAPHS

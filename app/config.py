@@ -29,6 +29,7 @@ PID_WARNING_THRESHOLDS = {
     'pressure_low': 0.5,
 }
 
+
 __all__ = [
     'STATIC_DIR',
     'APP_WIDTH',

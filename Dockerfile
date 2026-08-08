@@ -45,6 +45,8 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" || exit 1
 
-# NiceGUI recommends running via `python app/main.py` (uses uvicorn internally).
-# Use the JSON (exec-form) so that PID 1 is the Python process — signals work correctly.
-CMD ["python", "app/main.py"]
+# Production server: uvicorn runs the FastAPI+NiceGUI ASGI app (app/server.py).
+# --workers 1 is required — NiceGUI uses shared in-process state (SignalHub,
+# Bridge) so multiple workers would each get isolated copies of the state.
+# Scale horizontally at the container level instead.
+CMD ["uvicorn", "app.server:fastapi_app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1", "--log-level", "info"]

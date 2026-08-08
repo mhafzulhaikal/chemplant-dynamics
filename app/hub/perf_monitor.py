@@ -93,12 +93,10 @@ _HISTORY_MAXLEN: int = 6000
 
 # How often the flush timer runs (s) — 500 ms gives the UI plenty of
 # breathing room while the chart still feels live.
-_FLUSH_INTERVAL_S = 0.5
+_FLUSH_INTERVAL_S = 0.25
 
-# Minimum interval between echart re-renders.  500 ms = 2 fps is more
-# than enough for a process-control stripchart and keeps the wire
-# light even when the engine is running at high acceleration.
-_CHART_THROTTLE_S = 0.5
+# Minimum interval between echart re-renders.
+_CHART_THROTTLE_S = 0.25
 
 # Default visible x-axis window (simulation minutes).
 _DEFAULT_WINDOW_MIN = 60.0

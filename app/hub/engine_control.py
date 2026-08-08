@@ -34,10 +34,11 @@ class EngineControl:
     serialises its own state writes under ``self._lock``).
     """
 
-    __slots__ = ('_bridge',)
+    __slots__ = ('_bridge', '_hub')
 
-    def __init__(self, bridge: Any) -> None:
+    def __init__(self, bridge: Any, hub: Any = None) -> None:
         self._bridge = bridge
+        self._hub = hub
 
     # ---------------------------------------------------------------
     # Lifecycle — one line each
@@ -99,6 +100,8 @@ class EngineControl:
 
     @property
     def sim_time(self) -> float:
+        if self._hub:
+            return self._hub.sim_time
         return float(self._bridge.state.global_sim_time or 0.0)
 
     @property

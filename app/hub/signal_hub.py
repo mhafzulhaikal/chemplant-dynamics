@@ -111,7 +111,7 @@ class SignalHub:
         self._bridge = bridge
         self._registry = registry
         self._tick_s = float(tick_s)
-        self._engine_control = EngineControl(bridge)
+        self._engine_control = EngineControl(bridge, hub=self)
 
         from app.hub.ui_sync_manager import UiSyncManager
 
@@ -164,6 +164,18 @@ class SignalHub:
         # _tick_async coroutines from rapid _notify() calls.
         self._notify_pending: bool = False
 
+        # Zero-latency sim-time listeners — called from inside _tick_async
+        # immediately after bridge.state.global_sim_time is updated, so
+        # the current-time display in RTM updates in the same asyncio tick
+        # as the physics step (no extra 50 ms polling lag).
+        self._sim_time_listeners: list[Callable[[float, str], None]] = []
+
+        # Engine mode: always 'server' (original logic)
+        self._tick_s: float = float(tick_s)
+        self._client = None
+
+        self.restart_timer()
+
     # ---------------------------------------------------------------
     # Public surface
     # ---------------------------------------------------------------
@@ -186,9 +198,32 @@ class SignalHub:
         """
         return self._bridge
 
+    def add_sim_time_listener(self, cb: Callable[[float, str], None]) -> None:
+        """Register a callback invoked with (sim_time_minutes, status) immediately
+        after each physics step is processed in ``_tick_async``.
+
+        This gives zero-latency current-time display without an extra polling
+        timer. The callback runs in the asyncio event loop so ``ui.run_javascript``
+        can be called safely from within it.
+        """
+        if cb not in self._sim_time_listeners:
+            self._sim_time_listeners.append(cb)
+
+    def remove_sim_time_listener(self, cb: Callable[[float, str], None]) -> None:
+        """Unregister a previously added sim-time listener."""
+        try:
+            self._sim_time_listeners.remove(cb)
+        except ValueError:
+            pass
+
     @property
     def tick_s(self) -> float:
         return self._tick_s
+
+    @property
+    def sim_time(self) -> float:
+        """Monotonic simulation time folded by the engine adapter."""
+        return float(getattr(self._adapter, '_sim_time', 0.0))
 
     def snapshot(self) -> Mapping[str, float]:
         """Return a copy of the latest snapshot (lock-safe)."""
@@ -371,14 +406,11 @@ class SignalHub:
             logger.debug('SignalHub: _seed_from_storage failed', exc_info=True)
 
     def _seed_from_storage(self) -> None:
-        """Merge a previously-persisted snapshot (if any) into the in-memory
-        snapshot. Keys already present in the bridge's authoritative state are
-        NOT overwritten — the bridge wins.
+        """Seed the in-memory snapshot from persisted storage.
 
-        Storage shape: ``app.storage.user['hub_snapshot:<case>']`` is
-        a dict of ``{modal_key: float}``. We only read; writes happen
-        in :meth:`_maybe_persist_snapshot` below.
+        *Server mode*: reads from ``app.storage.user`` (original behaviour).
         """
+        # ── Server mode: original app.storage.user path ──
         try:
             from nicegui import app
         except Exception:
@@ -423,17 +455,20 @@ class SignalHub:
                     self._snapshot[target_key] = v
 
     def _maybe_persist_snapshot(self) -> None:
-        """Every Nth tick, mirror the snapshot to ``app.storage.user``.
+        """Every Nth tick, persist the snapshot.
 
-        Throttled to every 100th tick (~10 s at 10 Hz) so the JSON
-        serialization cost is minimal. The write is fire-and-forget via
-        ``asyncio.ensure_future`` so we never block the event loop tick.
+        *Server mode*: writes to ``app.storage.user`` (original).
         """
         if not hasattr(self, '_persist_counter'):
             self._persist_counter = 0
         self._persist_counter += 1
         if self._persist_counter % 100 != 0:
             return
+
+        with self._lock:
+            payload = dict(self._snapshot)
+
+        # ── Server mode: original app.storage.user path ──
         try:
             from nicegui import app
         except Exception:
@@ -442,8 +477,6 @@ class SignalHub:
         if not case:
             return
         key = f'hub_snapshot:{case}'
-        with self._lock:
-            payload = dict(self._snapshot)
 
         async def _write_async() -> None:
             try:
@@ -489,6 +522,17 @@ class SignalHub:
         except Exception:
             pass
 
+    def restart_timer(self) -> None:
+        """Restart the polling timer (used when a new client connects)."""
+        self.stop()
+        try:
+            from nicegui import ui
+
+            self._client = ui.context.client
+            self._timer = ui.timer(self._tick_s, self._tick_async)
+        except Exception:
+            pass
+
     async def tick_once(self) -> None:
         """Drive one tick manually (used by tests and post-reset rebuilds)."""
         await self._tick_async()
@@ -526,6 +570,7 @@ class SignalHub:
                 pass
             self._sim_time = 0.0
             self._step_index = -1
+            self._adapter.reset()
             self._reset_counter += 1
             self._history.clear()
         self._apply_derived_pairs()
@@ -535,16 +580,18 @@ class SignalHub:
     # ---------------------------------------------------------------
 
     async def _tick_async(self) -> None:
-        t0 = time.perf_counter()
-        drain_cap = self._drain_cap
+        time.perf_counter()
 
-        # ── 1. Drain via pure Adapter ──
-        delta_dict, meta, raw_steps = self._adapter.drain_and_parse(drain_cap)
+        # ── 1. Step-aligned drain ──────────────────────────────────────────────
+        # drain_one() consumes exactly ONE physics step record at a time.
+        # This guarantees that every UI refresh corresponds to one coherent
+        # physics state: t=0.01 min → T=160F, NOT a stale mix of step i+k data.
+        delta_dict, meta, raw_step = self._adapter.drain_one()
 
-        # Append to history
-        if raw_steps:
+        # Append to history (one step at a time)
+        if raw_step is not None:
             with self._lock:
-                self._history.extend(raw_steps)
+                self._history.append(raw_step)
 
         # Apply write-locks: ignore values for keys that were recently modified
         now = time.time()
@@ -561,6 +608,24 @@ class SignalHub:
 
         if delta_dict:
             self._write_snapshot(delta_dict)
+
+        try:
+            self._adapter._bridge.state.status = meta.status
+        except Exception:
+            pass
+
+        # ── Sim-time zero-latency listeners ───────────────────────────────────
+        # Notify registered callbacks (e.g. RTM current-time label) immediately
+        # after each step so they update in the same asyncio tick — no polling
+        # lag. The `if(el)` guard in the JS keeps stale closures safe.
+        if self._sim_time_listeners and raw_step is not None:
+            _st = meta.sim_time
+            _status = meta.status
+            for _cb in list(self._sim_time_listeners):
+                try:
+                    _cb(_st, _status)
+                except Exception:
+                    logger.debug('SignalHub: sim_time_listener %r raised', _cb, exc_info=True)
 
         # Apply derived mirrors
         derived = self._derived_pairs
@@ -579,13 +644,7 @@ class SignalHub:
 
         delta_keys = frozenset(list(delta_dict.keys()) + list(local_dirty))
 
-        # ── 3. Atomic fan-out ──
-        # Take a snapshot of the subscriber list under the lock so a
-        # ``subscribe()`` during dispatch can't mutate it mid-iteration.
-        # All children are then called sequentially with the SAME
-        # ``delta_keys`` frozenset and the SAME snapshot mapping —
-        # that's what makes "satu angka di tick yang sama" structural.
-
+        # ── 2. Atomic fan-out ──────────────────────────────────────────────────
         status_changed = meta.status != getattr(self, '_last_meta_status', None)
         mode_changed = meta.mode != getattr(self, '_last_meta_mode', None)
         reset_changed = meta.reset_counter != getattr(self, '_last_reset_counter', None)
@@ -609,8 +668,7 @@ class SignalHub:
                         type(child).__name__,
                     )
 
-            # ── 3b. UI Sync Manager — only when data changed ──
-            # Skip the sync pass on idle ticks to reduce CPU load.
+            # UI Sync Manager — only when data changed
             try:
                 self._tick_counter += 1
                 self.ui_sync.on_tick()
@@ -620,21 +678,44 @@ class SignalHub:
 
         self._maybe_persist_snapshot()
 
-        # ── Adaptive drain cap update (2A) ──
-        elapsed = time.perf_counter() - t0
-        if elapsed > self._tick_s:
-            self._drain_cap = max(1, drain_cap // 2)
-        elif elapsed < self._tick_s * 0.5:
-            self._drain_cap = min(40, drain_cap * 2)
+        # ── 3. Adaptive tick rate ──────────────────────────────────────────────
+        # When running, set the hub timer to fire at exactly the step rate so
+        # every engine tick gets its own UI refresh with no batching lag.
+        # When idle/paused, fall back to a slow poll (200ms) to save CPU.
+        try:
+            running = meta.status in ('running', 'starting')
+            if running:
+                Ts_min = float(getattr(self._adapter._bridge.state, 'Ts', 0.05) or 0.05)
+                accel = float(getattr(self._adapter._bridge.state, 'acceleration', 1.0) or 1.0)
+                # Wall-clock seconds per step
+                step_wall_s = (Ts_min * 60.0) / max(accel, 1e-12)
+                # Poll at EXACTLY the step rate — clamp to [10ms, 500ms]
+                target_tick_s = max(0.010, min(step_wall_s, 0.5))
+            else:
+                target_tick_s = 0.2  # idle: 200ms
+
+            if self._timer is not None and abs(self._timer.interval - target_tick_s) > 0.005:
+                self._timer.interval = target_tick_s
+        except Exception:
+            pass
 
         # Yield the event loop so NiceGUI can process WebSocket frames
-        # (clicks, hover, open/close dialogs) between ticks.
         await asyncio.sleep(0)
 
     def _write_snapshot(self, new_values: Mapping[str, float]) -> None:
         with self._lock:
             for key, value in new_values.items():
                 self._snapshot[key] = float(value)
+
+    def _make_idle_meta(self) -> TickMeta:
+        """Return a neutral TickMeta when no step data is available."""
+        return TickMeta(
+            sim_time=getattr(self._adapter, '_sim_time', 0.0),
+            step_index=getattr(self._adapter, '_step_index', -1),
+            status='idle',
+            mode=getattr(self._adapter, '_mode', 'Automatic'),
+            reset_counter=self._reset_counter,
+        )
 
     def get_field_color(self, field_name: str, active_fields: list[str]) -> str:
         """Assign a unique and stable color to each selected/active field.

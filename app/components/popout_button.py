@@ -6,7 +6,7 @@ from nicegui import ui
 def render_popout_button(
     url: str,
     tooltip: str = 'New Tab',
-    classes: str = 'text-white bg-white/10 hover:bg-white/20 rounded-md px-2',
+    classes: str = '',
 ) -> None:
     """Render a flat dense icon button to open a URL in a new tab."""
 
@@ -16,7 +16,7 @@ def render_popout_button(
 
     with (
         ui.button(icon='open_in_new', on_click=_open, color=None)
-        .props('flat dense')
-        .classes(classes)
+        .props('flat dense round')
+        .classes(f'popout-icon-btn {classes}')
     ):
         ui.tooltip(tooltip)

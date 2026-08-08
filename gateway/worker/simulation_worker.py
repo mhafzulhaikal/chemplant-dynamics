@@ -27,9 +27,17 @@ from gateway.worker.worker_context import WorkerContext
 
 logger = logging.getLogger(__name__)
 
+# Detect Pyodide environment — Win32 API calls are unavailable in WASM.
+_IS_PYODIDE: bool = (
+    hasattr(sys, '_emscripten_info') or sys.platform == 'emscripten' or 'pyodide' in sys.modules
+)
+
 
 def _set_worker_priority_low() -> None:
     """Lower the current thread's scheduling priority on Windows."""
+    # Win32 API calls are unavailable in WebAssembly.
+    if _IS_PYODIDE:
+        return
     if sys.platform != 'win32':
         return
     try:
@@ -278,6 +286,7 @@ class SimulationWorker:
                 float(session.Ts),
                 should_interrupt=lambda: (
                     ipc.is_stopped()
+                    or ipc.is_paused()
                     or ipc.restart_event.is_set()
                     or ipc.config_changed_event.is_set()
                 ),

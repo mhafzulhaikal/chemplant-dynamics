@@ -335,7 +335,7 @@
         letter-spacing: 0.06em !important;
         background-color: rgba(255, 255, 255, 0.04) !important;
         border: 1px solid rgba(255, 255, 255, 0.20) !important;
-        border-radius: 4px !important;
+        border-radius: 6px !important;
         box-shadow: none !important;
     }
 
@@ -517,6 +517,7 @@
         color: #ffffff;
         background-color: transparent;
         font-family: var(--font-control-ui);
+        font-variant-numeric: tabular-nums;
         font-size: 1.4rem;
         font-weight: 700;
         letter-spacing: 0.04em;
@@ -939,6 +940,13 @@
     .runtime-manager-window-btn:hover {
         background-color: rgba(255, 255, 255, 0.15) !important;
         color: #ffffff !important;
+        opacity: 1 !important;
+    }
+
+    .runtime-manager-window-btn:hover .q-btn__content,
+    .runtime-manager-window-btn:hover .q-icon {
+        color: #ffffff !important;
+        opacity: 1 !important;
     }
 
     .runtime-manager-window-btn:focus-visible {
@@ -1007,8 +1015,21 @@
     }
 
     .runtime-manager-window-btn-close:hover {
-        background-color: rgba(198, 40, 40, 0.55) !important;
+        background-color: rgba(198, 40, 40, 0.65) !important;
         color: #ffffff !important;
+        opacity: 1 !important;
+    }
+
+    /* Hapus layer putih Quasar (q-focus-helper + ::before) saat hover */
+    .runtime-manager-window-btn-close .q-focus-helper,
+    .runtime-manager-window-btn-close::before {
+        display: none !important;
+    }
+
+    .runtime-manager-window-btn-close:hover .q-btn__content,
+    .runtime-manager-window-btn-close:hover .q-icon {
+        color: #ffffff !important;
+        opacity: 1 !important;
     }
 
     @media (max-width: 60rem) {

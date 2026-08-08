@@ -84,6 +84,7 @@ class FaceplateDialogConfig:
 
     case_slug: str
     bridge: Any | None = None
+    hub: Any | None = None
     on_close: Callable[[], None] | None = None
     on_minimize: Callable[[], None] | None = None
 
@@ -99,6 +100,7 @@ class FaceplateDialog:
     def __init__(self, config: FaceplateDialogConfig) -> None:
         self._case_slug = str(config.case_slug)
         self._bridge = config.bridge
+        self._hub = config.hub
         self._on_close = config.on_close
         self._on_minimize = config.on_minimize
 
@@ -618,7 +620,10 @@ class FaceplateDialog:
                 t_val = getattr(state, 'tick', None)
                 self._step_label.set_text(f'{int(t_val) if t_val is not None else 0:>6d}')
             if getattr(self, '_sim_time_label', None):
-                time_val = getattr(state, 'last_sim_time', None)
+                if self._hub is not None and hasattr(self._hub, 'sim_time'):
+                    time_val = self._hub.sim_time
+                else:
+                    time_val = getattr(state, 'last_sim_time', None)
                 try:
                     f_min = getattr(self, '_from_minutes', lambda val, unit: val)
                     unit = getattr(self, '_case_default_unit', 'min')

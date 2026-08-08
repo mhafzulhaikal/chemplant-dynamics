@@ -2,9 +2,35 @@
 
 from __future__ import annotations
 
+import ctypes
+import sys
 import time
 from collections.abc import Callable
 from typing import Protocol
+
+# Detect Pyodide (browser WebAssembly) environment.
+_IS_PYODIDE: bool = (
+    hasattr(sys, '_emscripten_info') or sys.platform == 'emscripten' or 'pyodide' in sys.modules
+)
+
+# ---------------------------------------------------------------------------
+# Windows Multimedia Timer — high-resolution mode
+# ---------------------------------------------------------------------------
+# On Windows, the default OS scheduler quantum is ~15.6 ms.  Calling
+# timeBeginPeriod(1) asks the kernel to use 1 ms quanta for the lifetime of
+# this process, which lets time.sleep() honour sub-10 ms delays accurately.
+# This is the same technique used by audio workstations and game engines.
+# We activate it once at import time and leave it on for the process lifetime.
+# ---------------------------------------------------------------------------
+
+_winmm: ctypes.WinDLL | None = None
+
+if sys.platform == 'win32' and not _IS_PYODIDE:
+    try:
+        _winmm = ctypes.windll.winmm  # type: ignore[attr-defined]
+        _winmm.timeBeginPeriod(1)
+    except Exception:
+        _winmm = None
 
 
 class SimulationClock(Protocol):
@@ -29,7 +55,7 @@ def _interruptible_sleep(
     delay_seconds: float,
     *,
     should_interrupt: Callable[[], bool] | None = None,
-    quantum_seconds: float = 0.02,
+    quantum_seconds: float = 0.002,
 ) -> bool:
     """
     Sleep yang bisa diputus oleh:
@@ -43,12 +69,23 @@ def _interruptible_sleep(
 
         False:
             sleep diputus, loop harus membaca ulang config.
+
+    With timeBeginPeriod(1) active, quantum_seconds=2ms gives us OS-level
+    precision without burning CPU in a tight spin loop.
     """
+    # In Pyodide, blocking sleep is a no-op; the async clock handles pacing.
+    if _IS_PYODIDE:
+        return True
 
     if delay_seconds <= 0:
         return True
 
     deadline = time.perf_counter() + delay_seconds
+
+    # Hybrid sleep: sleep in chunks until within SPIN_THRESHOLD of deadline,
+    # then busy-wait for the final stretch.  With timeBeginPeriod(1) the OS
+    # wakes us reliably within ~1ms, so SPIN_THRESHOLD can be tight (1ms).
+    SPIN_THRESHOLD = 0.001
 
     while True:
         if should_interrupt is not None and should_interrupt():
@@ -59,7 +96,10 @@ def _interruptible_sleep(
         if remaining <= 0:
             return True
 
-        time.sleep(min(remaining, quantum_seconds))
+        if remaining > SPIN_THRESHOLD:
+            # Sleep up to one OS quantum, capped so we stay interruptible.
+            time.sleep(min(remaining - SPIN_THRESHOLD, quantum_seconds))
+        # else: busy-spin the last <1ms for microsecond accuracy
 
 
 class RealTimeClock:
@@ -77,6 +117,7 @@ class RealTimeClock:
         self._next_tick = time.perf_counter()
         # 1 ms minimum yield when behind schedule
         self._min_yield_s: float = 0.001
+        self._max_debt_s: float = 0.5  # Max 500ms debt before resetting
 
     def reset(self) -> None:
         self._next_tick = time.perf_counter()
@@ -91,11 +132,18 @@ class RealTimeClock:
 
         self._next_tick += period_seconds
 
-        delay = self._next_tick - time.perf_counter()
+        now = time.perf_counter()
+        delay = self._next_tick - now
 
         if delay <= 0:
-            self._next_tick = time.perf_counter()
-            time.sleep(self._min_yield_s)  # yield to UI thread (1A)
+            # We are falling behind. Check if debt exceeded the ceiling.
+            debt = -delay
+            if debt > self._max_debt_s:
+                # Debt too large (e.g. system suspended or heavy lag), reset clock
+                self._next_tick = now
+
+            # Yield minimally so the UI thread doesn't completely freeze
+            time.sleep(self._min_yield_s)
             return True
 
         completed = _interruptible_sleep(
@@ -147,6 +195,7 @@ class AcceleratedClock:
         self._next_tick = time.perf_counter()
         # 1 ms minimum yield when behind schedule
         self._min_yield_s: float = 0.001
+        self._max_debt_s: float = 0.5
 
     def reset(self) -> None:
         self._next_tick = time.perf_counter()
@@ -162,11 +211,15 @@ class AcceleratedClock:
 
         self._next_tick += wall_period_seconds
 
-        delay = self._next_tick - time.perf_counter()
+        now = time.perf_counter()
+        delay = self._next_tick - now
 
         if delay <= 0:
-            self._next_tick = time.perf_counter()
-            time.sleep(self._min_yield_s)  # yield to UI thread (1A)
+            debt = -delay
+            if debt > self._max_debt_s:
+                self._next_tick = now
+
+            time.sleep(self._min_yield_s)
             return True
 
         completed = _interruptible_sleep(

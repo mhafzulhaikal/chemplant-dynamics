@@ -108,7 +108,6 @@ def register_popout_routes(case_slug: str) -> None:
         popout_shell('Piping & Instrumentation Diagram', _content)
 
         hub.start()
-        ui.timer(hub.tick_s, hub.tick_once)
 
     @ui.page(f'/popout/{case_slug}/perf-monitor')
     def perf_monitor_popout_base() -> None:
@@ -139,7 +138,6 @@ def register_popout_routes(case_slug: str) -> None:
         )
 
         hub.start()
-        ui.timer(hub.tick_s, hub.tick_once)
 
     @ui.page(f'/popout/{case_slug}/data-logger')
     def data_logger_popout_base() -> None:
@@ -167,7 +165,6 @@ def register_popout_routes(case_slug: str) -> None:
         popout_shell('Data Logger', _content)
 
         hub.start()
-        ui.timer(hub.tick_s, hub.tick_once)
 
     @ui.page(f'/runtime-manager/{case_slug}')
     def runtime_manager_standalone_page() -> None:
@@ -228,7 +225,6 @@ def register_popout_routes(case_slug: str) -> None:
             )
 
         hub.start()
-        ui.timer(hub.tick_s, hub.tick_once)
 
 
 # Pre-register for both known cases

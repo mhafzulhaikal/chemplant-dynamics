@@ -20,7 +20,24 @@ import math
 from dataclasses import dataclass, field
 from typing import Any
 
-from nicegui import binding
+try:
+    from nicegui import binding
+except ImportError:
+    # Running inside Pyodide / Worker environment where NiceGUI is unavailable.
+    # Provide a dummy binding decorator so the class definitions still parse.
+    class _MockBinding:
+        @staticmethod
+        def bindable(cls):
+            return cls
+
+        @staticmethod
+        def bindable_dataclass(cls, **kwargs):
+            from dataclasses import dataclass
+
+            # In NiceGUI, bindable_dataclass is used just like @dataclass
+            return dataclass(cls)
+
+    binding = _MockBinding()
 
 
 def safe_float(
@@ -119,6 +136,7 @@ class BridgeState:
     last_step: int = -1
     last_sim_time: float = 0.0
     global_sim_time: float = 0.0
+    actual_rtf: float = 0.0
 
     # True when the previous worker exited by reaching time_end (a "natural"
     # finish) rather than via reset()/stop(). The Data Logger and Performance

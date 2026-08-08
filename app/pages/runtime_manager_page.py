@@ -823,19 +823,7 @@ def _render_runtime_manager_card(
                     if is_dialog_open is not None and not is_dialog_open():
                         return
 
-                    # Update Step
-                    t_val = getattr(bridge.state, 'tick', None)
-                    new_tick_text = f'{int(t_val) if t_val is not None else 0:>6d}'
-                    if tick_label.text != new_tick_text:
-                        tick_label.text = new_tick_text
-
-                    # Update Sim Time
-                    time_val = getattr(bridge.state, 'last_sim_time', None)
-                    _time_val_f = float(time_val) if time_val is not None else 0.0
-                    _converted = case_cfg.from_minutes(_time_val_f, case_default_unit)
-                    new_time_text = f'{_converted:.2f} {case_default_unit}'
-                    if sim_time_label.text != new_time_text:
-                        sim_time_label.text = new_time_text
+                    # Update Step and Sim Time are now handled by _push_time_to_dom (zero-latency)
 
                     loop_order_val = getattr(case_cfg, 'LOOP_ORDER', None)
                     if not loop_order_val or len(loop_order_val) <= 1:
@@ -920,24 +908,13 @@ def _render_runtime_manager_card(
             except Exception:
                 end_input.value = raw_end
 
-        try:
-            bridge.state.global_sim_time = bridge.state.global_sim_time
-        except Exception:
-            pass
-
         # Re-render the unit chips and the live time readouts so the
         # user sees the new unit suffix on the End Time / Current
         # Time fields immediately.
         try:
-            _hero_val = float(bridge.state.last_sim_time or 0.0)
-            hero_current_time_label.text = f'{case_cfg.from_minutes(_hero_val, selected_unit):.4f}'
-        except Exception:
-            pass
-        try:
-            _st_val = float(bridge.state.last_sim_time or 0.0)
-            sim_time_label.text = (
-                f'{case_cfg.from_minutes(_st_val, selected_unit):.2f} {selected_unit}'
-            )
+            _last_hero_text[0] = ''
+            _last_st_text[0] = ''
+            _push_time_to_dom(_current_sim_time_minutes[0])
         except Exception:
             pass
 
@@ -960,26 +937,6 @@ def _render_runtime_manager_card(
             units_select.on('change', on_units_change)
         except Exception:
             pass
-
-    def on_acceleration_change(event: Any) -> None:
-        # Kept for backwards compatibility with anything that calls
-        # ``on_acceleration_change`` programmatically (e.g. a future
-        # unit test). The user's UI no longer fires this on every
-        # change — see the ``blur`` / ``keydown.enter`` wiring
-        # below — because we want the operator to confirm the
-        # value (Enter or tab-out) before the engine is asked to
-        # re-pace the simulation. This avoids the old behaviour
-        # where every keystroke wrote into the bridge and
-        # ``apply_runtime_configuration`` ran, causing the worker
-        # to thrash when the user typed ``1`` on the way to
-        # ``10`` (each digit was a separate "set acceleration to
-        # 1" / "set acceleration to 10" event).
-        current_value = _event_value(event, None)
-        bridge.state.acceleration = (
-            1.0 if current_value is None else max(float(current_value), 1e-12)
-        )
-        bridge.apply_runtime_configuration(restart_if_needed=False)
-        record_info(f'Acceleration set to: {bridge.state.acceleration}')
 
     def _commit_step_input(
         _event: Any = None,
@@ -1084,8 +1041,18 @@ def _render_runtime_manager_card(
             value = float(element.value) if element.value is not None else 1.0
         except (TypeError, ValueError):
             value = 1.0
-        bridge.state.acceleration = max(value, 1e-12)
-        bridge.apply_runtime_configuration(restart_if_needed=False)
+
+        accel_val = max(value, 1e-12)
+        if (
+            store is not None
+            and getattr(store, 'hub', None) is not None
+            and hasattr(store.hub, 'engine_control')
+        ):
+            store.hub.engine_control.set_acceleration(accel_val)
+        else:
+            bridge.state.acceleration = accel_val
+            bridge.apply_runtime_configuration(restart_if_needed=False)
+
         record_info(f'Acceleration set to: {bridge.state.acceleration}')
         try:
             from app.hub.data_logger import write_audit_log
@@ -1100,17 +1067,59 @@ def _render_runtime_manager_card(
     accel_input.on('blur', _on_accel_commit)
     accel_input.on('keydown.enter', _on_accel_commit)
 
-    # Live "Current Time" readout — bound to bridge.state.last_sim_time.
-    # The big hero timer at the top of the card stays in sync with
-    # whatever unit the user has selected in the Units dropdown.
-    _render_bind_text(
-        hero_current_time_label,
-        bridge.state,
-        'last_sim_time',
-        backward=lambda value: (
-            f'{case_cfg.from_minutes(float(value) if value is not None else 0.0, units_select.value):.4f}'  # noqa: E501
-        ),
-    )
+    # Live "Current Time" readout — updated zero-latency via SignalHub listener
+    _last_hero_text: list[str] = ['']
+    _last_st_text: list[str] = ['']
+    _last_tick_text: list[str] = ['']
+    _current_sim_time_minutes: list[float] = [0.0]
+    _max_displayed_time: list[float] = [0.0]
+
+    def _push_time_to_dom(sim_time_minutes: float, _status: str = '') -> None:
+        """Write the current-time value directly to the UI labels."""
+        try:
+            val = float(sim_time_minutes or 0.0)
+            # Reset detection: if sim_time is reset to 0, clear monotonic watermark
+            if val < 1e-12:
+                _max_displayed_time[0] = 0.0
+            elif val < _max_displayed_time[0]:
+                # Monotonic guard: ignore out-of-order or jittery time
+                return
+            else:
+                _max_displayed_time[0] = val
+
+            _current_sim_time_minutes[0] = val
+            u = units_select.value
+            converted = case_cfg.from_minutes(val, u)
+
+            hero_text = f'{converted:.4f}'
+            if hero_text != _last_hero_text[0]:
+                _last_hero_text[0] = hero_text
+                hero_current_time_label.text = hero_text
+
+            st_text = f'{converted:.2f} {u}'
+            if st_text != _last_st_text[0]:
+                _last_st_text[0] = st_text
+                sim_time_label.text = st_text
+
+            t_val = getattr(bridge.state, 'tick', None)
+            tick_text = f'{int(t_val) if t_val is not None else 0:>6d}'
+            if tick_text != _last_tick_text[0]:
+                _last_tick_text[0] = tick_text
+                tick_label.text = tick_text
+
+        except Exception:
+            pass
+
+    # Use SignalHub zero-latency listener whenever available (called directly inside _tick_async)
+    if store is not None and getattr(store, 'hub', None) is not None:
+        store.hub.add_sim_time_listener(_push_time_to_dom)
+        _push_time_to_dom(float(getattr(bridge.state, 'global_sim_time', 0.0) or 0.0))
+    else:
+
+        def _update_time_label() -> None:
+            _push_time_to_dom(float(getattr(bridge.state, 'global_sim_time', 0.0) or 0.0))
+
+        ui.timer(0.05, _update_time_label)
 
 
 __all__ = ['render_runtime_manager_body']

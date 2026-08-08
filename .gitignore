@@ -9,3 +9,4 @@ __pycache__/
 # Frameworks & Tooling caches
 .nicegui/
 .ruff_cache/
+

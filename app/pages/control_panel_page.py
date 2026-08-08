@@ -331,6 +331,7 @@ def _build_pid_section(
                 FaceplateDialogConfig(
                     case_slug=case_slug,
                     bridge=hub.bridge if hub is not None else None,
+                    hub=hub,
                 ),
             )
 
@@ -445,11 +446,11 @@ def _build_pid_section(
                 ui.timer(0.25, _sync_engine_status_ui)
 
             # ── Start the master tick ──
-            # ONE timer per page drives the shared hub. Started after
-            # subscribers attach so the first tick already
-            # has consumers.
+            # hub.start() seeds the initial snapshot from storage so the
+            # UI doesn't flash zeros before the first engine tick arrives.
+            # The actual timer is now owned entirely by SignalHub.__init__
+            # (via restart_timer()) — we do NOT create a second timer here.
             hub.start()
-            ui.timer(hub.tick_s, hub.tick_once)
 
 
 def _build_monitoring(hub: SignalHub | None, popout_url: str | None = None) -> None:
@@ -514,17 +515,6 @@ def _register_case_route(case_slug: str) -> None:
 
     def page_handler() -> None:
         hub = handlers.build_hub()
-
-        # Stop the hub's tick timer when the client disconnects
-        # (page close / navigate away) so the ui.timer doesn't
-        # raise "parent slot has been deleted" after the page is gone.
-        if hub is not None:
-            try:
-                from nicegui import context as _ng_context
-
-                _ng_context.client.on_disconnect(lambda: hub.stop())
-            except Exception:
-                pass
 
         # Floating Runtime Manager dialog. Only constructed when the
         # engine gateway is importable (i.e. hub is not None) —

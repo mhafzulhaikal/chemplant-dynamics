@@ -58,6 +58,21 @@ def discover_cases() -> dict[str, Callable[[object], Callable[[], SimulationSess
             cls = getattr(mod, cls_name, None)
             if cls is not None:
                 found[modname] = lambda appdb, cls=cls: lambda: cls(appdb=appdb)
+
+    # Fallback for Pyodide VFS where pkgutil might fail
+    if not found:
+        for modname in ('sthr', 'biodiesel'):
+            try:
+                mod = importlib.import_module(f'cases.{modname}.session')
+                if hasattr(mod, 'create_session'):
+                    found[modname] = lambda appdb, m=mod: m.create_session(appdb)
+                else:
+                    for cls_name in ('SimulationSession', 'STHRSimulationSession'):
+                        cls = getattr(mod, cls_name, None)
+                        if cls is not None:
+                            found[modname] = lambda appdb, cls=cls: lambda: cls(appdb=appdb)
+            except Exception:
+                pass
                 break
 
     return found

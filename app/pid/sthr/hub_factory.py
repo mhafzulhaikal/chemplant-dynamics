@@ -154,14 +154,22 @@ def build_sthr_hub(
             else case_default_mode.capitalize()
         )
 
-        browser_id = str(app.storage.browser.get('id', 'default-browser'))
+        try:
+            browser_id = str(app.storage.browser.get('id', 'default-browser'))
+        except Exception:
+            browser_id = 'default-browser'
         profile_key = f'{_GenericBridge.profile_storage_prefix}:sthr:{browser_id}'
 
         hub = _STHR_HUB_REGISTRY.get(profile_key)
         if hub is not None:
+            if hasattr(hub, 'restart_timer'):
+                hub.restart_timer()
             return hub
 
-        profile = app.storage.user.setdefault(profile_key, {})
+        try:
+            profile = app.storage.user.setdefault(profile_key, {})
+        except Exception:
+            profile = {}
 
         bridge = _get_bridge(profile_key)
         bridge.bind_profile(browser_id, profile)

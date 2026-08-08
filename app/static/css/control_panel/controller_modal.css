@@ -289,7 +289,20 @@
     }
 
     .ctrl-param-close-btn:hover {
-        background-color: rgba(198, 40, 40, 0.55) !important;
+        background-color: rgba(198, 40, 40, 0.65) !important;
+        opacity: 1 !important;
+    }
+
+    /* Hapus layer putih Quasar saat hover */
+    .ctrl-param-close-btn .q-focus-helper,
+    .ctrl-param-close-btn::before {
+        display: none !important;
+    }
+
+    .ctrl-param-close-btn:hover .q-btn__content,
+    .ctrl-param-close-btn:hover .q-icon {
+        color: #ffffff !important;
+        opacity: 1 !important;
     }
 
     /* Body — same vertical rhythm as the faceplate body. */

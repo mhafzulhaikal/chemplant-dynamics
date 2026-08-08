@@ -67,6 +67,12 @@ class EngineBridgeAdapter:
         )
         self._reset_counter: int = 0
 
+    def reset(self) -> None:
+        """Reset internal time and step tracking on simulation reset."""
+        self._sim_time = 0.0
+        self._step_index = -1
+        self._reset_counter += 1
+
     def set_input_value(self, engine_tag: str, value: float) -> None:
         """Forward a raw input value to the bridge."""
         self._bridge.set_input_value(engine_tag, float(value))
@@ -118,7 +124,7 @@ class EngineBridgeAdapter:
 
         # Update tracking state from bridge state safely.
         # Step records (folded above) already updated self._step_index and
-        # self._sim_time via _fold_step.  Bridge.state is used as a fallback
+        # self._sim_time via _fold_step. Bridge.state is used as a fallback
         # only when no step records arrived this tick.
         try:
             bridge_state = self._bridge.state
@@ -129,13 +135,23 @@ class EngineBridgeAdapter:
                 getattr(bridge_state, 'controller_mode', self._mode) or self._mode,
             )
             if not has_steps:
-                # No step records this tick — fall back to bridge state clock.
-                self._sim_time = float(
-                    getattr(bridge_state, 'global_sim_time', self._sim_time) or self._sim_time,
-                )
+                # No step records this tick — fall back to bridge state clock monotonically.
+                fallback_t = getattr(bridge_state, 'global_sim_time', None)
+                if fallback_t is not None:
+                    try:
+                        f_val = float(fallback_t)
+                        if f_val >= self._sim_time:
+                            self._sim_time = f_val
+                    except (TypeError, ValueError):
+                        pass
                 bridge_last = getattr(bridge_state, 'last_step', None)
                 if bridge_last is not None and bridge_last >= 0:
-                    self._step_index = int(bridge_last)
+                    try:
+                        s_val = int(bridge_last)
+                        if s_val >= self._step_index:
+                            self._step_index = s_val
+                    except (TypeError, ValueError):
+                        pass
         except Exception:
             pass
 
@@ -148,6 +164,93 @@ class EngineBridgeAdapter:
         )
 
         return delta, meta, raw_steps
+
+    def drain_one(self) -> tuple[dict[str, float], TickMeta, dict | None]:
+        """Drain exactly ONE step record from the engine queue.
+
+        This is the step-aligned drain used by the high-frequency UI path.
+        Each call either:
+        - Returns (delta, meta, step_dict) when a physics step is consumed.
+        - Returns (delta, meta, None) when only status records are available
+          or the queue is empty (delta may still contain status updates).
+
+        By consuming one step at a time, the UI snapshot always represents a
+        single coherent physics state: t=0.01 → T=160F, t=0.02 → T=162F, etc.
+        """
+        try:
+            records = self._bridge.drain_records(1)
+        except Exception:
+            logger.exception('EngineBridgeAdapter: drain_records(1) failed')
+            records = []
+
+        delta: dict[str, float] = {}
+        raw_step: dict | None = None
+
+        # If we only got status records or nothing, try to drain a few more
+        # status records to stay current (they are cheap).
+        if not records or all(getattr(r, 'kind', None) != 'step' for r in records):
+            try:
+                extra = self._bridge.drain_records(8)
+                records = list(records) + list(extra)
+            except Exception:
+                pass
+
+        step_record = None
+        for r in records:
+            kind = getattr(r, 'kind', None)
+            if kind == 'step' and step_record is None:
+                step_record = r
+            elif kind == 'status':
+                self._fold_status(r, delta)
+
+        if step_record is not None:
+            self._fold_step(step_record, delta)
+            raw_step = {
+                'step_index': step_record.step_index,
+                'time_min': step_record.time_min,
+                'inputs': step_record.inputs,
+                'states': step_record.states,
+                'outputs': step_record.outputs,
+            }
+
+        # Update tracking state from bridge state.
+        try:
+            bridge_state = self._bridge.state
+            self._status = str(
+                getattr(bridge_state, 'status', self._status) or self._status,
+            )
+            self._mode = str(
+                getattr(bridge_state, 'controller_mode', self._mode) or self._mode,
+            )
+            if step_record is None:
+                fallback_t = getattr(bridge_state, 'global_sim_time', None)
+                if fallback_t is not None:
+                    try:
+                        f_val = float(fallback_t)
+                        if f_val >= self._sim_time:
+                            self._sim_time = f_val
+                    except (TypeError, ValueError):
+                        pass
+                bridge_last = getattr(bridge_state, 'last_step', None)
+                if bridge_last is not None and bridge_last >= 0:
+                    try:
+                        s_val = int(bridge_last)
+                        if s_val >= self._step_index:
+                            self._step_index = s_val
+                    except (TypeError, ValueError):
+                        pass
+        except Exception:
+            pass
+
+        meta = TickMeta(
+            sim_time=self._sim_time,
+            step_index=self._step_index,
+            status=self._status,
+            mode=self._mode,
+            reset_counter=self._reset_counter,
+        )
+
+        return delta, meta, raw_step
 
     def _fold_step(
         self,
@@ -187,15 +290,19 @@ class EngineBridgeAdapter:
             for sk in self._status_keys:
                 delta[sk] = code
 
-        # Step / time bookkeeping
+        # Step / time bookkeeping (strictly monotonic within this lifecycle)
         if getattr(record, 'time_min', None) is not None:
             try:
-                self._sim_time = float(record.time_min)
+                new_t = float(record.time_min)
+                if new_t >= self._sim_time:
+                    self._sim_time = new_t
             except (TypeError, ValueError):
                 pass
         if getattr(record, 'step_index', None) is not None:
             try:
-                self._step_index = int(record.step_index)
+                new_step = int(record.step_index)
+                if new_step >= self._step_index:
+                    self._step_index = new_step
             except (TypeError, ValueError):
                 pass
 

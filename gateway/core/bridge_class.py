@@ -560,11 +560,11 @@ class Bridge:
             self._last_applied_scenario = new_scenario
             self.persist_profile()
 
-            if old_pacing != new_pacing:
-                self.ipc.signal_config_change()
-
             if (
-                old_config.time_end != new_config.time_end
+                old_pacing != new_pacing
+                or old_config.acceleration != new_config.acceleration
+                or old_config.real_time != new_config.real_time
+                or old_config.time_end != new_config.time_end
                 or old_config.controller_mode != new_config.controller_mode
                 or old_config.loop_modes != new_config.loop_modes
                 or old_scenario != new_scenario
@@ -1019,11 +1019,28 @@ class Bridge:
                 reset = True
                 self._need_fresh_start = False
 
+            # If simulation reached time_end previously, clear time_end on explicit Run
+            try:
+                parsed_te = (
+                    float(self.state.time_end) if self.state.time_end is not None else float('inf')
+                )
+                if (
+                    math.isfinite(parsed_te)
+                    and float(self.state.global_sim_time or 0.0) + 1e-12 >= parsed_te
+                ):
+                    self.state.time_end = float('inf')
+            except Exception:
+                pass
+
+            # Clear any natural_stop marker on explicit Run start
+            self.state.natural_stop = False
+
             if self._worker is not None and self._worker.is_alive():
                 # If worker exists and is paused, resume by clearing pause
-                # event
+                # event and signaling config change to reset clock pacing
                 if self.ipc.is_paused():
                     self.ipc.signal_resume()
+                    self.ipc.signal_config_change()
                     self.state.running = True
                     self.state.status = 'running'
                 return
@@ -1031,17 +1048,13 @@ class Bridge:
             self.ipc.stop_event.clear()
             self.ipc.restart_event.clear()
             self.ipc.config_changed_event.clear()
+            self.ipc.pause_event.clear()
 
             if reset:
                 self._global_sim_time = 0.0
                 self.state.global_sim_time = 0.0
                 self.state.last_step = -1
                 self.state.last_sim_time = 0.0
-                self.state.natural_stop = False
-
-            # ensure any leftover pause flag is cleared when starting a fresh
-            # worker
-            self.ipc.pause_event.clear()
 
             runtime_config = self._read_runtime_config()
             self._apply_runtime_config_to_legacy_cfg(runtime_config)
@@ -1079,16 +1092,25 @@ class Bridge:
 
         if worker is not None and worker.is_alive():
             worker.join(timeout=2.0)
+            if not worker.is_alive():
+                self._worker = None
+        else:
+            self._worker = None
 
         self.state.running = False
         self.state.status = 'stopped'
-        self._worker = None
 
     def pause(self) -> None:
         """Pause the running simulation without terminating the worker
         thread."""
         self.ipc.signal_pause()
-        self.ipc.signal_config_change()
+        # NOTE: do NOT call signal_config_change() here.
+        # The worker's `should_interrupt` lambda in clock.wait_next_step already
+        # checks `is_paused()` directly, so the clock interrupts immediately.
+        # Calling signal_config_change() simultaneously caused a race: the worker
+        # could clear config_changed_event and fire `continue` (clock-rebuild
+        # branch) before seeing is_paused() — causing the first Stop press to
+        # be silently ignored and requiring a second press.
         self.state.running = False
         self.state.status = 'paused'
 
@@ -1114,8 +1136,10 @@ class Bridge:
             worker = self._worker
             if worker is not None and worker.is_alive():
                 worker.join(timeout=2.0)
-
-            self._worker = None
+                if not worker.is_alive():
+                    self._worker = None
+            else:
+                self._worker = None
 
             # clear server-side step log on reset
             self._step_log.clear()

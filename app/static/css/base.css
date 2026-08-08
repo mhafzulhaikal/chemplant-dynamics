@@ -69,3 +69,27 @@
     }
 }
 
+/* =========================================================
+   POPOUT / NEW TAB BUTTON (ICON ONLY, NO BACKGROUND)
+   ========================================================= */
+.popout-icon-btn,
+.popout-icon-btn:before,
+.popout-icon-btn .q-focus-helper {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.popout-icon-btn:before {
+    display: none !important;
+    content: none !important;
+}
+
+.popout-icon-btn:hover {
+    color: var(--text-highlight, #ffd54f) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+}
+

@@ -194,11 +194,6 @@ def render_runtime_manager(
             .classes('pid-navbar-realtime-check')
         )
 
-        # When the page has a bindable real_time flag (the bridge's
-        # ``BridgeState``), bind the checkbox two-way so the widget
-        # reflects updates made elsewhere — e.g. the Runtime Manager
-        # window toggling Real Time updates ``bridge.state.real_time``,
-        # which NiceGUI's binding system propagates back here.
         if config.realtime_bindable is not None:
             try:
                 checkbox.bind_value(
