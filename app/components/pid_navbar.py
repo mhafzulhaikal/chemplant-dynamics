@@ -253,17 +253,43 @@ def render_simulation_control_buttons(config: PidNavbarConfig) -> None:
 
 
 def render_clock() -> None:
+    now = datetime.now()
     with ui.column().classes('pid-navbar-clock'):
-        day_date_label = ui.label().classes('pid-navbar-clock-date')
-        time_label = ui.label().classes('pid-navbar-clock-time')
+        ui.label(now.strftime('%A, %d %B %Y')).classes('pid-navbar-clock-date')
+        ui.label(now.strftime('%H:%M:%S')).classes('pid-navbar-clock-time')
 
-    def update_clock() -> None:
-        now = datetime.now()
-        day_date_label.set_text(now.strftime('%A, %d %B %Y'))
-        time_label.set_text(now.strftime('%H:%M:%S'))
-
-    update_clock()
-    ui.timer(1.0, update_clock)
+    ui.add_head_html("""
+        <script>
+            if (!window._pidClockInitialized) {
+                window._pidClockInitialized = true;
+                window.updatePidClock = function() {
+                    const now = new Date();
+                    const ds = now.toLocaleDateString('en-GB', {
+                        weekday: 'long',
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    const ts = now.toLocaleTimeString('en-GB', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    });
+                    const dateEls = document.querySelectorAll('.pid-navbar-clock-date');
+                    const timeEls = document.querySelectorAll('.pid-navbar-clock-time');
+                    for (let i = 0; i < dateEls.length; i++) {
+                        dateEls[i].innerText = ds;
+                    }
+                    for (let i = 0; i < timeEls.length; i++) {
+                        timeEls[i].innerText = ts;
+                    }
+                };
+                setInterval(window.updatePidClock, 1000);
+            }
+        </script>
+    """)
+    ui.run_javascript('if (window.updatePidClock) window.updatePidClock();', respond=False)
 
 
 def render_navbar_separator() -> None:

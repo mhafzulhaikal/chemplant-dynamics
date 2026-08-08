@@ -100,7 +100,11 @@ async def get_sim_status() -> SimStatusResponse:
         return SimStatusResponse(
             status=str(ec.status or 'idle'),
             sim_time=float(ec.sim_time or 0.0),
-            step_index=int(getattr(ec, '_adapter', ec).drain_one()[1].step_index if hasattr(ec, '_adapter') else -1),
+            step_index=int(
+                getattr(ec, '_adapter', ec).drain_one()[1].step_index
+                if hasattr(ec, '_adapter')
+                else -1
+            ),
             controller_mode=str(ec.controller_mode or 'Automatic'),
             real_time=bool(ec.real_time),
         )

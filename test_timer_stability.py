@@ -11,17 +11,17 @@ def test_stability():
 
     # Configure for real-time
     bridge.state.acceleration = 1.0
-    bridge.state.time_end = "Infinity"
+    bridge.state.time_end = 'Infinity'
     bridge.apply_runtime_configuration(restart_if_needed=False)
 
-    print("Starting simulation...")
+    print('Starting simulation...')
     bridge.start()
 
     # Wait for the engine to spin up and produce the first tick
     while bridge.state.global_sim_time <= 0:
         time.sleep(0.01)
 
-    print(f"Engine running. Initial sim_time: {bridge.state.global_sim_time:.4f} min")
+    print(f'Engine running. Initial sim_time: {bridge.state.global_sim_time:.4f} min')
 
     start_wall = time.perf_counter()
     start_sim_min = bridge.state.global_sim_time
@@ -36,7 +36,7 @@ def test_stability():
     test_duration = 10.0
     poll_interval = 0.01  # Poll very fast to catch the exact moment it changes
 
-    print(f"Sampling for {test_duration} seconds (recording only on sim_time changes)...")
+    print(f'Sampling for {test_duration} seconds (recording only on sim_time changes)...')
 
     while True:
         now_wall = time.perf_counter()
@@ -69,11 +69,11 @@ def test_stability():
 
     bridge.stop()
 
-    print("\n--- Stability Test Results ---")
-    print(f"Physics Steps caught: {len(errors)}")
+    print('\n--- Stability Test Results ---')
+    print(f'Physics Steps caught: {len(errors)}')
 
     if len(errors) == 0:
-        print("No steps recorded!")
+        print('No steps recorded!')
         return
 
     mean_error = statistics.mean(errors)
@@ -81,25 +81,26 @@ def test_stability():
     max_error = max(errors)
     min_error = min(errors)
 
-    print(f"Mean error (sim_dt - wall_dt): {mean_error*1000:.2f} ms")
-    print(f"Mean absolute error:           {mean_abs_error*1000:.2f} ms")
-    print(f"Max error peak:                {max_error*1000:.2f} ms")
-    print(f"Min error peak:                {min_error*1000:.2f} ms")
+    print(f'Mean error (sim_dt - wall_dt): {mean_error * 1000:.2f} ms')
+    print(f'Mean absolute error:           {mean_abs_error * 1000:.2f} ms')
+    print(f'Max error peak:                {max_error * 1000:.2f} ms')
+    print(f'Min error peak:                {min_error * 1000:.2f} ms')
 
     # Calculate jitter (standard deviation of the error)
     if len(errors) >= 2:
         std_dev = statistics.stdev(errors)
-        print(f"Error Standard Deviation:      {std_dev*1000:.2f} ms (Jitter)")
+        print(f'Error Standard Deviation:      {std_dev * 1000:.2f} ms (Jitter)')
     else:
-        print("Not enough samples for standard deviation.")
+        print('Not enough samples for standard deviation.')
 
     # Calculate overall drift
     total_wall_elapsed = last_wall - start_wall
     total_sim_elapsed = (last_sim - start_sim_min) * 60.0
     drift = total_sim_elapsed - total_wall_elapsed
-    print(f"\nTotal Wall Time Elapsed:       {total_wall_elapsed:.4f} s")
-    print(f"Total Sim Time Elapsed:        {total_sim_elapsed:.4f} s")
-    print(f"Cumulative Drift:              {drift*1000:.2f} ms")
+    print(f'\nTotal Wall Time Elapsed:       {total_wall_elapsed:.4f} s')
+    print(f'Total Sim Time Elapsed:        {total_sim_elapsed:.4f} s')
+    print(f'Cumulative Drift:              {drift * 1000:.2f} ms')
+
 
 if __name__ == '__main__':
     test_stability()

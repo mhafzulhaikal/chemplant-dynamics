@@ -55,9 +55,14 @@ import importlib
 import logging
 import os
 import sys
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncGenerator
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from nicegui import ui
 
 # ── Path bootstrap (mirrors app/main.py) ──────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -73,13 +78,8 @@ if sys.platform == 'win32' and sys.version_info < (3, 14):
     except (AttributeError, RuntimeError):
         pass
 
-import uvicorn
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from nicegui import ui
-
-from app.api import health_router, sim_router
-from app.config import STATIC_DIR
+from app.api import health_router, sim_router  # noqa: E402
+from app.config import STATIC_DIR  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(_app: FastAPI) -> AsyncGenerator[None]:
     """ASGI lifespan handler — startup and graceful shutdown.
 
     NiceGUI pages are imported here (not at module level) so that
@@ -155,7 +155,7 @@ if __name__ == '__main__':
         'app.server:fastapi_app',
         host='0.0.0.0',
         port=8080,
-        workers=1,      # see module docstring — multi-worker is unsafe here
-        reload=False,   # use `python app/main.py` for hot-reload dev mode
+        workers=1,  # see module docstring — multi-worker is unsafe here
+        reload=False,  # use `python app/main.py` for hot-reload dev mode
         log_level='info',
     )
