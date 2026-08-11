@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>ChemPlant Dynamics — Process Documentation Hub</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" 
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    
+    <link rel="stylesheet" href="styles.css?v=2.1">
+</head>
+<body>
+
+    <!-- Quarto Header Navbar -->
+    <header class="quarto-navbar">
+        <a href="index.html" class="navbar-brand">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+            ChemPlant Dynamics
+        </a>
+        <nav class="navbar-nav">
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="overview_sthr.html" class="nav-link">STHR Process</a>
+            <a href="overview_biodiesel.html" class="nav-link">Biodiesel Reactor</a>
+            <a href="control_theory.html" class="nav-link">Control Theory</a>
+            <a href="isa101_guide.html" class="nav-link">ISA-101 Guide</a>
+        </nav>
+    </header>
+
+    <div class="quarto-layout">
+
+        <!-- Left Sidebar Navigation -->
+        <aside class="quarto-sidebar">
+            <div class="sidebar-title">Process Models</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="index.html" class="sidebar-link active">Hub Overview</a></li>
+                <li class="sidebar-item"><a href="overview_sthr.html" class="sidebar-link">STHR System</a></li>
+                <li class="sidebar-item"><a href="overview_biodiesel.html" class="sidebar-link">Biodiesel Reactor</a></li>
+            </ul>
+
+            <div class="sidebar-title">Engineering & Control</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="control_theory.html" class="sidebar-link">PID Control Theory</a></li>
+                <li class="sidebar-item"><a href="isa101_guide.html" class="sidebar-link">ISA-101 Standards</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="quarto-main">
+            <div class="page-header">
+                <h1 class="page-title">ChemPlant Dynamics — Technical Documentation</h1>
+                <p class="page-subtitle">Real-time Process Dynamics, Control Engineering & High-Performance HMI Simulation Suite</p>
+            </div>
+
+            <div class="callout callout-tip">
+                <div class="callout-title">Interactive Simulation Suite</div>
+                <div class="callout-body">
+                    ChemPlant Dynamics is an industrial-grade simulation and process control training platform adhering to <strong>ANSI/ISA-101.01</strong> High Performance HMI principles and first-principles chemical engineering kinetics.
+                </div>
+            </div>
+
+            <h2 id="modules">1. Available Simulation Modules</h2>
+            <div class="card">
+                <h3>Stirred Tank Heater (STHR)</h3>
+                <p>A continuous mixed heating tank modeling first-order thermal dynamics, liquid level gravity discharge, and non-linear valve hydraulics. Features dual SISO feedback loops (TIC-101 and LIC-101).</p>
+                <p><a href="overview_sthr.html" style="color: var(--quarto-accent); font-weight: 600;">Explore STHR Documentation &rarr;</a></p>
+            </div>
+
+            <div class="card">
+                <h3>Biodiesel Transesterification Reactor</h3>
+                <p>A continuous stirred tank reactor (CSTR) modeling Arrhenius reaction kinetics for triglyceride conversion with methanol, accompanied by exothermic energy balances and jacketed cooling control.</p>
+                <p><a href="overview_biodiesel.html" style="color: var(--quarto-accent); font-weight: 600;">Explore Biodiesel Documentation &rarr;</a></p>
+            </div>
+
+            <h2 id="architecture">2. Architecture & Standards</h2>
+            <p>Every process model in this suite is governed by rigorous discrete numerical solvers (Euler / RK4) communicating with a zero-latency WebSocket bridge to the DCS faceplate layers.</p>
+        </main>
+
+        <!-- Right TOC -->
+        <aside class="quarto-toc">
+            <div class="toc-title">On this page</div>
+            <ul class="toc-menu">
+                <li class="toc-item"><a href="#modules" class="toc-link">1. Simulation Modules</a></li>
+                <li class="toc-item"><a href="#architecture" class="toc-link">2. Architecture & Standards</a></li>
+            </ul>
+        </aside>
+
+    </div>
+
+</body>
+</html>

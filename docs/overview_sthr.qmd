@@ -1,0 +1,72 @@
+---
+title: "Stirred Tank Heater (STHR) — Process Overview"
+subtitle: "Dynamic Thermal & Mass Balance Simulation Model"
+author: "ChemPlant Dynamics Team"
+date: "2026-08-09"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    html-math-method: katex
+---
+
+# 1. Process Objective & Summary
+
+The Stirred Tank Heater (STHR) regulates outlet liquid temperature ($T$) and liquid hold-up height ($H$) under inlet feed disturbances ($F_{in}, T_{in}$).
+
+```{python}
+#| label: sthr-parameters
+#| caption: "Nominal System Parameters"
+import pandas as pd
+
+params = {
+    "Parameter": ["Tank Diameter", "Level Setpoint", "Outlet Temp Setpoint", "Steam Heating Temp", "Overall Heat Transfer (UA)"],
+    "Symbol": ["D", "H_sp", "T_sp", "T_steam", "UA"],
+    "Value": [1.50, 2.00, 65.00, 140.00, 12.50],
+    "Unit": ["m", "m", "°C", "°C", "kW/°C"]
+}
+
+df = pd.DataFrame(params)
+print(df.to_markdown(index=False))
+```
+
+# 2. Dynamic Equations
+
+## 2.1 Liquid Level Mass Balance
+$$\frac{dH}{dt} = \frac{F_{in} - F_{out}}{A}$$
+
+$$F_{out} = K_v \cdot V_o \cdot \sqrt{\rho g H}$$
+
+## 2.2 Thermal Energy Balance
+$$\rho C_p V \frac{dT}{dt} = \rho C_p F_{in} (T_{in} - T) + Q_{steam} - Q_{loss}$$
+
+$$Q_{steam} = U A_s \cdot (T_{steam} - T) \cdot V_s$$
+
+# 3. Python Simulation Step-Response
+
+```{python}
+#| label: sthr-simulation
+#| fig-cap: "Open-Loop Thermal Response to Steam Valve Step Change"
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Time vector
+t = np.linspace(0, 50, 500)
+# Step response model: T(t) = T0 + K * (1 - exp(-t/tau))
+T0 = 30.0
+K = 35.0
+tau = 8.5
+
+T = T0 + K * (1 - np.exp(-t / tau))
+
+plt.figure(figsize=(8, 4))
+plt.plot(t, T, color='#ffd600', linewidth=2, label='Tank Temp T(t)')
+plt.axhline(65.0, color='#4caf50', linestyle='--', label='Setpoint T_sp')
+plt.title('STHR Open-Loop Heating Dynamics', color='white')
+plt.xlabel('Time (s)', color='white')
+plt.ylabel('Temperature (°C)', color='white')
+plt.grid(True, alpha=0.2)
+plt.legend()
+plt.tight_layout()
+plt.show()
+```

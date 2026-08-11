@@ -1,0 +1,45 @@
+project:
+  type: website
+  output-dir: ../app/static/docs
+
+website:
+  title: "ChemPlant Dynamics"
+  navbar:
+    background: primary
+    search: false
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "STHR Process"
+        href: overview_sthr.qmd
+      - text: "Biodiesel Reactor"
+        href: overview_biodiesel.qmd
+      - text: "Control Theory"
+        href: control_theory.qmd
+      - text: "ISA-101 Guide"
+        href: isa101_guide.qmd
+  sidebar:
+    style: "docked"
+    search: false
+    contents:
+      - section: "Process Overview"
+        contents:
+          - index.qmd
+          - overview_sthr.qmd
+          - overview_biodiesel.qmd
+      - section: "Engineering & Control"
+        contents:
+          - control_theory.qmd
+          - isa101_guide.qmd
+
+format:
+  html:
+    theme:
+      dark: darkly
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    number-sections: true
+    html-math-method: katex
+    smooth-scroll: true

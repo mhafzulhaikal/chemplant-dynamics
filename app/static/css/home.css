@@ -492,7 +492,7 @@
     .resource-clickable-icon:hover {
         opacity: 1;
         transform: translateY(-2px);
-        filter: drop-shadow(0 0 6px rgba(255, 214, 0, 0.35));
+        filter: brightness(1.15);
     }
 
     .clickable-resource-icon:active,

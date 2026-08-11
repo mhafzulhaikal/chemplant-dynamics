@@ -718,37 +718,45 @@ class SignalHub:
         )
 
     def get_field_color(self, field_name: str, active_fields: list[str]) -> str:
-        """Assign a unique and stable color to each selected/active field.
+        """Assign a unique and stable color to each selected/active field based
+        on ISA-101 High-Performance HMI chromatic dispersion standards.
 
-        Guarantees that no two active fields share the same color within
-        active_fields.
+        Guarantees that active fields are allocated distinct, non-alarm colors
+        with maximal perceptual separation.
         """
         if not hasattr(self, '_field_colors'):
             self._field_colors = {}
 
-        # If already assigned, return it.
+        # If already assigned and currently valid, return it.
         if field_name in self._field_colors:
             return self._field_colors[field_name]
 
         from app.hub.perf_monitor import _DCS_TRACE_PALETTE
 
-        # What colors are currently used by active fields?
+        palette = _DCS_TRACE_PALETTE
+        n_palette = len(palette)
+
+        # What colors are currently in use by active fields?
         active_set = set(active_fields)
         used_colors = {self._field_colors[f] for f in active_set if f in self._field_colors}
 
-        # Find the first color in the palette that is not used
-        for color in _DCS_TRACE_PALETTE:
-            if color not in used_colors:
-                self._field_colors[field_name] = color
-                return color
+        # Stride with a co-prime step (5) over 16 colors to maximize chromatic distance
+        stride = 5
+        dispersion_order = [(i * stride) % n_palette for i in range(n_palette)]
 
-        # Fallback if we run out of colors (more than 56 active fields)
+        for idx in dispersion_order:
+            candidate = palette[idx]
+            if candidate not in used_colors:
+                self._field_colors[field_name] = candidate
+                return candidate
+
+        # Fallback for > 16 simultaneous fields
         try:
             available = list(getattr(self._bridge.state, 'available_log_fields', []) or [])
             idx = available.index(field_name)
         except ValueError:
-            idx = 0
-        fallback_color = _DCS_TRACE_PALETTE[idx % len(_DCS_TRACE_PALETTE)]
+            idx = len(self._field_colors)
+        fallback_color = palette[idx % n_palette]
         self._field_colors[field_name] = fallback_color
         return fallback_color
 

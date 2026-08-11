@@ -29,9 +29,9 @@
 .btn-feedback {
     transition:
         background-color 80ms linear,
-        box-shadow 80ms linear,
+        border-color 80ms linear,
         transform 80ms ease-out;
-    will-change: background-color, box-shadow, transform;
+    will-change: background-color, transform;
 }
 
 /* The browser fires ``:active`` while the pointer button is
@@ -41,38 +41,36 @@
 .btn-feedback:active,
 .btn-feedback.is-pressed {
     transform: translateY(1px);
-    box-shadow:
-        inset 0 0 0 1px var(--btn-feedback-glow, rgba(255, 213, 79, 0.45)),
-        inset 0 1px 0 0 rgba(0, 0, 0, 0.20);
+    box-shadow: none !important;
 }
 
 /* On dark surfaces (navbar / drawer on control panel) */
 .btn-feedback--dark {
-    --btn-feedback-glow: rgba(255, 213, 79, 0.55);
-    --btn-feedback-tint:  rgba(255, 213, 79, 0.10);
+    --btn-feedback-border: rgba(255, 213, 79, 0.40);
+    --btn-feedback-tint:   rgba(255, 255, 255, 0.08);
 }
 
 .btn-feedback--dark.is-pressed,
 .btn-feedback--dark:active {
     background-color: var(--btn-feedback-tint);
+    border-color: var(--btn-feedback-border);
 }
 
 /* On light surfaces (home page, expansion cards) */
 .btn-feedback--light {
-    --btn-feedback-glow: rgba(38, 198, 218, 0.55);
-    --btn-feedback-tint:  rgba(38, 198, 218, 0.10);
+    --btn-feedback-border: rgba(38, 198, 218, 0.40);
+    --btn-feedback-tint:   rgba(0, 0, 0, 0.06);
 }
 
 .btn-feedback--light.is-pressed,
 .btn-feedback--light:active {
     background-color: var(--btn-feedback-tint);
+    border-color: var(--btn-feedback-border);
 }
 
 /* The "active" / "selected" state stays on a button that has been
- * toggled, e.g. the left-drawer item that owns the current section.
- * A subtle persistent accent — not the same as the pressed
- * feedback, which is transient. */
+ * toggled, e.g. the left-drawer item that owns the current section. */
 .btn-feedback--persistent-active {
-    box-shadow:
-        inset 2px 0 0 0 var(--btn-feedback-glow, rgba(255, 213, 79, 0.65));
+    border-left: 2px solid var(--btn-feedback-border, rgba(255, 213, 79, 0.65));
+    box-shadow: none !important;
 }

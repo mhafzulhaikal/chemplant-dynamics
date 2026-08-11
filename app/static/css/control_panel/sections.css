@@ -129,7 +129,7 @@
     }
 
     .monitor-page-subtitle {
-        color: #ffff00;
+        color: var(--text-highlight, #ffd54f);
         font-size: 12px;
         letter-spacing: 0.02em;
     }
@@ -158,7 +158,7 @@
     }
 
     .monitor-metric-value {
-        color: #00ff00;
+        color: #4caf50;
         font-size: 24px;
         line-height: 1.05;
         margin-top: 8px;
@@ -166,7 +166,7 @@
     }
 
     .monitor-metric-unit {
-        color: #ffff00;
+        color: var(--text-highlight, #ffd54f);
         font-size: 11px;
         margin-top: 4px;
     }
@@ -212,8 +212,8 @@
 
     .monitor-plot-button-active {
         color: #000000;
-        border: 1px solid #ffff00;
-        background: #ffff00;
+        border: 1px solid #ffb300;
+        background: #ffb300;
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
     }
 
@@ -243,7 +243,7 @@
     }
 
     .monitor-active-subtitle {
-        color: #ffff00;
+        color: var(--text-highlight, #ffd54f);
         font-size: 11px;
     }
 

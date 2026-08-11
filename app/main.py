@@ -31,6 +31,10 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
+from app.nicegui_patch import apply_windows_storage_patch
+
+apply_windows_storage_patch()
+
 from nicegui import app as nicegui_app  # noqa: E402
 from nicegui import ui  # noqa: E402
 

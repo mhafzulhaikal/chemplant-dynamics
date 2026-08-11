@@ -1,0 +1,32 @@
+---
+title: "ChemPlant Dynamics — Technical Documentation"
+subtitle: "Real-time Process Dynamics, Control Engineering & High-Performance HMI Simulation Suite"
+author: "ChemPlant Dynamics Team"
+date: "2026-08-09"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+---
+
+::: {.callout-tip}
+## Interactive Simulation Suite
+ChemPlant Dynamics is an industrial-grade simulation and process control training platform adhering to **ANSI/ISA-101.01** High Performance HMI principles and first-principles chemical engineering kinetics.
+:::
+
+# 1. Available Simulation Modules
+
+## Stirred Tank Heater (STHR)
+A continuous mixed heating tank modeling first-order thermal dynamics, liquid level gravity discharge, and non-linear valve hydraulics. Features dual SISO feedback loops (TIC-101 and LIC-101).
+
+[Explore STHR Documentation](overview_sthr.qmd)
+
+## Biodiesel Transesterification Reactor
+A continuous stirred tank reactor (CSTR) modeling Arrhenius reaction kinetics for triglyceride conversion with methanol, accompanied by exothermic energy balances and jacketed cooling control.
+
+[Explore Biodiesel Documentation](overview_biodiesel.qmd)
+
+# 2. Engineering Standards
+
+- **ANSI/ISA-101.01**: High-Performance HMI philosophy.
+- **Velocity Discrete PID Algorithm**: Standard anti-windup formulation.

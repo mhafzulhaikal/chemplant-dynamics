@@ -141,12 +141,7 @@
         flex: 0 0 auto;
 
         margin: 0 !important;
-        padding: 0 !important;
-
-        background-color: #d32f2f !important;
-        border: none !important;
-
-        opacity: 1 !important;
+        background-color: var(--drawer-menu-separator-bg, rgba(255, 255, 255, 0.14)) !important;
     }
 
 

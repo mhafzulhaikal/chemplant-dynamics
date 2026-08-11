@@ -427,40 +427,32 @@
     }
 
     .pid-navbar-run-btn {
-        color: var(--text-success) !important;
+        color: #4caf50 !important;
+    }
+
+    .pid-navbar-run-btn:hover {
+        background-color: rgba(76, 175, 80, 0.14) !important;
+        color: #81c784 !important;
     }
 
     .pid-navbar-run-btn-active {
-        background-color: rgba(0, 255, 153, 0.18) !important;
-        color: #00ff99 !important;
-        box-shadow:
-            0 0 0 1px rgba(0, 255, 153, 0.55) inset,
-            0 0 8px rgba(0, 255, 153, 0.35) !important;
+        background-color: rgba(76, 175, 80, 0.18) !important;
+        color: #4caf50 !important;
+        border: 1px solid rgba(76, 175, 80, 0.75) !important;
+        box-shadow: none !important;
+    }
+
+    .pid-navbar-run-btn-active:hover {
+        background-color: rgba(76, 175, 80, 0.24) !important;
+        color: #81c784 !important;
+        border-color: rgba(76, 175, 80, 0.95) !important;
     }
 
     .pid-navbar-run-btn-active .q-icon {
-        animation: pid-run-icon-pulse 1.4s ease-in-out infinite;
+        animation: none !important;
     }
 
-    @keyframes pid-run-icon-pulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50%      { transform: scale(1.12); opacity: 0.85; }
-    }
-
-    /* ── Disabled state (simulation finished) ──
-       Applied by ``set_run_button_disabled`` in
-       app/pages/_svg_animation_helpers.py once the worker reaches
-       ``time_end`` and ``state.natural_stop`` flips to True. The
-       block is lifted on Reset and when the user extends End Time.
-
-       We target both the attribute selector (``[disabled]`` — what
-       Quasar / the HTML spec set) and the class
-       (``pid-navbar-run-btn-disabled`` — what the helper applies as
-       a visual hook independent of Quasar's own attribute juggling)
-       so the styling is robust if either form is stripped by a
-       Vue re-render. The active-state animation/glow is suppressed
-       so a button that was Running and then naturally completed
-       doesn't keep pulsing green. */
+    /* ── Disabled state (simulation finished) ── */
     .pid-navbar-run-btn[disabled],
     .pid-navbar-run-btn-disabled {
         color: rgba(255, 255, 255, 0.35) !important;
@@ -484,11 +476,21 @@
     }
 
     .pid-navbar-stop-btn {
-        color: #ff5252 !important;
+        color: #ffa726 !important;
+    }
+
+    .pid-navbar-stop-btn:hover {
+        background-color: rgba(255, 167, 38, 0.14) !important;
+        color: #ffb74d !important;
     }
 
     .pid-navbar-reset-btn {
-        color: var(--text-highlight) !important;
+        color: #26c6da !important;
+    }
+
+    .pid-navbar-reset-btn:hover {
+        background-color: rgba(38, 198, 218, 0.14) !important;
+        color: #80deea !important;
     }
 
 

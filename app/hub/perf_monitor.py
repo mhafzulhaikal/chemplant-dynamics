@@ -122,65 +122,26 @@ _SCOPE_HINTS: dict[str, str] = {
     'output': 'Click a cell to plot / unplot the output signal',
 }
 
-# Trace palette for the chart — DCS HMI colors cycled through the
-# selected fields, with amber first (brand accent).
+# Trace palette for the chart — Curated High-Performance HMI (ISA-101)
+# compliant palette. Avoids critical alarm red (#ff0000) and pure yellow
+# (#ffff00), while providing high contrast and color-blind friendly distinction.
 _DCS_TRACE_PALETTE: list[str] = [
-    '#ffd54f',
-    '#4fd1c5',
-    '#ff5252',
-    '#4caf50',
-    '#90cdf4',
-    '#f6ad55',
-    '#f687b3',
-    '#b794f4',
-    '#fbd38d',
-    '#68d391',
-    '#fc8181',
-    '#63b3ed',
-    '#ed64a6',
-    '#ecc94b',
-    '#48bb78',
-    '#f56565',
-    '#4299e1',
-    '#ed8936',
-    '#9f7aea',
-    '#38b2ac',
-    '#e53e3e',
-    '#f6e05e',
-    '#d6bcfa',
-    '#a0aec0',
-    '#00ff7f',
-    '#1e90ff',
-    '#ff69b4',
-    '#ff8c00',
-    '#ba55d3',
-    '#00ced1',
-    '#ff1493',
-    '#32cd32',
-    '#ff7f50',
-    '#6495ed',
-    '#da70d6',
-    '#adff2f',
-    '#ffb6c1',
-    '#7b68ee',
-    '#00fa9a',
-    '#ff00ff',
-    '#7fffd4',
-    '#ff4500',
-    '#9370db',
-    '#00ffff',
-    '#fa8072',
-    '#8a2be2',
-    '#ffff00',
-    '#00ff00',
-    '#ffdab9',
-    '#c71585',
-    '#20b2aa',
-    '#ff6347',
-    '#4682b4',
-    '#d2691e',
-    '#9acd32',
-    '#87ceeb',
+    '#26c6da',  # 1.  Process Cyan (Primary PV)
+    '#ff7043',  # 2.  Terracotta / Coral (Warm distinct)
+    '#42a5f5',  # 3.  Azure Blue (Calm, high contrast)
+    '#66bb6a',  # 4.  Sage Mint Green (Non-alarm green)
+    '#9575cd',  # 5.  Soft Lavender / Purple
+    '#e0a96d',  # 6.  Warm Sand / Ochre
+    '#80deea',  # 7.  Ice Teal
+    '#f06292',  # 8.  Dusty Rose
+    '#4db6ac',  # 9.  Seafoam Slate
+    '#7986cb',  # 10. Periwinkle Blue
+    '#dce775',  # 11. Soft Khaki Gold
+    '#ffab91',  # 12. Peach Amber
+    '#0097a7',  # 13. Deep Slate Teal
+    '#ba68c8',  # 14. Muted Lilac
+    '#aed581',  # 15. Pistachio Green
+    '#cfd8dc',  # 16. Platinum Silver
 ]
 
 
@@ -219,7 +180,7 @@ def _repaint_cell_dot(cell: Any, color: str) -> None:
 
     if color:
         dot.props(
-            f'style="background-color: {color}; box-shadow: 0 0 4px {color}; "',
+            f'style="background-color: {color}; box-shadow: none; "',
         )
     else:
         # Show as a muted white dot when inactive
@@ -821,7 +782,7 @@ class PerfMonitorState:
             cb(None)
         from nicegui import ui
 
-        ui.notify('Plot selections cleared', color='positive')
+        ui.notify('Plot selections cleared', color='blue-grey-8', icon='check_circle_outline')
 
     def start_flush_timer(self) -> None:
         def _flush():
@@ -912,9 +873,7 @@ def _mount_stripchart(
                                 f'!important; '
                                 f'background-color: {cell_color}26 '
                                 f'!important; '
-                                f'box-shadow: inset 0 0 0 1px '
-                                f'{cell_color}55, 0 '
-                                '0 6px -2px {cell_color}aa; "'
+                                f'box-shadow: none; "'
                             )
                         _repaint_cell_dot(cell, cell_color)
                     else:
@@ -1059,17 +1018,12 @@ def _mount_stripchart(
                         f'!important; '
                         f'background-color: {cell_color}26 '
                         f'!important; '
-                        f'box-shadow: inset 0 0 0 1px '
-                        f'{cell_color}55, 0 '
-                        '0 6px -2px {cell_color}aa; "'
+                        f'box-shadow: none; "'
                     )
                 with cell:
                     dot = ui.element('span').classes('pm-cell-color-dot')
                     if is_active and cell_color:
-                        dot.props(
-                            f'style="background-color: {cell_color}; '
-                            'box-shadow: 0 0 4px {cell_color}; "'
-                        )
+                        dot.props(f'style="background-color: {cell_color}; box-shadow: none; "')
                     else:
                         dot.props(
                             'style="background-color: #ffffff; opacity: 0.3; box-shadow: none; "'
@@ -1552,17 +1506,12 @@ def _mount_unified_stripchart(
                         f'!important; '
                         f'background-color: {cell_color}26 '
                         f'!important; '
-                        f'box-shadow: inset 0 0 0 1px '
-                        f'{cell_color}55, 0 '
-                        '0 6px -2px {cell_color}aa; "'
+                        f'box-shadow: none; "'
                     )
                 with cell:
                     dot = ui.element('span').classes('pm-cell-color-dot')
                     if is_active and cell_color:
-                        dot.props(
-                            f'style="background-color: {cell_color}; '
-                            'box-shadow: 0 0 4px {cell_color}; "'
-                        )
+                        dot.props(f'style="background-color: {cell_color}; box-shadow: none; "')
                     else:
                         dot.props(
                             'style="background-color: #ffffff; opacity: 0.3; box-shadow: none; "'
@@ -1677,7 +1626,7 @@ def _mount_unified_stripchart(
 
                             render_popout_button(
                                 popout_url,
-                                tooltip='Open Performance Monitoring in new tab',
+                                tooltip='Open in New Tab',
                             )
 
             with ui.column().classes('w-full shrink-0 gap-0'):

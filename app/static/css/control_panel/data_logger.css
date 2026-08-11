@@ -181,8 +181,8 @@
     .data-logger-action-btn-danger:hover {
         color: var(--text-white) !important;
 
-        background-color: rgba(211, 47, 47, 0.20) !important;
-        border-color: #d32f2f !important;
+        background-color: rgba(255, 112, 67, 0.18) !important;
+        border-color: rgba(255, 112, 67, 0.75) !important;
     }
 
     /* ── Save menu / per-scope save button ──────────────── */
@@ -192,15 +192,15 @@
        accent so it reads as the export action (matches the
        faceplate Apply button family). */
     .data-logger-save-btn {
-        color: var(--text-highlight, #ffd54f) !important;
-        border-color: rgba(255, 214, 0, 0.45) !important;
+        color: #26c6da !important;
+        background-color: rgba(38, 198, 218, 0.08) !important;
+        border: 1px solid rgba(38, 198, 218, 0.35) !important;
     }
 
     .data-logger-save-btn:hover {
-        color: var(--text-highlight, #ffd54f) !important;
-
-        background-color: rgba(255, 214, 0, 0.14) !important;
-        border-color: rgba(255, 214, 0, 0.85) !important;
+        color: #80deea !important;
+        background-color: rgba(38, 198, 218, 0.18) !important;
+        border-color: rgba(38, 198, 218, 0.75) !important;
     }
 
     .data-logger-save-btn .q-icon {
@@ -209,22 +209,22 @@
 
     /* Compact save icon-button on each scope card header. */
     .data-logger-scope-save-btn {
-        color: var(--text-highlight, #ffd54f) !important;
+        color: #26c6da !important;
 
         min-width: 26px !important;
         min-height: 26px !important;
 
-        background-color: rgba(255, 214, 0, 0.08) !important;
+        background-color: rgba(38, 198, 218, 0.08) !important;
 
-        border: 1px solid rgba(255, 214, 0, 0.35) !important;
+        border: 1px solid rgba(38, 198, 218, 0.35) !important;
         border-radius: 4px !important;
     }
 
     .data-logger-scope-save-btn:hover {
-        color: var(--text-white) !important;
+        color: #80deea !important;
 
-        background-color: rgba(255, 214, 0, 0.20) !important;
-        border-color: rgba(255, 214, 0, 0.75) !important;
+        background-color: rgba(38, 198, 218, 0.20) !important;
+        border-color: rgba(38, 198, 218, 0.75) !important;
     }
 
     .data-logger-scope-save-btn .q-icon {
@@ -236,7 +236,7 @@
         background-color: var(--bg-panel) !important;
         color: var(--text-main) !important;
 
-        border: 1px solid var(--border-color);
+        border: 1px solid rgba(38, 198, 218, 0.30);
         border-radius: 6px;
 
         font-family: var(--font-control-ui);
@@ -258,8 +258,8 @@
 
     .data-logger-save-menu .q-item:hover,
     .data-logger-save-menu .q-item--active {
-        background-color: rgba(255, 214, 0, 0.18) !important;
-        color: var(--text-highlight, #ffd54f) !important;
+        background-color: rgba(38, 198, 218, 0.16) !important;
+        color: #26c6da !important;
     }
 
     .data-logger-save-menu .q-separator {

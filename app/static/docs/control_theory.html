@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Process Control Theory — ChemPlant Dynamics</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" 
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    
+    <link rel="stylesheet" href="styles.css?v=2.1">
+</head>
+<body>
+
+    <!-- Quarto Header Navbar -->
+    <header class="quarto-navbar">
+        <a href="index.html" class="navbar-brand">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+            ChemPlant Dynamics
+        </a>
+        <nav class="navbar-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="overview_sthr.html" class="nav-link">STHR Process</a>
+            <a href="overview_biodiesel.html" class="nav-link">Biodiesel Reactor</a>
+            <a href="control_theory.html" class="nav-link active">Control Theory</a>
+            <a href="isa101_guide.html" class="nav-link">ISA-101 Guide</a>
+        </nav>
+    </header>
+
+    <div class="quarto-layout">
+
+        <!-- Left Sidebar Navigation -->
+        <aside class="quarto-sidebar">
+            <div class="sidebar-title">Process Models</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="index.html" class="sidebar-link">Hub Overview</a></li>
+                <li class="sidebar-item"><a href="overview_sthr.html" class="sidebar-link">STHR System</a></li>
+                <li class="sidebar-item"><a href="overview_biodiesel.html" class="sidebar-link">Biodiesel Reactor</a></li>
+            </ul>
+
+            <div class="sidebar-title">Engineering & Control</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="control_theory.html" class="sidebar-link active">PID Control Theory</a></li>
+                <li class="sidebar-item"><a href="isa101_guide.html" class="sidebar-link">ISA-101 Standards</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="quarto-main">
+            <div class="page-header">
+                <h1 class="page-title">Process Control Theory & PID Tuning</h1>
+                <p class="page-subtitle">Mathematical Foundations of Feedback Control Loops</p>
+            </div>
+
+            <h2 id="pid-algorithm">1. Continuous PID Controller Algorithm</h2>
+            <p>The standard parallel continuous-time PID algorithm in ideal gain form is defined as:</p>
+            <div class="equation-container">
+                $$u(t) = K_p e(t) + K_i \int_{0}^{t} e(\tau) d\tau + K_d \frac{de(t)}{dt}$$
+            </div>
+            <p>Where $u(t)$ is the controller output ($0-100\%$) and $e(t) = SP - PV(t)$ represents the instantaneous control error.</p>
+
+            <h2 id="discrete-form">2. Discrete Velocity Form (Anti-Windup)</h2>
+            <p>For discrete numerical simulation and microcontroller implementation, the algorithm is expressed in velocity form to prevent integral windup:</p>
+            <div class="equation-container">
+                $$\Delta u_k = K_p \left( e_k - e_{k-1} \right) + K_p \frac{\Delta t}{\tau_i} e_k + K_p \frac{\tau_d}{\Delta t} \left( PV_k - 2 PV_{k-1} + PV_{k-2} \right)$$
+            </div>
+            <div class="equation-container">
+                $$u_k = u_{k-1} + \Delta u_k$$
+            </div>
+
+            <h2 id="tuning-methods">3. Tuning Methodologies</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Response Character</th>
+                        <th>Aggressiveness</th>
+                        <th>Robustness ($M_s$)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Ziegler-Nichols</strong></td><td>Quarter-decay response</td><td>High</td><td>Low ($M_s > 2.0$)</td></tr>
+                    <tr><td><strong>Cohen-Coon</strong></td><td>Fast disturbance rejection</td><td>High</td><td>Moderate</td></tr>
+                    <tr><td><strong>AMIGO (Åström)</strong></td><td>Smooth reference tracking</td><td>Balanced</td><td>High ($M_s \approx 1.4$)</td></tr>
+                    <tr><td><strong>SIMC (Skogestad)</strong></td><td>Tunable speed & no overshoot</td><td>Configurable ($\tau_c$)</td><td>Excellent</td></tr>
+                </tbody>
+            </table>
+        </main>
+
+        <!-- Right TOC -->
+        <aside class="quarto-toc">
+            <div class="toc-title">On this page</div>
+            <ul class="toc-menu">
+                <li class="toc-item"><a href="#pid-algorithm" class="toc-link">1. PID Algorithm</a></li>
+                <li class="toc-item"><a href="#discrete-form" class="toc-link">2. Discrete Form</a></li>
+                <li class="toc-item"><a href="#tuning-methods" class="toc-link">3. Tuning Methods</a></li>
+            </ul>
+        </aside>
+
+    </div>
+
+</body>
+</html>

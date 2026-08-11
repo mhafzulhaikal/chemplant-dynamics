@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemPlant Dynamics — Process Documentation</title>
+    
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" 
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    
+    <link rel="stylesheet" href="styles.css?v=2.2">
+</head>
+<body>
+
+    <!-- Quarto Header Navbar -->
+    <header class="quarto-navbar">
+        <a href="javascript:void(0)" onclick="showPage('home')" class="navbar-brand">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+            ChemPlant Dynamics Docs
+        </a>
+        <nav class="navbar-nav">
+            <a href="javascript:void(0)" onclick="showPage('home')" class="nav-link" data-page="home">Home</a>
+            <a href="javascript:void(0)" onclick="showPage('sthr')" class="nav-link" data-page="sthr">STHR Process</a>
+            <a href="javascript:void(0)" onclick="showPage('biodiesel')" class="nav-link" data-page="biodiesel">Biodiesel Reactor</a>
+            <a href="javascript:void(0)" onclick="showPage('control')" class="nav-link" data-page="control">Control Theory</a>
+            <a href="javascript:void(0)" onclick="showPage('isa101')" class="nav-link" data-page="isa101">ISA-101 Guide</a>
+        </nav>
+    </header>
+
+    <div class="quarto-layout">
+
+        <!-- Left Sidebar Navigation -->
+        <aside class="quarto-sidebar">
+            <div class="sidebar-title">Process Models</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="javascript:void(0)" onclick="showPage('home')" class="sidebar-link" data-page="home">Hub Overview</a></li>
+                <li class="sidebar-item"><a href="javascript:void(0)" onclick="showPage('sthr')" class="sidebar-link" data-page="sthr">STHR System</a></li>
+                <li class="sidebar-item"><a href="javascript:void(0)" onclick="showPage('biodiesel')" class="sidebar-link" data-page="biodiesel">Biodiesel Reactor</a></li>
+            </ul>
+
+            <div class="sidebar-title">Engineering & Control</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="javascript:void(0)" onclick="showPage('control')" class="sidebar-link" data-page="control">PID Control Theory</a></li>
+                <li class="sidebar-item"><a href="javascript:void(0)" onclick="showPage('isa101')" class="sidebar-link" data-page="isa101">ISA-101 Standards</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area with SPA Tabs -->
+        <main class="quarto-main">
+
+            <!-- TAB 1: HOME -->
+            <div id="page-home" class="quarto-page" style="display:none;">
+                <div class="page-header">
+                    <h1 class="page-title">ChemPlant Dynamics — Technical Documentation</h1>
+                    <p class="page-subtitle">Real-time Process Dynamics, Control Engineering & High-Performance HMI Simulation Suite</p>
+                </div>
+
+                <div class="callout callout-tip">
+                    <div class="callout-title">Interactive Simulation Suite</div>
+                    <div class="callout-body">
+                        ChemPlant Dynamics is an industrial-grade simulation and process control training platform adhering to <strong>ANSI/ISA-101.01</strong> High Performance HMI principles and first-principles chemical engineering kinetics.
+                    </div>
+                </div>
+
+                <h2>1. Available Simulation Modules</h2>
+                <div class="card">
+                    <h3>Stirred Tank Heater (STHR)</h3>
+                    <p>A continuous mixed heating tank modeling first-order thermal dynamics, liquid level gravity discharge, and non-linear valve hydraulics. Features dual SISO feedback loops (TIC-101 and LIC-101).</p>
+                    <p><a href="javascript:void(0)" onclick="showPage('sthr')" style="color: var(--quarto-accent); font-weight: 600;">Open STHR Documentation &rarr;</a></p>
+                </div>
+
+                <div class="card">
+                    <h3>Biodiesel Transesterification Reactor</h3>
+                    <p>A continuous stirred tank reactor (CSTR) modeling Arrhenius reaction kinetics for triglyceride conversion with methanol, accompanied by exothermic energy balances and jacketed cooling control.</p>
+                    <p><a href="javascript:void(0)" onclick="showPage('biodiesel')" style="color: var(--quarto-accent); font-weight: 600;">Open Biodiesel Documentation &rarr;</a></p>
+                </div>
+
+                <h2>2. Architecture & Standards</h2>
+                <p>Every process model in this suite is governed by rigorous discrete numerical solvers (Euler / RK4) communicating with a zero-latency WebSocket bridge to the DCS faceplate layers.</p>
+            </div>
+
+            <!-- TAB 2: STHR PROCESS -->
+            <div id="page-sthr" class="quarto-page" style="display:none;">
+                <div class="page-header">
+                    <h1 class="page-title">Stirred Tank Heater (STHR) — Process Overview</h1>
+                    <p class="page-subtitle">Dynamic Thermal & Mass Balance Simulation Model</p>
+                </div>
+
+                <div class="callout callout-note">
+                    <div class="callout-title">Process Control Objective</div>
+                    <div class="callout-body">
+                        Regulate liquid outlet temperature ($T$) and hold-up level ($H$) under varying inlet feed disturbances ($F_{in}, T_{in}$).
+                    </div>
+                </div>
+
+                <h2 id="sthr-summary">1. System Summary</h2>
+                <div class="card">
+                    <p>The Stirred Tank Heater is a classic chemical engineering unit operation where cold inlet fluid is thoroughly mixed and heated via steam coil tubes.</p>
+                    <ul>
+                        <li><strong>TIC-101 (Temperature Loop):</strong> Manipulates steam inlet control valve ($V_s$).</li>
+                        <li><strong>LIC-101 (Level Loop):</strong> Manipulates discharge drain valve ($V_o$).</li>
+                    </ul>
+                </div>
+
+                <h2 id="sthr-equations">2. Dynamic Model Equations</h2>
+                <h3>2.1 Liquid Level Mass Balance</h3>
+                <p>The rate of change of liquid height $H$ with cross-sectional area $A$:</p>
+                <div class="equation-container">
+                    $$A \frac{dH}{dt} = F_{in} - F_{out}$$
+                </div>
+                <p>Where gravity outlet discharge $F_{out}$ follows Torricelli flow characteristics:</p>
+                <div class="equation-container">
+                    $$F_{out} = K_v \cdot V_o \cdot \sqrt{\rho g H}$$
+                </div>
+
+                <h3>2.2 Thermal Energy Balance</h3>
+                <p>Assuming perfect mixing and negligible wall heat capacitance:</p>
+                <div class="equation-container">
+                    $$\rho C_p V \frac{dT}{dt} = \rho C_p F_{in} (T_{in} - T) + Q_{steam} - Q_{loss}$$
+                </div>
+                <p>The steam heating rate $Q_{steam}$ is governed by heat transfer surface area $A_s$:</p>
+                <div class="equation-container">
+                    $$Q_{steam} = U A_s \cdot (T_{steam} - T) \cdot V_s$$
+                </div>
+
+                <h2 id="sthr-parameters">3. Nominal Operating Parameters</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Symbol</th>
+                            <th>Nominal Value</th>
+                            <th>Units</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Tank Diameter</td><td>$D$</td><td>1.50</td><td>$\text{m}$</td></tr>
+                        <tr><td>Liquid Level Setpoint</td><td>$H_{sp}$</td><td>2.00</td><td>$\text{m}$</td></tr>
+                        <tr><td>Target Outlet Temp Setpoint</td><td>$T_{sp}$</td><td>65.00</td><td>$\text{°C}$</td></tr>
+                        <tr><td>Steam Heating Temp</td><td>$T_{steam}$</td><td>140.00</td><td>$\text{°C}$</td></tr>
+                        <tr><td>Overall Heat Transfer Coeff.</td><td>$UA$</td><td>12.50</td><td>$\text{kW/°C}$</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB 3: BIODIESEL REACTOR -->
+            <div id="page-biodiesel" class="quarto-page" style="display:none;">
+                <div class="page-header">
+                    <h1 class="page-title">Biodiesel Transesterification Reactor</h1>
+                    <p class="page-subtitle">Kinetic Rate & Thermal Energy Balance Model</p>
+                </div>
+
+                <div class="callout callout-tip">
+                    <div class="callout-title">Reaction Chemistry</div>
+                    <div class="callout-body">
+                        Transesterification of Triglycerides ($\text{TG}$) with Methanol ($\text{MeOH}$) using basic catalyst ($\text{NaOH}$) yields Fatty Acid Methyl Esters ($\text{FAME}$) and Glycerol byproduct ($\text{GL}$).
+                    </div>
+                </div>
+
+                <h2 id="bio-description">1. Process Description</h2>
+                <div class="card">
+                    <p>The continuous stirred tank reactor maintains optimal reaction kinetics while removing exothermic heat via water cooling jacket coils.</p>
+                    <div class="equation-container">
+                        $$\text{Triglyceride (TG)} + 3\,\text{MeOH} \xrightarrow{\text{Catalyst}} 3\,\text{Biodiesel (FAME)} + \text{Glycerol (GL)}$$
+                    </div>
+                </div>
+
+                <h2 id="bio-kinetics">2. Reaction Kinetics & Energy Model</h2>
+                <h3>2.1 Arrhenius Rate Equation</h3>
+                <div class="equation-container">
+                    $$r_A = k_0 \cdot \exp\left(-\frac{E_a}{R T}\right) \cdot C_{TG} \cdot C_{MeOH}^3$$
+                </div>
+
+                <h3>2.2 Mass & Thermal Energy Balance</h3>
+                <div class="equation-container">
+                    $$V \frac{dC_{TG}}{dt} = F_{in} C_{TG,in} - F_{out} C_{TG} - V \cdot r_A$$
+                </div>
+                <div class="equation-container">
+                    $$\rho C_p V \frac{dT}{dt} = \rho C_p F_{in}(T_{in} - T) + (-\Delta H_{rxn}) \cdot V \cdot r_A + U A_{jacket} (T_{jacket} - T) \cdot V_{cool}$$
+                </div>
+
+                <h2 id="bio-loops">3. Operating Control Loops</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Loop Tag</th>
+                            <th>Controlled Variable (PV)</th>
+                            <th>Manipulated Variable (OP)</th>
+                            <th>Target Setpoint</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>TIC-201</strong></td><td>Reactor Temperature</td><td>Cooling Jacket Flow Valve</td><td>$60.0 \text{ °C}$</td></tr>
+                        <tr><td><strong>LIC-201</strong></td><td>Reactor Liquid Level</td><td>Outlet Harvest Pump</td><td>$1.80 \text{ m}$</td></tr>
+                        <tr><td><strong>FIC-201</strong></td><td>Methanol Feed Ratio</td><td>Methanol Dosing Pump</td><td>6:1 Molar Ratio</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB 4: CONTROL THEORY -->
+            <div id="page-control" class="quarto-page" style="display:none;">
+                <div class="page-header">
+                    <h1 class="page-title">Process Control Theory & PID Tuning</h1>
+                    <p class="page-subtitle">Mathematical Foundations of Feedback Control Loops</p>
+                </div>
+
+                <h2 id="ctrl-algorithm">1. Continuous PID Controller Algorithm</h2>
+                <p>The standard parallel continuous-time PID algorithm in ideal gain form is defined as:</p>
+                <div class="equation-container">
+                    $$u(t) = K_p e(t) + K_i \int_{0}^{t} e(\tau) d\tau + K_d \frac{de(t)}{dt}$$
+                </div>
+                <p>Where $u(t)$ is the controller output ($0-100\%$) and $e(t) = SP - PV(t)$ represents the instantaneous control error.</p>
+
+                <h2 id="ctrl-discrete">2. Discrete Velocity Form (Anti-Windup)</h2>
+                <p>For discrete numerical simulation and microcontroller implementation, the algorithm is expressed in velocity form to prevent integral windup:</p>
+                <div class="equation-container">
+                    $$\Delta u_k = K_p \left( e_k - e_{k-1} \right) + K_p \frac{\Delta t}{\tau_i} e_k + K_p \frac{\tau_d}{\Delta t} \left( PV_k - 2 PV_{k-1} + PV_{k-2} \right)$$
+                </div>
+                <div class="equation-container">
+                    $$u_k = u_{k-1} + \Delta u_k$$
+                </div>
+
+                <h2 id="ctrl-tuning">3. Tuning Methodologies</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Response Character</th>
+                            <th>Aggressiveness</th>
+                            <th>Robustness ($M_s$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Ziegler-Nichols</strong></td><td>Quarter-decay response</td><td>High</td><td>Low ($M_s > 2.0$)</td></tr>
+                        <tr><td><strong>Cohen-Coon</strong></td><td>Fast disturbance rejection</td><td>High</td><td>Moderate</td></tr>
+                        <tr><td><strong>AMIGO (Åström)</strong></td><td>Smooth reference tracking</td><td>Balanced</td><td>High ($M_s \approx 1.4$)</td></tr>
+                        <tr><td><strong>SIMC (Skogestad)</strong></td><td>Tunable speed & no overshoot</td><td>Configurable ($\tau_c$)</td><td>Excellent</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TAB 5: ISA-101 GUIDE -->
+            <div id="page-isa101" class="quarto-page" style="display:none;">
+                <div class="page-header">
+                    <h1 class="page-title">ANSI/ISA-101.01 High Performance HMI Guidelines</h1>
+                    <p class="page-subtitle">Standardized Human Factors & Situational Awareness Engineering</p>
+                </div>
+
+                <div class="callout callout-important">
+                    <div class="callout-title">Color Discipline in High Performance HMI</div>
+                    <div class="callout-body">
+                        Color is reserved strictly for drawing operator attention to abnormal upset states. Static background elements must remain neutral dark gray/black tones.
+                    </div>
+                </div>
+
+                <h2 id="isa-levels">1. Four Levels of HMI Displays</h2>
+                <div class="card">
+                    <ul>
+                        <li><strong>Level 1:</strong> Overview of entire plant / operating area.</li>
+                        <li><strong>Level 2:</strong> Unit Operation P&ID graphic display.</li>
+                        <li><strong>Level 3:</strong> Detailed equipment faceplates and diagnostic tuning modals.</li>
+                        <li><strong>Level 4:</strong> Sub-system diagnostics, interlocks, and maintenance procedures.</li>
+                    </ul>
+                </div>
+
+                <h2 id="isa-elements">2. Visual Element Specifications</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Standard Style</th>
+                            <th>Anti-Pattern (Prohibited)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Pipes & Vessels</strong></td><td>Low-contrast gray (`#2a3441`)</td><td>3D gradients, skeuomorphic shading</td></tr>
+                        <tr><td><strong>Pumps & Valves</strong></td><td>Static outline icon with state badge</td><td>Animated rotating impellers / flames</td></tr>
+                        <tr><td><strong>Alarm Warning (AH)</strong></td><td>Solid Amber badge (`#ffd600`)</td><td>Flashing neon yellow text</td></tr>
+                        <tr><td><strong>Emergency Trip (AHH)</strong></td><td>Solid Red badge (`#ff5252`)</td><td>Flashing screen popups</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+        <!-- Right TOC (Dynamically Updated by JS) -->
+        <aside class="quarto-toc">
+            <div class="toc-title">On this page</div>
+            <ul id="toc-list" class="toc-menu">
+                <!-- Injected by JavaScript based on active page -->
+            </ul>
+        </aside>
+
+    </div>
+
+    <script>
+        const TOC_DATA = {
+            'home': [
+                { title: '1. Simulation Modules', target: '#page-home' },
+                { title: '2. Architecture & Standards', target: '#page-home' }
+            ],
+            'sthr': [
+                { title: '1. System Summary', target: '#sthr-summary' },
+                { title: '2. Dynamic Equations', target: '#sthr-equations' },
+                { title: '3. Operating Parameters', target: '#sthr-parameters' }
+            ],
+            'biodiesel': [
+                { title: '1. Process Description', target: '#bio-description' },
+                { title: '2. Reaction Kinetics', target: '#bio-kinetics' },
+                { title: '3. Control Loops', target: '#bio-loops' }
+            ],
+            'control': [
+                { title: '1. PID Algorithm', target: '#ctrl-algorithm' },
+                { title: '2. Discrete Form', target: '#ctrl-discrete' },
+                { title: '3. Tuning Methods', target: '#ctrl-tuning' }
+            ],
+            'isa101': [
+                { title: '1. HMI Levels', target: '#isa-levels' },
+                { title: '2. Element Specifications', target: '#isa-elements' }
+            ]
+        };
+
+        function updateTOC(pageId) {
+            const list = document.getElementById('toc-list');
+            if (!list) return;
+            list.innerHTML = '';
+            const items = TOC_DATA[pageId] || [];
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'toc-item';
+                li.innerHTML = `<a href="${item.target}" class="toc-link">${item.title}</a>`;
+                list.appendChild(li);
+            });
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.quarto-page').forEach(el => el.style.display = 'none');
+            const target = document.getElementById('page-' + pageId);
+            if (target) {
+                target.style.display = 'block';
+            }
+
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.toggle('active', el.getAttribute('data-page') === pageId);
+            });
+
+            document.querySelectorAll('.sidebar-link').forEach(el => {
+                el.classList.toggle('active', el.getAttribute('data-page') === pageId);
+            });
+
+            updateTOC(pageId);
+            localStorage.setItem('chemplant_active_doc_tab', pageId);
+            window.location.hash = pageId;
+        }
+
+        // Initialize from URL hash or localStorage, default to 'sthr'
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlHash = window.location.hash.replace('#', '');
+            const saved = localStorage.getItem('chemplant_active_doc_tab');
+            const initial = urlHash || saved || 'sthr';
+            showPage(initial);
+        });
+    </script>
+
+</body>
+</html>

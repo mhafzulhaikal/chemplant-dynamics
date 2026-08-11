@@ -246,17 +246,17 @@
 
     .ctrl-param-status-auto {
         background: #4caf50 !important;
-        box-shadow: 0 0 6px rgba(76, 175, 80, 0.55) !important;
+        box-shadow: none !important;
     }
 
     .ctrl-param-status-manual {
         background: #ffb300 !important;
-        box-shadow: 0 0 6px rgba(255, 179, 0, 0.55) !important;
+        box-shadow: none !important;
     }
 
     .ctrl-param-status-off {
         background: #9e9e9e !important;
-        box-shadow: 0 0 6px rgba(158, 158, 158, 0.45) !important;
+        box-shadow: none !important;
     }
 
     .ctrl-param-mode-text {
@@ -585,31 +585,33 @@
     /* Apply / Face plate — same as .faceplate-apply-btn */
     .ctrl-param-faceplate-btn,
     .ctrl-param-apply-btn {
-           height: 26px !important;
-           min-height: 26px !important;
+        height: 26px !important;
+        min-height: 26px !important;
 
-           padding: 0 12px !important;
+        padding: 0 12px !important;
         border-radius: 4px !important;
 
         font-family: var(--font-control-ui) !important;
-           font-size: 0.72rem !important;
-           font-weight: 700 !important;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
 
-        background: transparent !important;
-        color: var(--text-highlight, #ffd54f) !important;
-        border: 1px solid rgba(255, 213, 79, 0.90) !important;
+        background: rgba(38, 198, 218, 0.08) !important;
+        color: #26c6da !important;
+        border: 1px solid rgba(38, 198, 218, 0.65) !important;
         box-shadow: none !important;
         text-transform: none !important;
     }
 
     .ctrl-param-faceplate-btn .q-btn__content,
     .ctrl-param-apply-btn .q-btn__content {
-        color: var(--text-highlight, #ffd54f) !important;
+        color: #26c6da !important;
     }
 
     .ctrl-param-faceplate-btn:hover,
     .ctrl-param-apply-btn:hover {
-        background-color: rgba(255, 213, 79, 0.14) !important;
+        background-color: rgba(38, 198, 218, 0.18) !important;
+        border-color: rgba(38, 198, 218, 0.90) !important;
+        color: #80deea !important;
     }
 
     @media (max-width: 760px) {

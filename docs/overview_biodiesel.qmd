@@ -1,0 +1,54 @@
+---
+title: "Biodiesel Transesterification Reactor"
+subtitle: "Kinetic Rate & Thermal Energy Balance Model"
+author: "ChemPlant Dynamics Team"
+date: "2026-08-09"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    html-math-method: katex
+---
+
+# 1. Process Description
+
+Continuous transesterification of Triglycerides ($\text{TG}$) with Methanol ($\text{MeOH}$) using $\text{NaOH}$ catalyst to yield Fatty Acid Methyl Esters ($\text{FAME}$) and Glycerol ($\text{GL}$).
+
+$$\text{Triglyceride (TG)} + 3\,\text{MeOH} \xrightarrow{\text{Catalyst}} 3\,\text{Biodiesel (FAME)} + \text{Glycerol (GL)}$$
+
+# 2. Reaction Kinetics & Energy Model
+
+## 2.1 Arrhenius Rate Law
+$$r_A = k_0 \cdot \exp\left(-\frac{E_a}{R T}\right) \cdot C_{TG} \cdot C_{MeOH}^3$$
+
+```{python}
+#| label: reaction-kinetics-plot
+#| fig-cap: "Arrhenius Reaction Rate Constant k(T) vs Temperature"
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Arrhenius parameters
+k0 = 1.2e8
+Ea = 45000.0  # J/mol
+R = 8.314     # J/(mol*K)
+
+T_degC = np.linspace(20, 80, 200)
+T_K = T_degC + 273.15
+k = k0 * np.exp(-Ea / (R * T_K))
+
+plt.figure(figsize=(8, 4))
+plt.plot(T_degC, k, color='#4caf50', linewidth=2, label='Rate Constant k(T)')
+plt.axvline(60.0, color='#ffd600', linestyle='--', label='Operating Temp (60°C)')
+plt.title('Transesterification Reaction Rate Sensitivity', color='white')
+plt.xlabel('Temperature (°C)', color='white')
+plt.ylabel('Rate Constant k (L^3/mol^3 s)', color='white')
+plt.grid(True, alpha=0.2)
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+## 2.2 Mass & Thermal Balances
+$$V \frac{dC_{TG}}{dt} = F_{in} C_{TG,in} - F_{out} C_{TG} - V \cdot r_A$$
+
+$$\rho C_p V \frac{dT}{dt} = \rho C_p F_{in}(T_{in} - T) + (-\Delta H_{rxn}) \cdot V \cdot r_A + U A_{jacket} (T_{jacket} - T) \cdot V_{cool}$$

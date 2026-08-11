@@ -401,12 +401,12 @@ def _trigger_download(
     """
     try:
         ui.download.content(content, filename, media_type)
-        ui.notify(f'Saved {filename}', color='positive')
+        ui.notify(f'Saved {filename}', color='blue-grey-8', icon='check_circle_outline')
     except AttributeError:
         # Pre-2.14 NiceGUI: fall back to the legacy ui.download(...).
         try:
             ui.download(content, filename)  # type: ignore[misc]
-            ui.notify(f'Saved {filename}', color='positive')
+            ui.notify(f'Saved {filename}', color='blue-grey-8', icon='check_circle_outline')
         except Exception:
             ui.notify(
                 'Download not supported by this NiceGUI version',
@@ -491,7 +491,7 @@ def _repaint_cell_dot(cell: Any, color: str) -> None:
         )
         if dot:
             if color:
-                dot.props(f'style="background-color: {color}; box-shadow: 0 0 4px {color}; "')
+                dot.props(f'style="background-color: {color}; box-shadow: none; "')
             else:
                 dot.props('style="background-color: #ffffff; opacity: 0.3; box-shadow: none; "')
     except Exception:
@@ -668,7 +668,7 @@ class DataLoggerState:
             cb(None)
         from nicegui import ui
 
-        ui.notify('Logs cleared', color='positive')
+        ui.notify('Logs cleared', color='blue-grey-8', icon='delete_sweep')
 
     def toggle_all_for_scope(self, scope: str) -> None:
         try:
@@ -891,9 +891,7 @@ def render_data_logger_section(
                                 f'!important; '
                                 f'background-color: {cell_color}26 '
                                 f'!important; '
-                                f'box-shadow: inset 0 0 0 1px '
-                                f'{cell_color}55, '
-                                f'0 0 6px -2px {cell_color}aa; "'
+                                f'box-shadow: none; "'
                             )
                         _repaint_cell_dot(cell, cell_color)
                     else:
@@ -999,7 +997,7 @@ def render_data_logger_section(
 
     def _save_scope_as(scope: str | None, fmt: str) -> None:
         if not state.hub._history:
-            ui.notify('No log entries to save yet.', color='warning')
+            ui.notify('No log entries to save yet.', color='blue-grey-8', icon='info_outline')
             return
         selected = state.all_selected()
         fields = _export_columns_for_scope(scope, selected)
@@ -1007,7 +1005,7 @@ def render_data_logger_section(
             fields = _split_fields_by_scope(list(bridge.state.available_log_fields)).get(scope, [])
             fields = _order_fields_for_scope(fields, loop_order, loop_signal_map)
         if not fields:
-            ui.notify('No columns selected to save.', color='warning')
+            ui.notify('No columns selected to save.', color='blue-grey-8', icon='info_outline')
             return
         case_name = getattr(bridge, 'case_name', None) or getattr(
             getattr(bridge, 'state', None), 'case_name', None
@@ -1033,10 +1031,7 @@ def render_data_logger_section(
                     'data-logger-header-cell data-logger-header-cell-readonly'
                 ):
                     dot = ui.element('span').classes('data-logger-cell-color-dot')
-                    dot.props(
-                        'style="background-color: #ffd54f; '
-                        'opacity: 1; box-shadow: 0 0 4px #ffd54f; "'
-                    )
+                    dot.props('style="background-color: #ffd54f; opacity: 1; box-shadow: none; "')
                     with ui.column().classes('data-logger-header-cell-text'):
                         ui.label(prefix_label).classes('data-logger-header-cell-tag')
                         ui.label('fixed').classes('data-logger-header-cell-meta')
@@ -1077,17 +1072,12 @@ def render_data_logger_section(
                         f'!important; '
                         f'background-color: {cell_color}26 '
                         f'!important; '
-                        f'box-shadow: inset 0 0 0 1px '
-                        f'{cell_color}55, '
-                        f'0 0 6px -2px {cell_color}aa; "'
+                        f'box-shadow: none; "'
                     )
                 with cell:
                     dot = ui.element('span').classes('data-logger-cell-color-dot')
                     if is_active and cell_color:
-                        dot.props(
-                            f'style="background-color: {cell_color}; '
-                            f'box-shadow: 0 0 4px {cell_color}; "'
-                        )
+                        dot.props(f'style="background-color: {cell_color}; box-shadow: none; "')
                     else:
                         dot.props(
                             'style="background-color: #ffffff; opacity: 0.3; box-shadow: none; "'
@@ -1410,9 +1400,7 @@ def _mount_unified_log_widget(
                                 f'!important; '
                                 f'background-color: {cell_color}26 '
                                 f'!important; '
-                                f'box-shadow: inset 0 0 0 1px '
-                                f'{cell_color}55, 0 '
-                                '0 6px -2px {cell_color}aa; "'
+                                f'box-shadow: none; "'
                             )
                         _repaint_cell_dot(cell, cell_color)
                     else:
@@ -1517,7 +1505,7 @@ def _mount_unified_log_widget(
 
     def _save_scope_as(scope: str | None, fmt: str) -> None:
         if not state.hub._history:
-            ui.notify('No log entries to save yet.', color='warning')
+            ui.notify('No log entries to save yet.', color='blue-grey-8', icon='info_outline')
             return
         selected = state.all_selected()
         fields = _export_columns_for_scope(scope, selected)
@@ -1525,7 +1513,7 @@ def _mount_unified_log_widget(
             fields = _split_fields_by_scope(list(bridge.state.available_log_fields)).get(scope, [])
             fields = _order_fields_for_scope(fields, loop_order, loop_signal_map)
         if not fields:
-            ui.notify('No columns selected to save.', color='warning')
+            ui.notify('No columns selected to save.', color='blue-grey-8', icon='info_outline')
             return
         case_name = getattr(bridge, 'case_name', None) or getattr(
             getattr(bridge, 'state', None), 'case_name', None
@@ -1554,10 +1542,7 @@ def _mount_unified_log_widget(
                     'data-logger-header-cell data-logger-header-cell-readonly'
                 ):
                     dot = ui.element('span').classes('data-logger-cell-color-dot')
-                    dot.props(
-                        'style="background-color: #ffd54f; opacity: 1; '
-                        'box-shadow: 0 0 4px #ffd54f; "'
-                    )
+                    dot.props('style="background-color: #ffd54f; opacity: 1; box-shadow: none; "')
                     with ui.column().classes('data-logger-header-cell-text'):
                         ui.label(prefix_label).classes('data-logger-header-cell-tag')
                         ui.label('fixed').classes('data-logger-header-cell-meta')
@@ -1598,17 +1583,12 @@ def _mount_unified_log_widget(
                         f'!important; '
                         f'background-color: {cell_color}26 '
                         f'!important; '
-                        f'box-shadow: inset 0 0 0 1px '
-                        f'{cell_color}55, 0 '
-                        '0 6px -2px {cell_color}aa; "'
+                        f'box-shadow: none; "'
                     )
                 with cell:
                     dot = ui.element('span').classes('data-logger-cell-color-dot')
                     if is_active and cell_color:
-                        dot.props(
-                            f'style="background-color: {cell_color}; '
-                            'box-shadow: 0 0 4px {cell_color}; "'
-                        )
+                        dot.props(f'style="background-color: {cell_color}; box-shadow: none; "')
                     else:
                         dot.props(
                             'style="background-color: #ffffff; opacity: 0.3; box-shadow: none; "'
@@ -1706,7 +1686,7 @@ def _mount_unified_log_widget(
 
                             render_popout_button(
                                 popout_url,
-                                tooltip='Open Data Logger in new tab',
+                                tooltip='Open in New Tab',
                             )
 
             with ui.column().classes('w-full shrink-0 gap-0'):

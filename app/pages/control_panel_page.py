@@ -27,12 +27,14 @@ Routes registered:
 from __future__ import annotations
 
 import logging
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
 from nicegui import ui
 
+from app.config import STATIC_DIR
 from app.components.faceplate_dialog import (
     FaceplateDialog,
     FaceplateDialogConfig,
@@ -145,7 +147,7 @@ def _available_cases() -> list[str]:
 # ──────────────────────────────────────────────────────────────
 
 
-@ui.page('/control-panel')
+@ui.page('/control-panel', response_timeout=15)
 def control_panel_index() -> None:
     """Redirect ``/control-panel`` to the first registered case."""
     available = _available_cases()
@@ -232,7 +234,7 @@ def _make_engine_button_handlers(
     def _on_run() -> None:
         if hub is not None:
             hub.engine_control.run()  # ← one line to engine
-        ui.notify('Simulation Started', type='positive', position='bottom-right')
+        ui.notify('Simulation Started', color='blue-grey-8', icon='play_arrow', position='bottom-right')
         try:
             from app.hub.data_logger import write_audit_log
 
@@ -244,7 +246,7 @@ def _make_engine_button_handlers(
     def _on_stop() -> None:
         if hub is not None:
             hub.engine_control.stop()  # ← one line to engine
-        ui.notify('Simulation Stopped', type='info', position='bottom-right')
+        ui.notify('Simulation Stopped', color='blue-grey-8', icon='stop', position='bottom-right')
         try:
             from app.hub.data_logger import write_audit_log
 
@@ -257,7 +259,7 @@ def _make_engine_button_handlers(
         if hub is not None:
             hub.engine_control.reset()  # ← one line to engine
             hub.reset_snapshot_to_seed()
-        ui.notify('Simulation Reset', type='info', position='bottom-right')
+        ui.notify('Simulation Reset', color='blue-grey-8', icon='restart_alt', position='bottom-right')
         try:
             from app.hub.data_logger import write_audit_log
 
@@ -271,7 +273,8 @@ def _make_engine_button_handlers(
             hub.engine_control.set_real_time(bool(value))  # ← one line
         ui.notify(
             ('Realtime Simulation Activated' if value else 'Realtime Simulation Deactivated'),
-            type='info',
+            color='blue-grey-8',
+            icon='info_outline',
             position='bottom-right',
             timeout=1500,
         )
@@ -422,7 +425,8 @@ def _build_pid_section(
                             try:
                                 ui.notify(
                                     'Simulation reached End Time',
-                                    type='info',
+                                    color='blue-grey-8',
+                                    icon='flag',
                                     position='bottom-right',
                                     timeout=2000,
                                 )
@@ -432,7 +436,8 @@ def _build_pid_section(
                             try:
                                 ui.notify(
                                     'Simulation stopped (engine error)',
-                                    type='warning',
+                                    color='blue-grey-8',
+                                    icon='stop',
                                     position='bottom-right',
                                     timeout=2000,
                                 )
@@ -491,22 +496,15 @@ def _build_data_logger(hub: SignalHub | None, popout_url: str | None = None) -> 
     render_data_logger_section(hub, popout_url=popout_url)
 
 
+QUARTO_DOCS_VERSION = '2.2.0'
+
+
 def _build_overview(case_slug: str, handlers: CaseHandlers) -> None:  # noqa: ARG001
-    with ui.column().classes('control-panel-section-content'):
-        with ui.column().classes('w-full items-center justify-center pt-16 pb-8 gap-4'):
-            ui.image('/static/assets/under_construction_v3.png').classes('w-96 opacity-90').style(
-                'mix-blend-mode: screen;'
-                ' mask-image: radial-gradient('
-                'circle, black 50%, transparent 100%);'
-                ' -webkit-mask-image: radial-gradient('
-                'circle, black 50%, transparent 100%);'
-            )
-            ui.label('Page Under Construction').classes(
-                'text-white/70 text-xl font-bold tracking-wider uppercase'
-            )
-            ui.label('This section is currently being updated or under maintenance.').classes(
-                'text-white/50 text-sm text-center max-w-md'
-            )
+    quarto_url = f'/static/docs/overview_{case_slug}.html?v={QUARTO_DOCS_VERSION}#{case_slug}'
+    with ui.column().classes('w-full h-full p-0 m-0 gap-0 overflow-hidden'):
+        ui.element('iframe').props(
+            f'src="{quarto_url}" frameborder="0"'
+        ).classes('w-full h-[calc(100vh-104px)] border-none rounded-none')
 
 
 def _register_case_route(case_slug: str) -> None:
@@ -540,7 +538,8 @@ def _register_case_route(case_slug: str) -> None:
                 if finished:
                     ui.notify(
                         reason or 'Simulation already finished.',
-                        type='warning',
+                        color='blue-grey-8',
+                        icon='info_outline',
                         position='bottom-right',
                     )
                     return
@@ -555,7 +554,8 @@ def _register_case_route(case_slug: str) -> None:
                     return
                 ui.notify(
                     'Simulation Running',
-                    type='positive',
+                    color='blue-grey-8',
+                    icon='check_circle_outline',
                     position='bottom-right',
                 )
                 try:
@@ -581,7 +581,8 @@ def _register_case_route(case_slug: str) -> None:
                     return
                 ui.notify(
                     'Simulation Stopped',
-                    type='info',
+                    color='blue-grey-8',
+                    icon='stop',
                     position='bottom-right',
                 )
                 try:

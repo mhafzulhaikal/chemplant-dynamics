@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>ISA-101 HMI Standard — ChemPlant Dynamics</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" 
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    
+    <link rel="stylesheet" href="styles.css?v=2.1">
+</head>
+<body>
+
+    <!-- Quarto Header Navbar -->
+    <header class="quarto-navbar">
+        <a href="index.html" class="navbar-brand">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+            ChemPlant Dynamics
+        </a>
+        <nav class="navbar-nav">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="overview_sthr.html" class="nav-link">STHR Process</a>
+            <a href="overview_biodiesel.html" class="nav-link">Biodiesel Reactor</a>
+            <a href="control_theory.html" class="nav-link">Control Theory</a>
+            <a href="isa101_guide.html" class="nav-link active">ISA-101 Guide</a>
+        </nav>
+    </header>
+
+    <div class="quarto-layout">
+
+        <!-- Left Sidebar Navigation -->
+        <aside class="quarto-sidebar">
+            <div class="sidebar-title">Process Models</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="index.html" class="sidebar-link">Hub Overview</a></li>
+                <li class="sidebar-item"><a href="overview_sthr.html" class="sidebar-link">STHR System</a></li>
+                <li class="sidebar-item"><a href="overview_biodiesel.html" class="sidebar-link">Biodiesel Reactor</a></li>
+            </ul>
+
+            <div class="sidebar-title">Engineering & Control</div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="control_theory.html" class="sidebar-link">PID Control Theory</a></li>
+                <li class="sidebar-item"><a href="isa101_guide.html" class="sidebar-link active">ISA-101 Standards</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="quarto-main">
+            <div class="page-header">
+                <h1 class="page-title">ANSI/ISA-101.01 High Performance HMI Guidelines</h1>
+                <p class="page-subtitle">Standardized Human Factors & Situational Awareness Engineering</p>
+            </div>
+
+            <div class="callout callout-important">
+                <div class="callout-title">Color Discipline in High Performance HMI</div>
+                <div class="callout-body">
+                    Color is reserved strictly for drawing operator attention to abnormal upset states. Static background elements must remain neutral dark gray/black tones.
+                </div>
+            </div>
+
+            <h2 id="core-principles">1. Four Levels of HMI Displays</h2>
+            <div class="card">
+                <ul>
+                    <li><strong>Level 1:</strong> Overview of entire plant / operating area.</li>
+                    <li><strong>Level 2:</strong> Unit Operation P&ID graphic display.</li>
+                    <li><strong>Level 3:</strong> Detailed equipment faceplates and diagnostic tuning modals.</li>
+                    <li><strong>Level 4:</strong> Sub-system diagnostics, interlocks, and maintenance procedures.</li>
+                </ul>
+            </div>
+
+            <h2 id="element-rules">2. Visual Element Specifications</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Standard Style</th>
+                        <th>Anti-Pattern (Prohibited)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Pipes & Vessels</strong></td><td>Low-contrast gray (`#2a3441`)</td><td>3D gradients, skeuomorphic shading</td></tr>
+                    <tr><td><strong>Pumps & Valves</strong></td><td>Static outline icon with state badge</td><td>Animated rotating impellers / flames</td></tr>
+                    <tr><td><strong>Alarm Warning (AH)</strong></td><td>Solid Amber badge (`#ffd600`)</td><td>Flashing neon yellow text</td></tr>
+                    <tr><td><strong>Emergency Trip (AHH)</strong></td><td>Solid Red badge (`#ff5252`)</td><td>Flashing screen popups</td></tr>
+                </tbody>
+            </table>
+        </main>
+
+        <!-- Right TOC -->
+        <aside class="quarto-toc">
+            <div class="toc-title">On this page</div>
+            <ul class="toc-menu">
+                <li class="toc-item"><a href="#core-principles" class="toc-link">1. HMI Levels</a></li>
+                <li class="toc-item"><a href="#element-rules" class="toc-link">2. Element Specifications</a></li>
+            </ul>
+        </aside>
+
+    </div>
+
+</body>
+</html>

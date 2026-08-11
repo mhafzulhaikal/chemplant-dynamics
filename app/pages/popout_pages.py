@@ -67,7 +67,8 @@ def register_popout_routes(case_slug: str) -> None:
                 hub.engine_control.run()
                 ui.notify(
                     'Simulation Running',
-                    type='positive',
+                    color='blue-grey-8',
+                    icon='check_circle_outline',
                     position='bottom-right',
                 )
             except Exception as e:
@@ -80,7 +81,7 @@ def register_popout_routes(case_slug: str) -> None:
         def _on_stop() -> None:
             try:
                 hub.engine_control.stop()
-                ui.notify('Simulation Stopped', type='info', position='bottom-right')
+                ui.notify('Simulation Stopped', color='blue-grey-8', icon='stop', position='bottom-right')
             except Exception as e:
                 ui.notify(
                     f'Stop failed: {e}',
@@ -190,7 +191,8 @@ def register_popout_routes(case_slug: str) -> None:
                 hub.engine_control.run()
                 ui.notify(
                     'Simulation Running',
-                    type='positive',
+                    color='blue-grey-8',
+                    icon='check_circle_outline',
                     position='bottom-right',
                 )
             except Exception as e:
@@ -203,7 +205,7 @@ def register_popout_routes(case_slug: str) -> None:
         def _on_stop() -> None:
             try:
                 hub.engine_control.stop()
-                ui.notify('Simulation Stopped', type='info', position='bottom-right')
+                ui.notify('Simulation Stopped', color='blue-grey-8', icon='stop', position='bottom-right')
             except Exception as e:
                 ui.notify(
                     f'Stop failed: {e}',

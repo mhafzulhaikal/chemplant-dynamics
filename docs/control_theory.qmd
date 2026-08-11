@@ -1,0 +1,49 @@
+---
+title: "Process Control Theory & PID Tuning"
+subtitle: "Mathematical foundations of feedback control in chemical processes"
+author: "ChemPlant Dynamics Team"
+date: "2026-08-09"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+---
+
+# 1. Proportional-Integral-Derivative (PID) Control
+
+The standard parallel continuous-time PID controller algorithm is defined as:
+
+$$u(t) = K_p e(t) + K_i \int_{0}^{t} e(\tau) d\tau + K_d \frac{de(t)}{dt}$$
+
+Where:
+- $u(t)$ is the controller output signal ($0 - 100\%$).
+- $e(t) = SP - PV(t)$ is the instantaneous control error.
+- $K_p$, $K_i$, $K_d$ are the proportional, integral, and derivative gains.
+
+::: {.callout-note}
+In industrial DCS platforms (e.g., Emerson DeltaV, Honeywell Experion), the ideal gain form is often expressed with Integral Time ($\tau_i$) and Derivative Time ($\tau_d$):
+$$u(t) = K_p \left( e(t) + \frac{1}{\tau_i} \int_0^t e(\tau)d\tau + \tau_d \frac{de(t)}{dt} \right)$$
+:::
+
+# 2. Discrete Implementation (Velocity Form)
+
+For digital microcontrollers and real-time numerical simulation, the discrete positional PID formulation is converted to velocity form to prevent integral windup and bump-less transfer:
+
+$$\Delta u_k = K_p \left( e_k - e_{k-1} \right) + K_p \frac{\Delta t}{\tau_i} e_k + K_p \frac{\tau_d}{\Delta t} \left( PV_k - 2 PV_{k-1} + PV_{k-2} \right)$$
+
+$$u_k = u_{k-1} + \Delta u_k$$
+
+# 3. Tuning Methodologies
+
+| Method | Response Type | Aggressiveness | Robustness ($M_s$) |
+| :--- | :--- | :--- | :--- |
+| **Ziegler-Nichols** | Quarter-decay | High | Low ($M_s > 2.0$) |
+| **Cohen-Coon** | Fast disturbance recovery | High | Moderate |
+| **AMIGO (Åström-Hägglund)** | Smooth reference tracking | Balanced | High ($M_s \approx 1.4$) |
+| **SIMC (Skogestad)** | Modest overshoot | Tunable ($\tau_c$) | Excellent |
+
+# 4. Anti-Windup & Output Limits
+
+When the controller output $u(t)$ hits hard saturation limits ($0\%$ or $100\%$), integral action must freeze (*clamping*) or decay (*back-calculation*):
+
+$$e_{clamped} = \begin{cases} 0 & \text{if } u \ge u_{max} \text{ and } e > 0 \\ 0 & \text{if } u \le u_{min} \text{ and } e < 0 \\ e & \text{otherwise} \end{cases}$$

@@ -401,7 +401,7 @@ def _render_runtime_manager_card(
                         on_click=on_close,
                     ).props('flat dense size=sm').classes(
                         'runtime-manager-window-btn runtime-manager-window-btn-close'
-                    )
+                    ).tooltip('Close')
 
         # ── Hero timer strip (Current Time) ──
         # The big DCS-style clock lives at the top of the card, just

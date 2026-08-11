@@ -1,0 +1,50 @@
+---
+title: "ANSI/ISA-101.01 Human Machine Interface (HMI) Standard"
+subtitle: "Design principles for situational awareness in industrial process control"
+author: "ChemPlant Dynamics Team"
+date: "2026-08-09"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+---
+
+# 1. Core Principles of High Performance HMI
+
+The ANSI/ISA-101.01 standard defines visual design criteria aimed at maximizing operator situational awareness, minimizing reaction time, and preventing alarm fatigue.
+
+::: {.callout-tip}
+### Rule #1: Color Reserved for Abnormal Conditions
+The background must remain a muted, neutral dark/gray (#000000 or #111722). High-chroma saturated colors (Red, Amber, Yellow) are strictly reserved for active alarms and emergency states.
+:::
+
+# 2. HMI Hierarchy Levels
+
+```
+Level 1: Enterprise Overview (Macro KPIs, Plant-wide status)
+  └─ Level 2: Unit Process Graphic (P&ID Operational View)
+       └─ Level 3: Equipment Detail / Faceplates (PID Controllers, Tuning)
+            └─ Level 4: Diagnostic & Maintenance Displays
+```
+
+# 3. Visual Element Specifications
+
+| Element | Standard Style | Anti-Pattern (Prohibited) |
+| :--- | :--- | :--- |
+| **Piping & Vessels** | Low-contrast gray outlines (`#2a3441`) | 3D gradients, realistic shading |
+| **Active Pumps/Valves** | Static outline icon + status text | Animated rotating impellers / flames |
+| **Alarm High (AH)** | Solid Amber/Yellow badge (`#ffd600`) | Flashing neon bright text |
+| **Alarm High-High (AHH)**| Solid Red badge (`#ff1744`) | Screen-shaking popups |
+
+# 4. Color Palette Tokens
+
+```css
+:root {
+    --bg-main: #000000;         /* Level 1/2 Screen Background */
+    --bg-panel: #111722;        /* Process Card Backdrop */
+    --border-muted: #2a3441;    /* Vessel & Pipe Outlines */
+    --text-primary: #e0e0e0;    /* Process Measurements (PV) */
+    --color-alarm-warn: #ffd600;/* Warning / Alarm Low/High */
+    --color-alarm-crit: #ff1744;/* Emergency Trip / Alarm HH */
+}
+```

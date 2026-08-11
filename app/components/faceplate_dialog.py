@@ -273,7 +273,8 @@ class FaceplateDialog:
                             self._on_minimize() if self._on_minimize else None,
                         ),
                     )
-                    minimize_tooltip = ui.tooltip('Minimize')
+                    with minimize_btn:
+                        minimize_tooltip = ui.tooltip('Minimize')
                     card.register_minimize_button(
                         minimize_btn,
                         minimize_tooltip,
@@ -283,7 +284,7 @@ class FaceplateDialog:
                         color=None,
                     ).props('flat round dense size=sm').classes(
                         'faceplate-close-btn',
-                    ).on(
+                    ).tooltip('Close').on(
                         'click',
                         lambda _: (
                             self.close(),
@@ -427,6 +428,7 @@ class FaceplateDialog:
                             'faceplate-bar-label faceplate-bar-label-pv',
                         )
                         with ui.element('div').classes('faceplate-bar-track'):
+                            ui.element('div').classes('faceplate-normal-band')
                             self._pv_fill = ui.element('div').classes(
                                 'faceplate-bar-fill faceplate-bar-fill-pv',
                             )
@@ -444,6 +446,7 @@ class FaceplateDialog:
                             'faceplate-bar-label faceplate-bar-label-sp',
                         )
                         with ui.element('div').classes('faceplate-bar-track'):
+                            ui.element('div').classes('faceplate-normal-band')
                             self._sp_fill = ui.element('div').classes(
                                 'faceplate-bar-fill faceplate-bar-fill-sp',
                             )
@@ -931,7 +934,7 @@ class FaceplateDialog:
                 'dense color="amber"'
                 + (' readonly' if readonly else '')
                 + (
-                    f' tooltip="Press Enter or click Apply to commit {name}"'
+                    f' tooltip="Press Enter to apply"'
                     if not readonly
                     else ''
                 ),

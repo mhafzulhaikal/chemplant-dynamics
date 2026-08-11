@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 DEFAULT_HEIGHTS: dict[str, int] = {
-    'overview': 240,
+    'overview': 560,
     'Piping and Instrumentation Diagram': 540,
     'Performance Monitoring': 520,
     'Data Logger': 480,

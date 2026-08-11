@@ -44,7 +44,7 @@
     --text-success: #4caf50;
     --text-white: #ffffff;
 
-    --text-control: green;
+    --text-control: #4caf50;
 
 
     /* =========================================================
@@ -148,7 +148,7 @@
        14. CONTROL PANEL DRAWER — COLOR
        ========================================================= */
 
-    --drawer-menu-separator-bg: #d32f2f;
+    --drawer-menu-separator-bg: rgba(255, 255, 255, 0.14);
 
     --drawer-menu-item-text: #c9d1d9;
     --drawer-menu-item-active-text: #000000;
@@ -308,9 +308,9 @@
     --hmi-accent-amber-strong: #ffd600;
     --hmi-accent-amber-soft:   rgba(255, 213, 79, 0.14);
     --hmi-accent-green:   #4caf50;
-    --hmi-accent-green-bright: #00ff00;
-    --hmi-accent-red:     #ff5252;
-    --hmi-accent-amber-button: #c62828;
+    --hmi-accent-green-bright: #81c784;
+    --hmi-accent-red:     #ff7043;
+    --hmi-accent-amber-button: #ffa726;
     --hmi-grid:           rgba(255, 255, 255, 0.04);
 
     /* =========================================================

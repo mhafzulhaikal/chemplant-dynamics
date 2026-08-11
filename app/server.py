@@ -80,6 +80,9 @@ if sys.platform == 'win32' and sys.version_info < (3, 14):
 
 from app.api import health_router, sim_router  # noqa: E402
 from app.config import STATIC_DIR  # noqa: E402
+from app.nicegui_patch import apply_windows_storage_patch
+
+apply_windows_storage_patch()
 
 logger = logging.getLogger(__name__)
 

@@ -570,7 +570,7 @@ class ControllerModal:
             )
             .props(
                 'dense step=any color="amber" '
-                f'tooltip="Press Enter or click Apply to commit {name}"',
+                f'tooltip="Press Enter to apply"',
             )
             .classes(f'ctrl-param-value {extra_classes}'.strip())
         )
@@ -1192,7 +1192,7 @@ class ControllerModal:
         except Exception as exc:
             ui.notify(f'Failed to apply parameters: {exc}', color='negative')
         else:
-            ui.notify(f'{self.controller_tag} parameters applied', color='positive')
+            ui.notify(f'{self.controller_tag} parameters applied', color='blue-grey-8', icon='check_circle_outline')
         finally:
             self.mode_syncing = False
 

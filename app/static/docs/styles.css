@@ -1,0 +1,375 @@
+/* ChemPlant Dynamics — Quarto Documentation Theme (ISA-101 Aligned) */
+
+:root {
+    --quarto-bg: #000000;
+    --quarto-panel: #111722;
+    --quarto-card: #151c29;
+    --quarto-border: #2a3441;
+    --quarto-text: #e0e0e0;
+    --quarto-muted: #8b949e;
+    --quarto-accent: #ffd600;
+    --quarto-green: #4caf50;
+    --quarto-red: #ff5252;
+    --quarto-font: "Inter", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --quarto-font-mono: "JetBrains Mono", "Consolas", monospace;
+    --nav-height: 48px;
+}
+
+* {
+    box-sizing: border-box;
+    scrollbar-color: rgba(255, 213, 79, 0.2) transparent;
+    scrollbar-width: thin;
+}
+
+*:hover {
+    scrollbar-color: var(--quarto-accent) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 213, 79, 0.2);
+    border-radius: 3px;
+}
+*:hover::-webkit-scrollbar-thumb {
+    background: var(--quarto-accent);
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--quarto-bg);
+    color: var(--quarto-text);
+    font-family: var(--quarto-font);
+    font-size: 14px;
+    line-height: 1.6;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   1. QUARTO NAVBAR
+   ========================================================= */
+.quarto-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    width: 100%;
+    height: var(--nav-height);
+    background-color: var(--quarto-panel);
+    border-bottom: 1px solid var(--quarto-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.quarto-navbar .navbar-brand {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--quarto-accent);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quarto-navbar .navbar-brand svg {
+    color: var(--quarto-accent);
+}
+
+.quarto-navbar .navbar-nav {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.quarto-navbar .nav-link {
+    color: var(--quarto-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.quarto-navbar .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.quarto-navbar .nav-link.active {
+    color: var(--quarto-accent);
+    background: rgba(255, 214, 0, 0.08);
+    font-weight: 600;
+}
+
+/* =========================================================
+   2. QUARTO 3-COLUMN LAYOUT
+   ========================================================= */
+.quarto-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr) 220px;
+    min-height: calc(100vh - var(--nav-height));
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Left Sidebar */
+.quarto-sidebar {
+    background-color: #0a0e17;
+    border-right: 1px solid var(--quarto-border);
+    padding: 24px 16px;
+    box-sizing: border-box;
+}
+
+.sidebar-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--quarto-muted);
+    font-weight: 700;
+    margin: 18px 0 8px 8px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-item {
+    margin-bottom: 2px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    color: var(--quarto-text);
+    text-decoration: none;
+    font-size: 0.84rem;
+    border-radius: 4px;
+    transition: background 0.12s;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+}
+
+.sidebar-link.active {
+    background-color: var(--quarto-panel);
+    color: var(--quarto-accent);
+    font-weight: 600;
+}
+
+/* Main Content Area */
+.quarto-main {
+    padding: 28px 40px 48px 40px;
+    min-width: 0;
+    max-width: 900px;
+    box-sizing: border-box;
+}
+
+.page-header {
+    border-bottom: 1px solid var(--quarto-border);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    color: var(--quarto-accent);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+}
+
+.page-subtitle {
+    color: var(--quarto-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+h2 {
+    color: var(--quarto-green);
+    font-size: 1.22rem;
+    font-weight: 600;
+    border-left: 3px solid var(--quarto-accent);
+    padding-left: 10px;
+    margin-top: 32px;
+    margin-bottom: 14px;
+}
+
+h3 {
+    color: var(--quarto-text);
+    font-size: 1.02rem;
+    font-weight: 600;
+    margin-top: 22px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin: 0 0 14px 0;
+}
+
+/* Callout Boxes (Official Quarto Format) */
+.callout {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    box-sizing: border-box;
+}
+
+.callout.callout-note {
+    background: rgba(255, 214, 0, 0.06);
+    border-left: 4px solid var(--quarto-accent);
+}
+
+.callout.callout-tip {
+    background: rgba(76, 175, 80, 0.06);
+    border-left: 4px solid var(--quarto-green);
+}
+
+.callout.callout-important {
+    background: rgba(255, 82, 82, 0.08);
+    border-left: 4px solid var(--quarto-red);
+}
+
+.callout-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+
+.callout-body {
+    font-size: 0.88rem;
+}
+
+/* Cards & Panels */
+.card {
+    background-color: var(--quarto-card);
+    border: 1px solid var(--quarto-border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0;
+}
+
+/* Code & Equations */
+.equation-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 14px 0;
+    padding: 8px 0;
+    box-sizing: border-box;
+}
+
+.katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin: 0.5em 0 !important;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    background: var(--quarto-card);
+    border-radius: 6px;
+    border: 1px solid var(--quarto-border);
+    overflow: hidden;
+}
+
+th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--quarto-border);
+    font-size: 0.88rem;
+}
+
+th {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--quarto-accent);
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* Right TOC (On this page) */
+.quarto-toc {
+    border-left: 1px solid var(--quarto-border);
+    padding: 24px 18px;
+    box-sizing: border-box;
+    font-size: 0.82rem;
+}
+
+.toc-title {
+    font-weight: 700;
+    color: var(--quarto-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    margin-bottom: 12px;
+}
+
+.toc-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toc-item {
+    margin-bottom: 6px;
+}
+
+.toc-link {
+    color: var(--quarto-muted);
+    text-decoration: none;
+    display: block;
+    padding: 3px 0;
+    transition: color 0.12s;
+}
+
+.toc-link:hover {
+    color: var(--quarto-accent);
+}
+
+/* Responsive Behavior */
+@media (max-width: 1024px) {
+    .quarto-layout {
+        grid-template-columns: 220px minmax(0, 1fr);
+    }
+    .quarto-toc {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .quarto-layout {
+        grid-template-columns: 1fr;
+    }
+    .quarto-sidebar {
+        display: none;
+    }
+    .quarto-main {
+        padding: 20px 24px;
+    }
+}

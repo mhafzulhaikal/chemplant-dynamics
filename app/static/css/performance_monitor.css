@@ -272,7 +272,7 @@
         height: 6px;
         border-radius: 50%;
         background-color: var(--text-highlight, #ffd54f);
-        box-shadow: 0 0 4px var(--text-highlight, #ffd54f);
+        box-shadow: none;
     }
 
     .pm-panel-tag-text {
@@ -573,24 +573,25 @@
     }
 
     .pm-action-btn-danger:hover {
-        color: #ff5252 !important;
-        background-color: rgba(255, 82, 82, 0.1) !important;
-        border-color: rgba(255, 82, 82, 0.45) !important;
+        color: #ff7043 !important;
+        background-color: rgba(255, 112, 67, 0.14) !important;
+        border-color: rgba(255, 112, 67, 0.65) !important;
     }
     
     .pm-save-btn {
-        background-color: rgba(255, 214, 0, 0.05) !important;
-        border-color: rgba(255, 214, 0, 0.2) !important;
-        color: #ffd54f !important;
+        background-color: rgba(38, 198, 218, 0.08) !important;
+        border-color: rgba(38, 198, 218, 0.35) !important;
+        color: #26c6da !important;
     }
     .pm-save-btn:hover {
-        background-color: rgba(255, 214, 0, 0.15) !important;
-        border-color: rgba(255, 214, 0, 0.6) !important;
+        background-color: rgba(38, 198, 218, 0.18) !important;
+        border-color: rgba(38, 198, 218, 0.75) !important;
+        color: #80deea !important;
     }
     
     .pm-save-menu {
         background-color: rgba(17, 17, 17, 0.98) !important;
-        border: 1px solid rgba(255, 214, 0, 0.3) !important;
+        border: 1px solid rgba(38, 198, 218, 0.30) !important;
         border-radius: 4px !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
     }
@@ -604,7 +605,7 @@
         text-transform: uppercase !important;
     }
     .pm-save-menu .q-item:hover {
-        background-color: rgba(255, 214, 0, 0.1) !important;
-        color: #ffd54f !important;
+        background-color: rgba(38, 198, 218, 0.16) !important;
+        color: #26c6da !important;
     }
 }
