@@ -99,7 +99,9 @@ def _interruptible_sleep(
         if remaining > SPIN_THRESHOLD:
             # Sleep up to one OS quantum, capped so we stay interruptible.
             time.sleep(min(remaining - SPIN_THRESHOLD, quantum_seconds))
-        # else: busy-spin the last <1ms for microsecond accuracy
+        else:
+            # Yield time slice to OS so UI/event loop threads are never starved
+            time.sleep(0)
 
 
 class RealTimeClock:
@@ -219,7 +221,8 @@ class AcceleratedClock:
             if debt > self._max_debt_s:
                 self._next_tick = now
 
-            time.sleep(self._min_yield_s)
+            # Yield time-slice to OS without artificially throttling high-speed steps
+            time.sleep(0)
             return True
 
         completed = _interruptible_sleep(

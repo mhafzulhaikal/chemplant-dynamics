@@ -380,7 +380,7 @@ class ControllerModal:
         value = self.param_defaults.get(key, fallback)
         try:
             return float(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return float(fallback)
 
     def _coerce_float(self, value: Any) -> float | None:
@@ -388,7 +388,7 @@ class ControllerModal:
             return None
         try:
             return float(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return None
 
     @property
@@ -463,7 +463,7 @@ class ControllerModal:
         if value is not None:
             try:
                 value = float(value)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 pass
 
         # ── Skip the write if the value is already in sync ──
@@ -480,7 +480,7 @@ class ControllerModal:
                     and float(current) == float(value)
                 ):
                     return
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 pass
         field.value = value  # type: ignore
 
@@ -569,8 +569,7 @@ class ControllerModal:
                 step=step,
             )
             .props(
-                'dense step=any color="amber" '
-                f'tooltip="Press Enter to apply"',
+                'dense step=any color="amber" tooltip="Press Enter to apply"',
             )
             .classes(f'ctrl-param-value {extra_classes}'.strip())
         )
@@ -911,7 +910,7 @@ class ControllerModal:
                     self.pv_input.classes(add='pv-warning', remove='pv-danger')
                 else:
                     self.pv_input.classes(remove='pv-warning pv-danger')
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 self.pv_input.classes(remove='pv-warning pv-danger')
 
         op_key = self._engine_key('op') or 'op'
@@ -1072,7 +1071,7 @@ class ControllerModal:
         raw_status = self.store.get(status_key, 2.0)
         try:
             raw_status = float(raw_status)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             raw_status = 2.0
         try:
             return status_map.get(round(float(raw_status)), 'auto')
@@ -1192,7 +1191,11 @@ class ControllerModal:
         except Exception as exc:
             ui.notify(f'Failed to apply parameters: {exc}', color='negative')
         else:
-            ui.notify(f'{self.controller_tag} parameters applied', color='blue-grey-8', icon='check_circle_outline')
+            ui.notify(
+                f'{self.controller_tag} parameters applied',
+                color='blue-grey-8',
+                icon='check_circle_outline',
+            )
         finally:
             self.mode_syncing = False
 

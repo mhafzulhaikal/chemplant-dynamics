@@ -198,30 +198,3 @@ def control_panel_shell(
                 panel.set_visibility(label == default_section)
 
     build_footer()
-
-
-# trigger reload 3
-# trigger reload 4
-# trigger reload 5
-# trigger reload 8
-# trigger reload 9
-# trigger reload 28
-# trigger reload 29
-# trigger reload 30
-# trigger reload 31
-# trigger reload 32
-# trigger reload 33
-# trigger reload 34
-# trigger reload 35
-# trigger reload 36
-# trigger reload 37
-# trigger reload 48
-# trigger reload 49
-# trigger reload 50
-# trigger reload 51
-# trigger reload 52
-# trigger reload 53
-# trigger reload 54
-# trigger reload 55
-# trigger reload 56
-# trigger reload 57

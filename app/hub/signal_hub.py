@@ -313,7 +313,7 @@ class SignalHub:
         """
         try:
             v = float(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return
 
         spec = self._registry.get_by_modal_key(modal_key)
@@ -431,7 +431,7 @@ class SignalHub:
                     continue
                 try:
                     self._snapshot[str(modal_key)] = float(value)
-                except (TypeError, ValueError):
+                except TypeError, ValueError:
                     continue
         self._apply_derived_pairs()
 
@@ -564,7 +564,7 @@ class SignalHub:
                             self._snapshot[modal_key] = float(
                                 overrides[engine_tag],
                             )
-                        except (TypeError, ValueError):
+                        except TypeError, ValueError:
                             pass
             except Exception:
                 pass
@@ -583,15 +583,16 @@ class SignalHub:
         time.perf_counter()
 
         # ── 1. Step-aligned drain ──────────────────────────────────────────────
-        # drain_one() consumes exactly ONE physics step record at a time.
-        # This guarantees that every UI refresh corresponds to one coherent
-        # physics state: t=0.01 min → T=160F, NOT a stale mix of step i+k data.
-        delta_dict, meta, raw_step = self._adapter.drain_one()
+        # drain_and_parse drains up to self._drain_cap records per tick.
+        # All intermediate physics steps are recorded into history for full
+        # fidelity, while the latest step is folded into delta_dict so the UI
+        # remains instantaneous without queue backlog lag.
+        delta_dict, meta, raw_steps = self._adapter.drain_and_parse(self._drain_cap)
 
-        # Append to history (one step at a time)
-        if raw_step is not None:
+        # Append to history
+        if raw_steps:
             with self._lock:
-                self._history.append(raw_step)
+                self._history.extend(raw_steps)
 
         # Apply write-locks: ignore values for keys that were recently modified
         now = time.time()
@@ -617,15 +618,19 @@ class SignalHub:
         # ── Sim-time zero-latency listeners ───────────────────────────────────
         # Notify registered callbacks (e.g. RTM current-time label) immediately
         # after each step so they update in the same asyncio tick — no polling
-        # lag. The `if(el)` guard in the JS keeps stale closures safe.
-        if self._sim_time_listeners and raw_step is not None:
+        # lag. Dead/disconnected listeners are safely removed.
+        if self._sim_time_listeners and raw_steps:
             _st = meta.sim_time
             _status = meta.status
+            dead_listeners: list[Callable[[float, str], None]] = []
             for _cb in list(self._sim_time_listeners):
                 try:
                     _cb(_st, _status)
                 except Exception:
-                    logger.debug('SignalHub: sim_time_listener %r raised', _cb, exc_info=True)
+                    dead_listeners.append(_cb)
+            if dead_listeners:
+                for dl in dead_listeners:
+                    self.remove_sim_time_listener(dl)
 
         # Apply derived mirrors
         derived = self._derived_pairs
@@ -689,8 +694,8 @@ class SignalHub:
                 accel = float(getattr(self._adapter._bridge.state, 'acceleration', 1.0) or 1.0)
                 # Wall-clock seconds per step
                 step_wall_s = (Ts_min * 60.0) / max(accel, 1e-12)
-                # Poll at EXACTLY the step rate — clamp to [10ms, 500ms]
-                target_tick_s = max(0.010, min(step_wall_s, 0.5))
+                # Poll at the step rate — clamp to [33ms (30 Hz max), 500ms]
+                target_tick_s = max(0.033, min(step_wall_s, 0.5))
             else:
                 target_tick_s = 0.2  # idle: 200ms
 

@@ -142,7 +142,7 @@ class EngineBridgeAdapter:
                         f_val = float(fallback_t)
                         if f_val >= self._sim_time:
                             self._sim_time = f_val
-                    except (TypeError, ValueError):
+                    except TypeError, ValueError:
                         pass
                 bridge_last = getattr(bridge_state, 'last_step', None)
                 if bridge_last is not None and bridge_last >= 0:
@@ -150,7 +150,7 @@ class EngineBridgeAdapter:
                         s_val = int(bridge_last)
                         if s_val >= self._step_index:
                             self._step_index = s_val
-                    except (TypeError, ValueError):
+                    except TypeError, ValueError:
                         pass
         except Exception:
             pass
@@ -229,7 +229,7 @@ class EngineBridgeAdapter:
                         f_val = float(fallback_t)
                         if f_val >= self._sim_time:
                             self._sim_time = f_val
-                    except (TypeError, ValueError):
+                    except TypeError, ValueError:
                         pass
                 bridge_last = getattr(bridge_state, 'last_step', None)
                 if bridge_last is not None and bridge_last >= 0:
@@ -237,7 +237,7 @@ class EngineBridgeAdapter:
                         s_val = int(bridge_last)
                         if s_val >= self._step_index:
                             self._step_index = s_val
-                    except (TypeError, ValueError):
+                    except TypeError, ValueError:
                         pass
         except Exception:
             pass
@@ -296,14 +296,14 @@ class EngineBridgeAdapter:
                 new_t = float(record.time_min)
                 if new_t >= self._sim_time:
                     self._sim_time = new_t
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 pass
         if getattr(record, 'step_index', None) is not None:
             try:
                 new_step = int(record.step_index)
                 if new_step >= self._step_index:
                     self._step_index = new_step
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 pass
 
     def _fold_status(
@@ -321,5 +321,5 @@ class EngineBridgeAdapter:
     def _safe_float(value: Any) -> float | None:
         try:
             return float(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return None

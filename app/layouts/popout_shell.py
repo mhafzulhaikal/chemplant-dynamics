@@ -30,9 +30,9 @@ def popout_shell(
     # Header without menu button, with page title
     build_popout_header(
         page_title,
-        _subtitle=subtitle,
-        _title_classes=title_classes,
-        _subtitle_classes=subtitle_classes,
+        subtitle=subtitle,
+        title_classes=title_classes,
+        subtitle_classes=subtitle_classes,
     )
 
     # Use the established control panel classes for the fixed layout

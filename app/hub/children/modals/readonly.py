@@ -195,7 +195,7 @@ class ReadOnlyControllerModal:
             return
         try:
             value = float(field.value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return
         target_key = getattr(self, 'sp_key', None)
         if not target_key:
@@ -325,7 +325,7 @@ class ReadOnlyControllerModal:
             value = self.pv_default
         try:
             value = float(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             value = self.pv_default
 
         if isinstance(value, float):

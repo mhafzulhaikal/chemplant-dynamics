@@ -128,7 +128,7 @@ class ReactiveActionStore(dict):
                 try:
                     mode_val = round(float(value))
                     mode_name = {0: 'OFF', 1: 'MANUAL', 2: 'AUTOMATIC'}.get(mode_val, str(value))
-                except (TypeError, ValueError):
+                except TypeError, ValueError:
                     mode_name = str(value)
                 return f'User changed {tag} Mode to {mode_name}'
 
@@ -142,7 +142,7 @@ class ReactiveActionStore(dict):
             if key == 'sim_time_end_state':
                 try:
                     val_str = 'unlimited' if float(value) == float('inf') else f'{value} min'
-                except (TypeError, ValueError):
+                except TypeError, ValueError:
                     val_str = str(value)
                 return f'User set {label} to {val_str}'
             if key == 'scenario_state':

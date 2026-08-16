@@ -27,15 +27,15 @@ except ImportError:
     # Provide a dummy binding decorator so the class definitions still parse.
     class _MockBinding:
         @staticmethod
-        def bindable(cls):
-            return cls
+        def bindable(target):
+            return target
 
         @staticmethod
-        def bindable_dataclass(cls, **kwargs):
+        def bindable_dataclass(target, **kwargs):
             from dataclasses import dataclass
 
             # In NiceGUI, bindable_dataclass is used just like @dataclass
-            return dataclass(cls)
+            return dataclass(target, **kwargs)
 
     binding = _MockBinding()
 
@@ -89,7 +89,7 @@ def safe_float(
         else:
             result = float(value)
 
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         result = float(default)
 
     if math.isnan(result):

@@ -276,7 +276,7 @@ class ControllerRegistry:
             return '—'
         try:
             f = float(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return f'{value} {spec.unit}'.strip()
         if self._is_flow_spec(spec):
             f *= 3600.0

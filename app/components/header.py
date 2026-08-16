@@ -203,24 +203,39 @@ def build_control_panel_header(
 
 
 def build_popout_header(
-    _page_title: str,
-    _subtitle: str | None = None,
+    page_title: str,
+    subtitle: str | None = None,
     on_title_click: Callable[[], None] | None = None,
-    _title_classes: str = ('text-lg font-bold tracking-wide text-white/90 uppercase'),
-    _subtitle_classes: str = (
-        'text-xs text-white/60 ml-2 mt-1 tracking-wider uppercase font-semibold'
-    ),
+    title_classes: str = 'text-lg font-bold tracking-wide text-white/90 uppercase',
+    subtitle_classes: str = 'text-xs text-white/60 ml-2 mt-1 tracking-wider uppercase font-semibold',
 ) -> None:
-    cfg = HeaderConfig(
-        variant=HeaderVariant.HOME,
-        show_menu_button=False,
-        show_title=True,
-        show_center_identity=False,
-        show_right_identity=True,
-        show_header_logo=True,
-        show_org_logo=False,
-    )
-    build_header(
-        cfg,
-        on_title_click=on_title_click or navigate_to_home,
-    )
+    """Build the popout-page header.
+
+    Renders a slimmed-down header with:
+    - LEFT: App title (clickable, navigates to home)
+    - CENTER: ``page_title`` with optional ``subtitle``
+    - RIGHT: University logo
+
+    All parameters are actually used — previously they were accepted but
+    silently dropped, causing every popout to show the generic
+    "ChemPlant Dynamics" title regardless of which view was open.
+    """
+    with ui.header().classes('app-header home-header'):
+        with ui.row().classes('app-header-inner items-center no-wrap'):
+            # LEFT — app title (navigates to home on click)
+            with ui.row().classes('header-region header-left items-center justify-start no-wrap'):
+                render_header_title(on_title_click or navigate_to_home)
+
+            # CENTER — page-specific title + subtitle
+            with ui.row().classes(
+                'header-region header-center items-center justify-center no-wrap'
+            ):
+                with ui.column().classes('items-center gap-0'):
+                    ui.label(page_title).classes(title_classes)
+                    if subtitle:
+                        ui.label(subtitle).classes(subtitle_classes)
+
+            # RIGHT — university logo
+            with ui.row().classes('header-region header-right items-center justify-end no-wrap'):
+                render_organization_identity('right')
+                render_header_logo()

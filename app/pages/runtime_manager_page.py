@@ -684,6 +684,8 @@ def _render_runtime_manager_card(
                                 pill.on('click', _cycle_mode)
                                 loop_displays[loop] = pill
 
+                    _last_loop_modes: dict[str, str] = {}
+
                     def _sync_all_loop_modes() -> None:
                         if is_dialog_open is not None and not is_dialog_open():
                             return
@@ -695,10 +697,12 @@ def _render_runtime_manager_card(
                                     bridge.state.controller_mode or 'Automatic',
                                 ),
                             )
-                            new_text = _mode_pill_label(current_mode)
-                            if getattr(pill_el, 'text', None) != new_text:
-                                pill_el.text = new_text
-                            _apply_pill_classes(pill_el, current_mode)
+                            if _last_loop_modes.get(loop_id) != current_mode:
+                                _last_loop_modes[loop_id] = current_mode
+                                new_text = _mode_pill_label(current_mode)
+                                if getattr(pill_el, 'text', None) != new_text:
+                                    pill_el.text = new_text
+                                _apply_pill_classes(pill_el, current_mode)
 
                     ui.timer(0.25, _sync_all_loop_modes)
 
@@ -1039,7 +1043,7 @@ def _render_runtime_manager_card(
     ) -> None:
         try:
             value = float(element.value) if element.value is not None else 1.0
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             value = 1.0
 
         accel_val = max(value, 1e-12)
@@ -1113,6 +1117,12 @@ def _render_runtime_manager_card(
     # Use SignalHub zero-latency listener whenever available (called directly inside _tick_async)
     if store is not None and getattr(store, 'hub', None) is not None:
         store.hub.add_sim_time_listener(_push_time_to_dom)
+        try:
+            ui.context.client.on_disconnect(
+                lambda: store.hub.remove_sim_time_listener(_push_time_to_dom),
+            )
+        except Exception:
+            pass
         _push_time_to_dom(float(getattr(bridge.state, 'global_sim_time', 0.0) or 0.0))
     else:
 

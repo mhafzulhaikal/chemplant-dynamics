@@ -3,22 +3,23 @@ import contextlib
 import sys
 import time
 
+
 def apply_windows_storage_patch():
     """Monkey-patch NiceGUI's FilePersistentDict to handle WinError 5 Access Denied.
-    
-    On Windows, rapid writes to storage files (like user.json) can trigger AV or 
-    OS file locks, causing os.replace to fail with PermissionError. This patch 
+
+    On Windows, rapid writes to storage files (like user.json) can trigger AV or
+    OS file locks, causing os.replace to fail with PermissionError. This patch
     adds a small retry loop around the replace operation.
     """
     if sys.platform != 'win32':
         return
 
     try:
-        from nicegui.persistence.file_persistent_dict import FilePersistentDict
-        from nicegui import background_tasks, core
-        from nicegui.persistence.serialization import dumps
-        from nicegui.helpers import unlink_with_retry, unlink_with_retry_async
         import aiofiles
+        from nicegui import background_tasks, core
+        from nicegui.helpers import unlink_with_retry, unlink_with_retry_async
+        from nicegui.persistence.file_persistent_dict import FilePersistentDict
+        from nicegui.persistence.serialization import dumps
     except ImportError:
         return
 
@@ -39,7 +40,7 @@ def apply_windows_storage_patch():
                 return
             async with aiofiles.open(tmp_filepath, 'w', encoding=self.encoding) as f:
                 await f.write(dumps(self, str(self.filepath), indent=self.indent))
-            
+
             with contextlib.suppress(FileNotFoundError):
                 retries = 5
                 for attempt in range(retries):
@@ -57,7 +58,9 @@ def apply_windows_storage_patch():
             tmp_filepath.unlink(missing_ok=True)
             unlink_with_retry(self.filepath, missing_ok=True)
         else:
-            tmp_filepath.write_text(dumps(self, str(self.filepath), indent=self.indent), encoding=self.encoding)
+            tmp_filepath.write_text(
+                dumps(self, str(self.filepath), indent=self.indent), encoding=self.encoding
+            )
             retries = 5
             for attempt in range(retries):
                 try:

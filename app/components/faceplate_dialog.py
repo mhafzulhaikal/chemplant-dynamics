@@ -48,6 +48,7 @@ registering all modals so the body has a full set of
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
@@ -596,6 +597,15 @@ class FaceplateDialog:
             except ValueError:
                 pass
 
+        # Refresh modal values once per refresh cycle
+        try:
+            modal.refresh_modal_values(
+                force_op_refresh=False,
+                force_sp_refresh=False,
+            )
+        except Exception:
+            pass
+
         # Post-reset input-push suppression. The live flusher
         # sets ``_suppress_input_push`` on this dialog for one
         # tick after an engine reset. We still repaint the
@@ -869,7 +879,7 @@ class FaceplateDialog:
                 val = default
             try:
                 val = float(val)
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 val = float(default)
 
             # SKILL.md Rule 13 (Amended): Enforce formats ONLY for readonly
@@ -879,7 +889,7 @@ class FaceplateDialog:
                     inp.format = f'%.{d}f'
                     try:
                         val = round(float(val), d)
-                    except (TypeError, ValueError):
+                    except TypeError, ValueError:
                         pass
                 else:
                     inp.format = None
@@ -933,11 +943,7 @@ class FaceplateDialog:
             .props(
                 'dense color="amber"'
                 + (' readonly' if readonly else '')
-                + (
-                    f' tooltip="Press Enter to apply"'
-                    if not readonly
-                    else ''
-                ),
+                + (' tooltip="Press Enter to apply"' if not readonly else ''),
             )
             .classes('faceplate-input-field')
         )
@@ -1018,7 +1024,7 @@ class FaceplateDialog:
             if value is not None:
                 try:
                     value = round(float(value), decimals)
-                except (TypeError, ValueError):
+                except TypeError, ValueError:
                     pass
         else:
             if getattr(field, 'format', None) is not None:
@@ -1033,7 +1039,7 @@ class FaceplateDialog:
         if value is not None:
             try:
                 value = float(value)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 pass
 
         if not format_changed:
@@ -1045,7 +1051,7 @@ class FaceplateDialog:
                 if current is not None and current != '' and value is not None:
                     if float(current) == float(value):
                         return
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 if str(current) == str(value):
                     return
         try:
@@ -1179,13 +1185,6 @@ class FaceplateDialog:
         fallback: float,
     ) -> float:
         """Read a numeric value from the modal's store, with fallbacks."""
-        try:
-            modal.refresh_modal_values(
-                force_op_refresh=False,
-                force_sp_refresh=False,
-            )
-        except Exception:
-            pass
         store = getattr(modal, 'store', None)
         if store is not None and hasattr(store, 'get'):
             value_keys = getattr(modal, 'value_keys', {})
@@ -1208,12 +1207,14 @@ class FaceplateDialog:
         """Map a value in [lo, hi] to a [0, 100] bargraph fill height."""
         try:
             v = float(value)
-        except (TypeError, ValueError):
+            if not math.isfinite(v):
+                return 0.0
+        except TypeError, ValueError:
             return 0.0
         if hi <= lo:
             return 0.0
         pct = (v - lo) / (hi - lo) * 100.0
-        if pct < 0.0:
+        if not math.isfinite(pct) or pct < 0.0:
             return 0.0
         if pct > 100.0:
             return 100.0
@@ -1249,7 +1250,7 @@ class FaceplateDialog:
     def _fmt(value: float, decimals: int) -> str:
         try:
             v = float(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return '—'
         return f'{round(v, decimals):.{decimals}f}'
 

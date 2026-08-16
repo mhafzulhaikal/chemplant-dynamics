@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import logging
 import math
-import time
 from collections import deque
 from collections.abc import Sequence
 from datetime import datetime
@@ -80,6 +79,10 @@ class Bridge:
     profile_storage_prefix = 'case_bridge'
 
     def __init__(self, appdb: Any | None = None, case_name: str = 'sthr') -> None:
+        if isinstance(appdb, str):
+            case_name = appdb
+            appdb = None
+
         self.case_name = str(case_name or 'sthr').strip().lower()
         self.cfg = get_case_config(self.case_name)
 
@@ -92,7 +95,6 @@ class Bridge:
         else:
             self.appdb = appdb
 
-        self.cfg = get_case_config(self.case_name)
         self.state = BridgeState()
 
         self.ipc = BridgeIPC()
@@ -964,7 +966,7 @@ class Bridge:
                 try:
                     self.appdb.timeseries.clear()
                 except Exception:
-                    self.appdb.timeseries = []
+                    self.appdb.timeseries = deque(maxlen=50000)
             except Exception:
                 logger.exception('Failed to clear appdb.timeseries')
 
@@ -1064,17 +1066,6 @@ class Bridge:
 
             self._worker.start()
 
-            # Wait briefly for the worker to transition to running
-            try:
-                wait_deadline = time.time() + 1.0
-                while time.time() < wait_deadline:
-                    if self._worker is not None and self._worker.is_alive():
-                        if self.state.status == 'running':
-                            break
-                    time.sleep(0.02)
-            except Exception:
-                pass
-
     def stop(self) -> None:
         self.ipc.signal_stop()
         self.ipc.restart_event.clear()
@@ -1083,7 +1074,7 @@ class Bridge:
         worker = self._worker
 
         if worker is not None and worker.is_alive():
-            worker.join(timeout=2.0)
+            worker.join(timeout=1.0)
             if not worker.is_alive():
                 self._worker = None
         else:
@@ -1116,22 +1107,21 @@ class Bridge:
     def reset(self) -> None:
         """Stop the worker and reset simulation state to initial
         conditions without starting."""
-        with self._lock:
-            # stop worker if running
-            self.ipc.signal_stop()
-            # clear pause so a subsequent start doesn't immediately block
-            self.ipc.signal_resume()
-            # indicate that the next start() should create a fresh worker and
-            # reset time
-            self._need_fresh_start = True
+        # Stop worker if running — signal stop and resume outside the lock
+        # so any worker thread executing a lock-dependent operation can
+        # finish immediately without deadlocking with this thread.
+        self.ipc.signal_stop()
+        self.ipc.signal_resume()
+        self._need_fresh_start = True
 
-            worker = self._worker
-            if worker is not None and worker.is_alive():
-                worker.join(timeout=2.0)
-                if not worker.is_alive():
-                    self._worker = None
-            else:
-                self._worker = None
+        worker = self._worker
+        if worker is not None and worker.is_alive():
+            worker.join(timeout=1.0)
+        self._worker = None
+
+        with self._lock:
+            # clear IPC queues after stop, preventing stale records re-read
+            self.ipc.clear_queues()
 
             # clear server-side step log on reset
             self._step_log.clear()

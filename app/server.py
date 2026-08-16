@@ -75,12 +75,12 @@ if sys.platform == 'win32' and sys.version_info < (3, 14):
 
     try:
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    except (AttributeError, RuntimeError):
+    except AttributeError, RuntimeError:
         pass
 
 from app.api import health_router, sim_router  # noqa: E402
 from app.config import STATIC_DIR  # noqa: E402
-from app.nicegui_patch import apply_windows_storage_patch
+from app.nicegui_patch import apply_windows_storage_patch  # noqa: E402
 
 apply_windows_storage_patch()
 

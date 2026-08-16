@@ -9,10 +9,10 @@ for root, _, files in os.walk(r'C:\process-control\chemplant-dynamics\app\static
     for f in files:
         if f.endswith('.css'):
             try:
-                content = open(os.path.join(root, f), 'r', encoding='utf-8').read()
+                content = open(os.path.join(root, f), encoding='utf-8').read()
                 for match in color_pattern.findall(content):
                     colors.add((match.lower().strip(), f))
-            except Exception as e:
+            except Exception:
                 pass
 
 d = defaultdict(list)
@@ -20,4 +20,4 @@ for c, f in colors:
     d[c].append(f)
 
 for c in sorted(d.keys()):
-    print(f"{c}: {', '.join(set(d[c]))}")
+    print(f'{c}: {", ".join(set(d[c]))}')

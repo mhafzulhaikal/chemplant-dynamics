@@ -215,7 +215,7 @@ def _extract_plot_value(step_entry: dict, field_name: str, registry: Any) -> flo
         return None
     try:
         value = float(value)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return value
 
     return value * registry.get_scale_for(field_name)
@@ -267,7 +267,7 @@ def _smart_yaxis_config(series: list[dict]) -> dict:
             if point and len(point) >= 2:
                 try:
                     all_y.append(float(point[1]))
-                except (TypeError, ValueError):
+                except TypeError, ValueError:
                     pass
 
     if not all_y:
@@ -297,137 +297,85 @@ def _smart_yaxis_config(series: list[dict]) -> dict:
 
 
 def _save_chart_as(chart: Any, fmt: str, filename_prefix: str | None = None) -> None:
-    """Trigger download of the specified chart in PNG or JPEG format via
-    NiceGUI backend."""
-    import asyncio
-    import base64
+    """Trigger high-resolution download of the specified chart in PNG or JPEG format."""
+    from datetime import datetime
 
     from nicegui import ui
 
-    from app.hub.data_logger import _trigger_download
+    if chart is None:
+        ui.notify('Chart is not ready to export', color='warning')
+        return
 
-    try:
-        client = ui.context.client
-        container = chart if hasattr(chart, 'default_slot') else client.layout
-    except Exception:
-        client = None
-        container = None
-
-    chart_id = chart if isinstance(chart, str) else getattr(chart, 'id', -1)
-    chart_class = (
-        chart if isinstance(chart, str) else getattr(chart, '_classes', ['pm-chart-input'])[0]
-    )
-    file_prefix = filename_prefix or (
-        f'performance_plot_{chart_class}'
-        if isinstance(chart, str)
-        else f'performance_plot_{chart_id}'
+    # Extract target ID / class
+    chart_id = getattr(chart, 'id', None)
+    target_classes = getattr(chart, '_classes', ['pm-panel-chart'])
+    specific_class = next(
+        (c for c in target_classes if c.startswith('pm-chart-')),
+        target_classes[0] if target_classes else 'pm-panel-chart',
     )
 
-    def handle_export(data_url: Any) -> None:
-        if not data_url or not isinstance(data_url, str) or ',' not in data_url:
-            return
-        try:
-            header, base64_data = data_url.split(',', 1)
-            content = base64.b64decode(base64_data)
-            filename = f'{file_prefix}.{fmt}'
-            media_type = f'image/{fmt}'
-            if container is not None:
-                with container:
-                    _trigger_download(content, filename, media_type)
-            else:
-                _trigger_download(content, filename, media_type)
-        except Exception as exc:
-            if container is not None:
-                with container:
-                    ui.notify(
-                        f'Failed to decode chart image: {exc}',
-                        color='negative',
-                    )
-            else:
-                pass
-
-    nicegui_id = chart_id if not isinstance(chart, str) else -1
-    try:
-        if not isinstance(chart, str) and hasattr(chart, 'run_chart_method'):
-            chart.run_chart_method('dispatchAction', {'type': 'saveAsImage'})
-        else:
-            for el in ui.context.client.elements.values():
-                if hasattr(el, '_classes') and chart_class in el._classes:
-                    nicegui_id = el.id
-                    if hasattr(el, 'run_chart_method'):
-                        el.run_chart_method('dispatchAction', {'type': 'saveAsImage'})  # type: ignore
-    except Exception:
-        pass
+    timestamp = datetime.now().strftime('%Y-%m-%dT%H%M%S')
+    file_prefix = filename_prefix or 'performance_plot'
+    filename = f'{file_prefix}_{timestamp}.{fmt}'
 
     js = f"""
     (() => {{
         try {{
-            let el = document.getElementById('{chart_class}') ||
-                    document.querySelector('.{chart_class}');
-            if (!el && {nicegui_id} !== -1) {{
-                el = document.getElementById('c' + {nicegui_id});
+            // 1. Locate the container element
+            let container = document.querySelector('.{specific_class}') ||
+                            document.getElementById('{specific_class}') ||
+                            document.getElementById('c{chart_id}') ||
+                            document.getElementById('{chart_id}');
+            if (!container && typeof getElement === 'function') {{
+                const w = getElement({chart_id});
+                if (w && w.$el) container = w.$el;
             }}
-            if (!el && {nicegui_id} !== -1) {{
-                el = document.getElementById({nicegui_id});
+            if (!container) {{
+                container = document.querySelector('.nicegui-echart');
             }}
-            if (!el) {{
-                console.error('Chart DOM element not found: {chart_class}');
-                return null;
+            if (!container) {{
+                console.error('Chart container not found');
+                return false;
             }}
-            let targetDom = el.hasAttribute('_echarts_instance_') ?
-                    el : el.querySelector('[_echarts_instance_]');
-            if (!targetDom) {{
-                targetDom = el.querySelector('div') ||
-                    el.firstElementChild || el;
+
+            // 2. Locate the canvas element
+            let canvas = container.querySelector('canvas');
+            if (!canvas) {{
+                const canvases = container.getElementsByTagName('canvas');
+                if (canvases.length > 0) canvas = canvases[0];
             }}
-            let chartInstance = echarts.getInstanceByDom(targetDom);
-            if (!chartInstance && el._vnode && el._vnode.component &&
-                    el._vnode.component.proxy &&
-                    el._vnode.component.proxy.chart) {{
-                chartInstance = el._vnode.component.proxy.chart;
+            if (!canvas) {{
+                console.error('Canvas element not found in chart container');
+                return false;
             }}
-            if (!chartInstance && typeof getElement === 'function') {{
-                const wrapper = getElement({nicegui_id});
-                if (wrapper && wrapper.chart) {{
-                    chartInstance = wrapper.chart;
-                }}
-            }}
-            if (!chartInstance) {{
-                console.error('Echarts instance not found for '
-                    'DOM: {chart_class}', el);
-                return null;
-            }}
-            const dataURL = chartInstance.getDataURL({{
-                type: '{fmt}',
-                pixelRatio: 2,
-                backgroundColor: '#000000'
-            }});
+
+            // 3. Prepare export canvas with black background
+            const bgCanvas = document.createElement('canvas');
+            bgCanvas.width = canvas.width;
+            bgCanvas.height = canvas.height;
+            const ctx = bgCanvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+            ctx.drawImage(canvas, 0, 0);
+
+            // 4. Generate download link directly in browser
+            const mimeType = ('{fmt}' === 'jpeg' || '{fmt}' === 'jpg') ? 'image/jpeg' : 'image/png';
+            const dataUrl = bgCanvas.toDataURL(mimeType, 0.95);
             const a = document.createElement('a');
-            a.download = '{file_prefix}.{fmt}';
-            a.target = '_blank';
-            a.href = dataURL;
-            const evt = new MouseEvent('click', {{
-                view: window,
-                bubbles: true,
-                cancelable: false
-            }});
-            a.dispatchEvent(evt);
-            return dataURL;
-        }} catch(e) {{
-            console.error('Failed to export chart:', e);
-            return null;
+            a.download = '{filename}';
+            a.href = dataUrl;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            return true;
+        }} catch (e) {{
+            console.error('Export failed:', e);
+            return false;
         }}
     }})();
     """
-
-    async def do_export():
-        try:
-            res = await ui.run_javascript(js)
-            handle_export(res)
-        except Exception:
-            pass
-
-    asyncio.create_task(do_export())
+    ui.run_javascript(js)
+    ui.notify(f'Saving {filename}...', color='blue-grey-8', icon='download')
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -930,6 +878,7 @@ def _mount_stripchart(
 
     def _update_panel_chart(scope: str | None) -> None:
         scopes_to_update = [scope] if scope else [s for s, _ in _PANEL_SECTIONS]
+        all_active = state.all_selected()
         for s in scopes_to_update:
             chart = state.charts.get(s)
             if chart is None:
@@ -940,7 +889,7 @@ def _mount_stripchart(
                 step_history=state.step_history,
                 window_min=state.window_min,
                 registry=state.hub.registry,
-                all_selected_fields=state.all_selected(),
+                all_selected_fields=all_active,
                 hub=hub,
             )
 
@@ -1219,6 +1168,47 @@ def _format_legend_label(field_name: str) -> str:
     return f'{display}  ·  {scope.upper()}'
 
 
+def _downsample_points(points: list[list[float]], max_points: int = 500) -> list[list[float]]:
+    """Downsample a series of [time, val] points using Min-Max bucketing.
+
+    Preserves peaks, valleys, and endpoints while keeping the payload
+    ultra-light.
+    """
+    n = len(points)
+    if n <= max_points:
+        return points
+
+    num_buckets = max_points // 2
+    if num_buckets < 1:
+        return points
+
+    bucket_size = n / num_buckets
+    result: list[list[float]] = [points[0]]
+
+    for i in range(num_buckets):
+        start = int(i * bucket_size)
+        end = int((i + 1) * bucket_size)
+        chunk = points[start:end]
+        if not chunk:
+            continue
+        min_pt = min(chunk, key=lambda p: p[1])
+        max_pt = max(chunk, key=lambda p: p[1])
+        if min_pt[0] <= max_pt[0]:
+            if min_pt != result[-1]:
+                result.append(min_pt)
+            if max_pt != result[-1]:
+                result.append(max_pt)
+        else:
+            if max_pt != result[-1]:
+                result.append(max_pt)
+            if min_pt != result[-1]:
+                result.append(min_pt)
+
+    if points[-1] != result[-1]:
+        result.append(points[-1])
+    return result
+
+
 def _update_chart(
     *,
     chart: Any,
@@ -1249,8 +1239,10 @@ def _update_chart(
                 continue
             try:
                 points.append([float(x_value), float(y_value)])
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 continue
+
+        points = _downsample_points(points, max_points=500)
 
         if hub is not None:
             color = hub.get_field_color(field_name, all_selected_fields or selected_fields)
@@ -1280,21 +1272,14 @@ def _update_chart(
     chart.options.setdefault('xAxis', {})
 
     try:
-        all_x = [
-            point[0]
-            for item in series
-            for point in item.get('data', [])
-            if point and len(point) >= 1
-        ]
-        if not all_x:
-            all_x = [
-                float(entry['time_min'])
-                for entry in step_history
-                if entry.get('time_min') is not None
-            ]
+        data_max: float | None = None
+        if step_history and step_history[-1].get('time_min') is not None:
+            try:
+                data_max = float(step_history[-1]['time_min'])
+            except TypeError, ValueError:
+                pass
 
-        if all_x:
-            data_max = max(all_x)
+        if data_max is not None:
             # The x-axis always tracks the current simulation time
             # so the trace fills the full chart width from left to
             # right at every tick — even when only a fraction of a

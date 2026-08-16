@@ -94,7 +94,13 @@ def render_sthr_pid_svg(hub: SignalHub):
         )
 
     html_element.initial_sync(hub)
-    hub.subscribe(html_element)
+    unsub = hub.subscribe(html_element)
+    try:
+        from nicegui import ui
+
+        ui.context.client.on_disconnect(unsub)
+    except Exception:
+        pass
 
     return html_element
 

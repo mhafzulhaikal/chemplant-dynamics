@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import csv
 import os
+from collections import deque
 from collections.abc import Iterable, Mapping
 from typing import Any
 
@@ -62,8 +63,8 @@ class AppDB:
         # session_id -> SimulationSession
         self.sessions: dict[str, object] = {}
 
-        # --- HISTORIAN ---
-        self.timeseries: list[dict] = []  # list of dict (time-series data)
+        # --- HISTORIAN (Bounded to prevent memory leaks in continuous runs) ---
+        self.timeseries: deque[dict] = deque(maxlen=50000)
 
         # --- BACKEND ---
         params = backend_params or {}
