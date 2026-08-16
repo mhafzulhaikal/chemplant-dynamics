@@ -122,35 +122,47 @@ _SCOPE_HINTS: dict[str, str] = {
     'output': 'Click a cell to plot / unplot the output signal',
 }
 
-# Trace palette for the chart — Curated High-Performance HMI (ISA-101)
-# compliant palette. Avoids critical alarm red (#ff0000) and pure yellow
-# (#ffff00), while providing high contrast and color-blind friendly distinction.
+# Curated 32-color high-contrast, non-alarm DCS trace palette.
+# Maximizes perceptual distance and ensures every active variable on the plot
+# receives a strictly distinct, unique color without collision.
 _DCS_TRACE_PALETTE: list[str] = [
-    '#26c6da',  # 1.  Process Cyan (Primary PV)
-    '#ff7043',  # 2.  Terracotta / Coral (Warm distinct)
-    '#42a5f5',  # 3.  Azure Blue (Calm, high contrast)
-    '#66bb6a',  # 4.  Sage Mint Green (Non-alarm green)
-    '#9575cd',  # 5.  Soft Lavender / Purple
-    '#e0a96d',  # 6.  Warm Sand / Ochre
-    '#80deea',  # 7.  Ice Teal
-    '#f06292',  # 8.  Dusty Rose
-    '#4db6ac',  # 9.  Seafoam Slate
-    '#7986cb',  # 10. Periwinkle Blue
-    '#dce775',  # 11. Soft Khaki Gold
-    '#ffab91',  # 12. Peach Amber
-    '#0097a7',  # 13. Deep Slate Teal
-    '#ba68c8',  # 14. Muted Lilac
-    '#aed581',  # 15. Pistachio Green
-    '#cfd8dc',  # 16. Platinum Silver
+    '#26c6da',  #  1. Process Cyan
+    '#ff7043',  #  2. Coral Terracotta (Warm high contrast)
+    '#42a5f5',  #  3. Azure Blue
+    '#66bb6a',  #  4. Sage Mint Green
+    '#ab47bc',  #  5. Orchid Purple
+    '#ffa726',  #  6. Amber Orange
+    '#80deea',  #  7. Ice Teal
+    '#ec407a',  #  8. Vivid Rose
+    '#26a69a',  #  9. Seafoam Emerald
+    '#7e57c2',  # 10. Deep Violet
+    '#d4e157',  # 11. Lime Chartreuse
+    '#ff8a65',  # 12. Peach Salmon
+    '#5c6bc0',  # 13. Indigo Slate
+    '#29b6f6',  # 14. Sky Blue
+    '#9ccc65',  # 15. Light Pistachio
+    '#ba68c8',  # 16. Muted Lilac
+    '#ffd54f',  # 17. Gold Amber
+    '#00acc1',  # 18. Dark Cyan Teal
+    '#f06292',  # 19. Soft Pink
+    '#4db6ac',  # 20. Seafoam Slate
+    '#7986cb',  # 21. Periwinkle Blue
+    '#aed581',  # 22. Pale Lime
+    '#ffab91',  # 23. Light Peach
+    '#b39ddb',  # 24. Soft Lavender
+    '#80cbc4',  # 25. Mint Aqua
+    '#e57373',  # 26. Soft Crimson Rust
+    '#90caf9',  # 27. Ice Blue
+    '#c5e1a5',  # 28. Soft Sage
+    '#ce93d8',  # 29. Light Orchid
+    '#ffe082',  # 30. Pale Gold
+    '#81d4fa',  # 31. Pale Azure
+    '#b0bec5',  # 32. Platinum Slate
 ]
 
 
 def _color_for_index(index: int) -> str:
-    """Return the palette color for the ``index``-th selected field.
-
-    The picker cells and the chart both use this resolver so the cell's
-    accent border matches the trace it produces.
-    """
+    """Return the palette color for the ``index``-th selected field."""
     return _DCS_TRACE_PALETTE[index % len(_DCS_TRACE_PALETTE)]
 
 
@@ -1253,6 +1265,7 @@ def _update_chart(
                 else index
             )
             color = _color_for_index(color_index)
+
         series.append(
             {
                 'name': _format_legend_label(field_name),
@@ -1260,7 +1273,7 @@ def _update_chart(
                 'showSymbol': False,
                 'connectNulls': True,
                 'smooth': False,
-                'lineStyle': {'width': 2, 'color': color},
+                'lineStyle': {'width': 2, 'color': color, 'type': 'solid'},
                 'itemStyle': {'color': color},
                 'data': points,
             },

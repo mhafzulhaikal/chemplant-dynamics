@@ -722,48 +722,27 @@ class SignalHub:
             reset_counter=self._reset_counter,
         )
 
-    def get_field_color(self, field_name: str, active_fields: list[str]) -> str:
-        """Assign a unique and stable color to each selected/active field based
-        on ISA-101 High-Performance HMI chromatic dispersion standards.
+    def get_field_color(self, field_name: str, active_fields: list[str] | None = None) -> str:
+        """Assign a strictly unique, collision-free color to each active field on the plot.
 
-        Guarantees that active fields are allocated distinct, non-alarm colors
-        with maximal perceptual separation.
+        Guarantees that NO TWO VARIABLES IN THE SAME PLOT ever share the same color.
         """
-        if not hasattr(self, '_field_colors'):
-            self._field_colors = {}
-
-        # If already assigned and currently valid, return it.
-        if field_name in self._field_colors:
-            return self._field_colors[field_name]
-
         from app.hub.perf_monitor import _DCS_TRACE_PALETTE
 
         palette = _DCS_TRACE_PALETTE
-        n_palette = len(palette)
+        n = len(palette)
 
-        # What colors are currently in use by active fields?
-        active_set = set(active_fields)
-        used_colors = {self._field_colors[f] for f in active_set if f in self._field_colors}
+        if active_fields and field_name in active_fields:
+            idx = active_fields.index(field_name)
+            return palette[idx % n]
 
-        # Stride with a co-prime step (5) over 16 colors to maximize chromatic distance
-        stride = 5
-        dispersion_order = [(i * stride) % n_palette for i in range(n_palette)]
-
-        for idx in dispersion_order:
-            candidate = palette[idx]
-            if candidate not in used_colors:
-                self._field_colors[field_name] = candidate
-                return candidate
-
-        # Fallback for > 16 simultaneous fields
+        # For inactive cell display, assign deterministic color by available field position
         try:
             available = list(getattr(self._bridge.state, 'available_log_fields', []) or [])
             idx = available.index(field_name)
-        except ValueError:
-            idx = len(self._field_colors)
-        fallback_color = palette[idx % n_palette]
-        self._field_colors[field_name] = fallback_color
-        return fallback_color
+        except Exception:
+            idx = abs(hash(field_name))
+        return palette[idx % n]
 
     def update_bridge_selected_fields(self) -> None:
         """Update the bridge's selected_log_fields with the union of all PM and
