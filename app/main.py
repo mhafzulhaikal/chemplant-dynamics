@@ -68,7 +68,7 @@ ui.run(
     host='0.0.0.0',
     port=8080,
     show=True,
-    reload=True,
+    reload=False,
     reconnect_timeout=30,  # wait 30 s on network drop before hard-reloading
     storage_secret=os.environ.get('STORAGE_SECRET', 'chemplant-dev-secret-change-me'),
 )
