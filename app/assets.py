@@ -37,6 +37,12 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+# Module-level cache so collect_css() reads disk only once per server
+# process. The CSS bundle never changes at runtime (static files), so
+# a simple never-invalidate cache is correct for production. In dev
+# mode restart the server to pick up CSS changes (same as before).
+_CSS_CACHE: str | None = None
+
 # Separator comment injected between inlined files for readability.
 _SEP = '\n\n/* ===== {rel} ===== */\n'
 
@@ -92,7 +98,11 @@ def _collect(path: Path, css_root: Path, seen: set[Path]) -> str:
     return result
 
 
-def collect_css(static_dir: Path) -> str:
+def collect_css(static_dir: Path) -> str:  # noqa: PLR0912
+    global _CSS_CACHE  # noqa: PLW0603
+    if _CSS_CACHE is not None:
+        return _CSS_CACHE
+
     """Bundle every CSS file under ``<static_dir>/css/`` into one string.
 
     Starts from ``app.css`` and follows ``@import`` chains to guarantee
@@ -131,7 +141,8 @@ def collect_css(static_dir: Path) -> str:
                 chunks.append(_SEP.format(rel=rel))
                 chunks.append(source)
 
-    return ''.join(chunks)
+    _CSS_CACHE = ''.join(chunks)
+    return _CSS_CACHE
 
 
 __all__ = ['collect_css']

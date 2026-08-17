@@ -144,6 +144,7 @@ ui.run_with(
     fastapi_app,
     title='ChemPlant Dynamics',
     dark=True,
+    reconnect_timeout=30,  # wait 30 s on network drop before hard-reloading
     storage_secret=os.environ.get('STORAGE_SECRET', 'chemplant-dev-secret-change-me'),
 )
 

@@ -164,6 +164,11 @@ class SignalHub:
         # _tick_async coroutines from rapid _notify() calls.
         self._notify_pending: bool = False
 
+        # Dirty flag: set True whenever _write_snapshot() actually changes
+        # a value.  _maybe_persist_snapshot() skips the disk write when
+        # this is False (snapshot unchanged since last persist).
+        self._snapshot_dirty: bool = False
+
         # Zero-latency sim-time listeners — called from inside _tick_async
         # immediately after bridge.state.global_sim_time is updated, so
         # the current-time display in RTM updates in the same asyncio tick
@@ -465,6 +470,13 @@ class SignalHub:
         if self._persist_counter % 100 != 0:
             return
 
+        # Skip the write entirely when the snapshot has not changed
+        # since the last persist — avoids redundant disk I/O and
+        # reduces Windows file-lock (WinError 5) risk on idle sessions.
+        if not self._snapshot_dirty:
+            return
+        self._snapshot_dirty = False
+
         with self._lock:
             payload = dict(self._snapshot)
 
@@ -710,7 +722,10 @@ class SignalHub:
     def _write_snapshot(self, new_values: Mapping[str, float]) -> None:
         with self._lock:
             for key, value in new_values.items():
-                self._snapshot[key] = float(value)
+                fv = float(value)
+                if self._snapshot.get(key) != fv:
+                    self._snapshot[key] = fv
+                    self._snapshot_dirty = True
 
     def _make_idle_meta(self) -> TickMeta:
         """Return a neutral TickMeta when no step data is available."""

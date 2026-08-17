@@ -386,44 +386,29 @@ def _build_pid_section(
                 modal_child = ModalChild(hub, controller_modals)
                 modal_child.attach()
 
-            # ── UI ↔ engine status sync ──
-            # The Run button "active" class and the SVG
-            # animation are driven explicitly by the
-            # Run/Stop/Reset handlers, but the worker can
-            # self-terminate (time_end reached, error, or
-            # external stop) without going through those
-            # handlers. This timer polls the engine status
-            # and resets the UI indicators when the worker
-            # transitions out of 'running' on its own, so
-            # the operator's view always matches the
-            # actual engine state. Mirrors the
-            # ``_sync_mode_pill`` pattern at
-            # ``app/pages/runtime_manager_page.py:336``.
-            if hub is not None:
-                _prev_engine_status_holder: dict[str, str] = {
-                    'value': '',
-                }
+                # ── UI ↔ engine status sync ──
+                # The sim_time listener (_on_sim_tick below) handles
+                # implicit worker terminations (time_end reached, error)
+                # without a separate timer. It is registered after the
+                # svg-host style element so the DOM context is ready.
 
-                def _sync_engine_status_ui() -> None:
-                    try:
-                        current = str(
-                            hub.engine_control.status or '',
-                        )
-                    except Exception:
-                        return
+                ui.html('<style>.svg-wrapper { display: contents; }</style>').classes(
+                    'pid-svg-host'
+                )
+
+                # Wire status-sync into the hub's existing tick via
+                # add_sim_time_listener instead of a standalone timer.
+                # The listener receives (sim_time, status) directly from
+                # _tick_async — no extra asyncio wake-up needed.
+                _prev_engine_status_holder: dict[str, str] = {'value': ''}
+
+                def _on_sim_tick(_sim_time: float, status: str) -> None:
                     previous = _prev_engine_status_holder['value']
-                    if current == previous:
+                    if status == previous:
                         return
-                    _prev_engine_status_holder['value'] = current
-
-                    # React to implicit terminations
-                    # (worker self-stopped on time_end,
-                    # or errored). The explicit Run/Stop
-                    # handlers already update the UI on
-                    # their own, so a transition we missed
-                    # is exactly the case we want to fix.
-                    if current in ('complete', 'error', 'stopped', 'idle'):
-                        if previous == 'running' and current == 'complete':
+                    _prev_engine_status_holder['value'] = status
+                    if status in ('complete', 'error', 'stopped', 'idle'):
+                        if previous == 'running' and status == 'complete':
                             try:
                                 ui.notify(
                                     'Simulation reached End Time',
@@ -434,7 +419,7 @@ def _build_pid_section(
                                 )
                             except Exception:
                                 pass
-                        elif previous == 'running' and current == 'error':
+                        elif previous == 'running' and status == 'error':
                             try:
                                 ui.notify(
                                     'Simulation stopped (engine error)',
@@ -446,11 +431,15 @@ def _build_pid_section(
                             except Exception:
                                 pass
 
-                ui.html('<style>.svg-wrapper { display: contents; }</style>').classes(
-                    'pid-svg-host'
-                )
-
-                ui.timer(0.25, _sync_engine_status_ui)
+                hub.add_sim_time_listener(_on_sim_tick)
+                # Auto-remove on browser disconnect so the listener
+                # does not linger after the page is closed.
+                try:
+                    ui.context.client.on_disconnect(
+                        lambda: hub.remove_sim_time_listener(_on_sim_tick)
+                    )
+                except Exception:
+                    pass
 
             # ── Start the master tick ──
             # hub.start() seeds the initial snapshot from storage so the

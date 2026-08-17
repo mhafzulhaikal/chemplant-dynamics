@@ -83,11 +83,13 @@ __all__ = [
 ]
 
 
-# How often the flush timer drains the bridge's record queue.
-# 300 ms ≈ 3 Hz — fast enough to read the log, slow enough that
-# the DOM never chokes even when the engine is running at very
-# high acceleration.
-_FLUSH_INTERVAL_S: float = 0.3
+# Flush interval (s) — adapts based on engine state.
+# Idle/stopped: 1 Hz (barely any new entries; saves asyncio wake-ups).
+# Running:      3 Hz (fast enough to read the log in real time).
+_FLUSH_INTERVAL_S_RUNNING: float = 0.3
+_FLUSH_INTERVAL_S_IDLE: float = 1.0
+# Initial value used by ui.timer().
+_FLUSH_INTERVAL_S: float = _FLUSH_INTERVAL_S_RUNNING
 
 # Cap on the in-memory step history used for replay when the user
 # toggles field selection.  Must be large enough to hold at least
@@ -783,7 +785,22 @@ class DataLoggerState:
             except Exception:
                 pass
 
-        ui.timer(_FLUSH_INTERVAL_S, _flush_log)
+        _log_timer = ui.timer(_FLUSH_INTERVAL_S, _flush_log)
+
+        # Adaptive rate: slow down when engine is idle to save event-loop wake-ups.
+        def _adapt_log_rate() -> None:
+            try:
+                running = str(getattr(self.bridge.state, 'status', 'idle') or 'idle') in (
+                    'running',
+                    'starting',
+                )
+                target = _FLUSH_INTERVAL_S_RUNNING if running else _FLUSH_INTERVAL_S_IDLE
+                if abs(_log_timer.interval - target) > 0.01:
+                    _log_timer.interval = target
+            except Exception:
+                pass
+
+        ui.timer(1.0, _adapt_log_rate)
 
 
 def render_data_logger_section(

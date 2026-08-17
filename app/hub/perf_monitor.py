@@ -91,9 +91,13 @@ __all__ = ['render_performance_monitor']
 # Biodiesel (Ts≈0.00833 min): 60/0.00833 * 1.2 ≈ 8 640
 _HISTORY_MAXLEN: int = 6000
 
-# How often the flush timer runs (s) — 500 ms gives the UI plenty of
-# breathing room while the chart still feels live.
-_FLUSH_INTERVAL_S = 0.25
+# Flush interval (s) — adapts based on engine state.
+# Idle/stopped: 1 Hz (barely any new data to show).
+# Running:      4 Hz (keep chart live without hammering the loop).
+_FLUSH_INTERVAL_S_RUNNING: float = 0.25
+_FLUSH_INTERVAL_S_IDLE: float = 1.0
+# Keep the old name as the initial value used by ui.timer() below.
+_FLUSH_INTERVAL_S: float = _FLUSH_INTERVAL_S_RUNNING
 
 # Minimum interval between echart re-renders.
 _CHART_THROTTLE_S = 0.25
@@ -790,7 +794,22 @@ class PerfMonitorState:
                         cb(None)
                     self.last_render_time[0] = now
 
-        ui.timer(_FLUSH_INTERVAL_S, _flush)
+        _flush_timer = ui.timer(_FLUSH_INTERVAL_S, _flush)
+
+        # Adaptive rate: slow down when engine is idle to reduce event-loop pressure.
+        def _adapt_flush_rate() -> None:
+            try:
+                running = str(getattr(hub.bridge.state, 'status', 'idle') or 'idle') in (
+                    'running',
+                    'starting',
+                )
+                target = _FLUSH_INTERVAL_S_RUNNING if running else _FLUSH_INTERVAL_S_IDLE
+                if abs(_flush_timer.interval - target) > 0.01:
+                    _flush_timer.interval = target
+            except Exception:
+                pass
+
+        ui.timer(1.0, _adapt_flush_rate)
 
 
 def _mount_stripchart(
