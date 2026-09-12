@@ -70,12 +70,15 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # ── Windows asyncio policy ─────────────────────────────────────────────────────
-if sys.platform == 'win32' and sys.version_info < (3, 14):
+# The ProactorEventLoop (Windows default) raises ConnectionResetError (WinError
+# 10054) inside _ProactorBasePipeTransport._call_connection_lost during normal
+# socket teardown.  SelectorEventLoop avoids this entirely on all Python versions.
+if sys.platform == 'win32':
     import asyncio
 
     try:
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    except AttributeError, RuntimeError:
+    except (AttributeError, RuntimeError):
         pass
 
 from app.api import health_router, sim_router  # noqa: E402
